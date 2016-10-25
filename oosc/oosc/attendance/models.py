@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Attendance(models.Model)
+class Attendance(models.Model):
     attendance_id = models.IntegerField(default = 0)
     student_id  = models.IntegerField(default = 0)
     date    = models.DateTimeField()
