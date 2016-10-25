@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 import dj_database_url # 3rd party database config helper
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,6 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'oosc.teachers.apps.TeachersConfig',
+    'oosc.students.apps.StudentsConfig',
+    'oosc.attendance.apps.AttendanceConfig',
+    'oosc.parents.apps.ParentsConfig',
+    'oosc.subjects.apps.SubjectsConfig',
+    'oosc.schools.apps.SchoolsConfig',
+    'oosc.promotions.apps.PromotionsConfig',
+    'oosc.counties.apps.CountiesConfig',
+    'oosc.constituencies.apps.ConstituenciesConfig',
+    'oosc.classes.apps.ClassesConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -77,9 +88,15 @@ WSGI_APPLICATION = 'oosc.config.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    'default' : dj_database_url.config(default='postgres://oosc:#oosc2016@localhost:5432/oosc')
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'oosc',        # Or path to database file if using sqlite3.
+        'USER': 'oosc',                   # Not used with sqlite3.
+        'PASSWORD': '#oosc2016',            # Not used with sqlite3.
+        'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',                  # Set to empty string for default. Not used with sqlite3.
+    }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
