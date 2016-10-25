@@ -20,7 +20,10 @@ class Students(models.Model):
     meals_per_day   = models.IntegerField(default=0)
     not_in_school_before = models.IntegerField(default=0)   #reason for not being in school before
     emis_code_histories = models.CharField(max_length=200)
+<<<<<<< HEAD
 
 
     def __str__(self):
         return ('student_name')
+=======
+>>>>>>> f6fa739de7087389f448ff1647ab1cd8a3023aa1
