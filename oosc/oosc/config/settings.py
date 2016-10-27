@@ -39,7 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Helper Apps | Dependancies
     'rest_framework',
+    'oauth2_provider',
+
+    # Systems applications developed
+
     'oosc.teachers.apps.TeachersConfig',
     'oosc.students.apps.StudentsConfig',
     'oosc.attendance.apps.AttendanceConfig',
@@ -50,8 +56,21 @@ INSTALLED_APPS = [
     'oosc.counties.apps.CountiesConfig',
     'oosc.constituencies.apps.ConstituenciesConfig',
     'oosc.classes.apps.ClassesConfig',
-
+    'oosc.authentication.apps.AuthenticationConfig',
 ]
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
