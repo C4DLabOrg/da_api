@@ -9,9 +9,6 @@ class Attendance(models.Model):
     status  = models.IntegerField(default = 0) #assuming 1 is present 0 is absent
     cause_of_absence = models.CharField(max_length = 200)
     class_id = models.ForeignKey(Classes, on_delete= models.CASCADE)
-<<<<<<< HEAD
 
     def __str__(self):
         return ('student_id')
-=======
->>>>>>> f6fa739de7087389f448ff1647ab1cd8a3023aa1
