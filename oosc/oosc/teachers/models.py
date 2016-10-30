@@ -7,7 +7,7 @@ class Teachers(models.Model):
 
     name = models.CharField(max_length=200)
     phone_no = models.IntegerField(default=0)
-    type = models.IntegerField(default=0)
+    teacher_type = models.IntegerField(default=0)
     age  = models.DateTimeField();
     gender = models.CharField(max_length=200)
     tsc_no = models.CharField(max_length=200)
