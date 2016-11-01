@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from attendance.models import Attendance
+from oosc.attendance.models import Attendance
 
-class AttendanceSerializer(serializer.ModelSerializer):
+class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Constituencies
+        model = Attendance
         fields = ('student_id','date','status','cause_of_absence','class_id')

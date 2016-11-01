@@ -1,6 +1,7 @@
 from django.db import models
 from oosc.counties.models import Counties
 
+
 # Create your models here.
 
 class Constituencies(models.Model):
