@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from classes.models import Classes
+from oosc.classes.models import Classes
+from rest_framework import serializers
 
-class ClassesSerializer(serializer.ModelSerializer):
+class ClassesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Constituencies
+        model = Classes
         fields = ('class_name','school_id','teacher_id')
