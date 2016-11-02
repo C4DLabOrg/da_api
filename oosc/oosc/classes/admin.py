@@ -4,6 +4,5 @@ from oosc.classes.models import Classes
 
 class classAdmin(admin.ModelAdmin):
     list_display=['class_name','school_id','teacher_id']
-    
-admin.site.register(Classes,classAdmin);
 
+admin.site.register(Classes,classAdmin);

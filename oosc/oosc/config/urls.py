@@ -17,7 +17,15 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from oosc.attendance.views import ListCreateAttendance
+from oosc.schools.views import ListCreateSchool
+from oosc.constituencies.views import ListCreateCounstituency
+from oosc.counties.views import ListCreateCounty
+from oosc.classes.views import ListCreateClass
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/attendance',ListCreateAttendance.as_view(),name="attendance"),
+    url(r'^api/attendance',ListCreateAttendance.as_view(),name="attendance-list-create"),
+    url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
+    url(r'^api/counties',ListCreateCounty.as_view(),name="county-list-create"),
+    url(r'^api/counstituencies',ListCreateCounstituency.as_view(),name="counstituency-list-create"),
+    url(r'^api/classes',ListCreateClass.as_view(),name="class-list-create"),
 ]
