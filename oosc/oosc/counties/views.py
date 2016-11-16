@@ -8,4 +8,8 @@ class ListCreateCounty(generics.ListCreateAPIView):
     queryset = Counties.objects.all()
     serializer_class = CountiesSerializer
 
+    def perform_create(self, serializer):
+        #print (serializer.validated_data)
+        serializer.save()
+
 

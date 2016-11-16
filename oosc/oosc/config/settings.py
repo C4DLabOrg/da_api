@@ -50,8 +50,16 @@ INSTALLED_APPS = [
     'oosc.counties.apps.CountiesConfig',
     'oosc.constituencies.apps.ConstituenciesConfig',
     'oosc.classes.apps.ClassesConfig',
+    'oauth2_provider',
 
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    ),
+
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

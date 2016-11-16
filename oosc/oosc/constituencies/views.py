@@ -7,3 +7,5 @@ class ListCreateCounstituency(generics.ListCreateAPIView):
     queryset = Constituencies.objects.all()
     serializer_class = ConstituenciesSerializer
 
+
+
