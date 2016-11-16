@@ -9,4 +9,4 @@ class Constituencies(models.Model):
     county_id = models.ForeignKey(Counties, on_delete=models.CASCADE)
 
     def __str__(self):
-        return ('constituency')
+        return self.constituency

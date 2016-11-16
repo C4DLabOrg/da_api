@@ -11,4 +11,4 @@ class Attendance(models.Model):
     class_id = models.ForeignKey(Classes, on_delete= models.CASCADE)
 
     def __str__(self):
-        return ('student_id')
+        return str(self.student_id)

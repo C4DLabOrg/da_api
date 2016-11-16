@@ -9,4 +9,4 @@ class Parents(models.Model):
     student_id = models.ForeignKey(Students,on_delete=models.CASCADE)
 
     def __str__(self):
-        return ('parents_name')
+        return self.parents_name
