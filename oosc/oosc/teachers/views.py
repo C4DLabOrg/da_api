@@ -3,7 +3,7 @@ from rest_framework import status
 # Create your views here.
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer,UserSerializer
-
+from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
@@ -18,9 +18,12 @@ class ListCreateTeachers(APIView):
     def post(self,request,format=None):
         #data=request.data['user']
         details=request.data
-
+        details["details"]["cleanings"]=0
         #Create a user for the teacher with a default password 'p@ssw0rd'
-        usr=User.objects.create_user(username=details['username'],password='p@ssw0rd')
+        try:
+            usr=User.objects.create_user(username=details['username'],password='p@ssw0rd')
+        except:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
         #add the user to teachers group
         g=Group.objects.get(name="teachers")
