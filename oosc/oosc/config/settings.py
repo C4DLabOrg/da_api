@@ -26,9 +26,10 @@ SECRET_KEY = '=l())7cafv22l7*yz)rf=g*kb@)0(f__e7$bp73!ibx#32k6e+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL=True
 
 # Application definition
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'oosc.constituencies.apps.ConstituenciesConfig',
     'oosc.classes.apps.ClassesConfig',
     'oauth2_provider',
+    'corsheaders',
 
 ]
 
@@ -69,6 +71,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'oosc.config.urls'
