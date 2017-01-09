@@ -99,16 +99,24 @@ WSGI_APPLICATION = 'oosc.config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+#Development Only
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'oosc',        # Or path to database file if using sqlite3.
-        'USER': 'oosc',                   # Not used with sqlite3.
-        'PASSWORD': 'p@ssw0rd',            # Not used with sqlite3.
-        'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432',                  # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+#Production Only
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': 'oosc',        # Or path to database file if using sqlite3.
+#         'USER': 'oosc',                   # Not used with sqlite3.
+#         'PASSWORD': 'p@ssw0rd',            # Not used with sqlite3.
+#         'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
+#         'PORT': '5432',                  # Set to empty string for default. Not used with sqlite3.
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -147,3 +155,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_ROOT=os.path.join(BASE_DIR,'..','uploads')
+MEDIA_URL="/media/"

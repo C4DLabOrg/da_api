@@ -17,7 +17,7 @@ class Teachers(models.Model):
     headteacher=models.BooleanField()
     qualifications = models.CharField(max_length=3,choices=QUALIFICATIONS,default='COL')
     subjects = models.ManyToManyField(Subjects)
-    school_id = models.ForeignKey(Schools, on_delete=models.CASCADE)
+    school = models.ForeignKey(Schools, on_delete=models.CASCADE)
     date_started_teaching = models.DateField()
     joined_current_school = models.DateField()
 

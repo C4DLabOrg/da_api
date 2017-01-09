@@ -8,8 +8,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
 from oosc.teachers.serializers import UserSerializer,TeacherSerializer
+from permission import IsHeadteacherOrAdmin
 
 class ListCreateTeachers(APIView):
+    permission_classes = (IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
         teach=Teachers.objects.all();
         teachers=TeacherSerializer(teach,many=True)
@@ -22,8 +24,9 @@ class ListCreateTeachers(APIView):
         #Create a user for the teacher with a default password 'p@ssw0rd'
         try:
             usr=User.objects.create_user(username=details['username'],password='p@ssw0rd')
-        except:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        except Exception as inst:
+            usr.delete()
+            return Response(data=inst,status=status.HTTP_400_BAD_REQUEST)
 
         #add the user to teachers group
         g=Group.objects.get(name="teachers")
@@ -55,7 +58,7 @@ class ListCreateTeachers(APIView):
                                     "headteacher":"True or False",
                                     "qualifications":"either COL for (college) or UNI for (university)",
                                     "subjects":["ids","of","subjects","required","integers"],
-                                    "school_id":"school_id",
+                                    "school":"school id",
                                     "date_started_teaching":"yyyy-mm-dd",
                                     "joined_current_school":"yyyy-mm-dd"
                                     }
