@@ -10,7 +10,7 @@ class Schools(models.Model):
     emis_code   = models.IntegerField(default = 0)
     constituency = models.ForeignKey(Constituencies, on_delete = models.CASCADE)
     source_of_water = models.CharField(max_length = 200)
-    headteacher = models.OneToOneField(User,related_name="headteacher")
+    headteacher = models.OneToOneField(User,related_name="headteacher",null=True,blank=True)
     phone_no    = models.IntegerField(default=0)
 
     def __str__(self):

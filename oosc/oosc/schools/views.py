@@ -8,4 +8,4 @@ from rest_framework.permissions import IsAdminUser
 class ListCreateSchool(generics.ListCreateAPIView):
     queryset=Schools.objects.all();
     serializer_class=SchoolsSerializer
-    permission_classes = (IsAdminUser,)
+    #permission_classes = (IsAdminUser,)
