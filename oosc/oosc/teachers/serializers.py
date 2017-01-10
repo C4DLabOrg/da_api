@@ -11,7 +11,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('user','namecd ..','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','subjects','school','date_started_teaching','joined_current_school','school_name')
+        fields = ('user','name','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','subjects','school','date_started_teaching','joined_current_school','school_name')
     def get_school_name(self,obj):
         return obj.school.school_name
     def get_name(self,obj):
