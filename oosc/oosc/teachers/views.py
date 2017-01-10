@@ -7,15 +7,18 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
-from oosc.teachers.serializers import UserSerializer,TeacherSerializer
+from oosc.teachers.serializers import UserSerializer,TeacherSerializer,TeacherAllSerializer
 from permission import IsHeadteacherOrAdmin
 
 class ListCreateTeachers(APIView):
     permission_classes = (IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
-        teach=Teachers.objects.all();
-        teachers=TeacherSerializer(teach,many=True)
-        return Response(teachers.data)
+        teach=Teachers.objects.filter(user=self.request.user.id);
+        if(len(teach) > 0):
+            teachers=TeacherAllSerializer(teach[0])
+            return Response(data=teachers.data,status=status.HTTP_200_OK)
+        else:
+            return Response(data={"error":"Not a teacher"},status=status.HTTP_404_NOT_FOUND)
 
     def post(self,request,format=None):
         #data=request.data['user']

@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from subjects.models import Subjects
+from oosc.subjects.models import Subjects
 
-class StudentsSerializer(serializers.ModelSerializer):
+class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subjects
-        fields = ('subject_name')
+        fields = ('id','subject_name')
