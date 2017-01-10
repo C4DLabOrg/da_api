@@ -8,6 +8,8 @@ class Teachers(models.Model):
     TEACHER_TYPE=(('TSC','TSC'),('BRD','BOARD'))
     QUALIFICATIONS=(('UNI','UNIVERSITY'),('COL','COLLEGE'))
     user=models.OneToOneField(User,on_delete=models.CASCADE)
+    fstname=models.CharField(max_length=45)
+    lstname = models.CharField(max_length=45)
     phone_no = models.IntegerField(default=0)
     teacher_type = models.CharField(max_length=3,choices=TEACHER_TYPE, default='TSC')
     birthday  = models.DateField()
