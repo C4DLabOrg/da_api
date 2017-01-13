@@ -13,7 +13,7 @@ from permission import IsHeadteacherOrAdmin
 class ListCreateTeachers(APIView):
     permission_classes = (IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
-        teach=Teachers.objects.filter(user=self.request.user.id);
+        teach=Teachers.objects.filter(user=self.request.user.id)
         if(len(teach) > 0):
             teachers=TeacherAllSerializer(teach[0])
             return Response(data=teachers.data,status=status.HTTP_200_OK)
