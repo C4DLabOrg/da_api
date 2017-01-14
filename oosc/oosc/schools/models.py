@@ -1,4 +1,5 @@
 from django.db import models
+#from oosc.teachers.models import Teachers
 from oosc.constituencies.models import Constituencies
 from django.contrib.auth.models import User
 #from oosc.teachers.models import Teachers
