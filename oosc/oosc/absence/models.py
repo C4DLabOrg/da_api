@@ -7,6 +7,7 @@ from oosc.reason.models import Reason
 # Create your models here.
 class Absence(models.Model):
     student=models.ForeignKey(Students)
-    reasons=models.ManyToManyField(Reason)
+    reasons=models.ManyToManyField(Reason,null=True,blank=True)
+    status=models.BooleanField(default=False)
     date_from=models.DateField()
     date_to=models.DateField()
