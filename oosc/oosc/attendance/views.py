@@ -4,6 +4,8 @@ from rest_framework import generics,status
 from datetime import datetime
 from oosc.students.models import Students
 from oosc.attendance.serializers import AttendanceSerializer
+from oosc.absence.models import Absence
+from datetime import datetime
 # Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,6 +34,11 @@ class TakeAttendance(APIView):
                 student = Students()
                 student = Students.objects.filter(id=i)[0]
                 student.absence = student.absence + 1
+                if(student.absence>4):
+                    ab=Absence()
+                    ab.student=student
+                    ab.date_to=datetime.now().date()
+
                 attendance = Attendance()
                 attendance.date = datetime.now().date()
                 attendance.id = now + str(i)
