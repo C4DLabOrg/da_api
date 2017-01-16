@@ -19,6 +19,7 @@ class TakeAttendance(APIView):
             for i in request.data["present"]:
                 student=Students()
                 student=Students.objects.filter(id=i)[0]
+                student.absence=0
                 attendance=Attendance()
                 attendance.date=datetime.now().date()
                 attendance.id=now+str(i)
@@ -30,6 +31,7 @@ class TakeAttendance(APIView):
             for i in request.data["absent"]:
                 student = Students()
                 student = Students.objects.filter(id=i)[0]
+                student.absence = student.absence + 1
                 attendance = Attendance()
                 attendance.date = datetime.now().date()
                 attendance.id = now + str(i)

@@ -2,10 +2,85 @@ from django.shortcuts import render
 from oosc.schools.models import Schools
 from rest_framework import generics
 from oosc.schools.serializers import SchoolsSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from oosc.counties.models import Counties
+from oosc.subcounty.models import SubCounty
+from oosc.zone.models import Zone
+
+
+from django.conf import settings
+import csv,codecs
 from rest_framework.permissions import IsAdminUser
 # Create your views here.
+from rest_framework.views import APIView
+from django.core.files.storage import FileSystemStorage
 
 class ListCreateSchool(generics.ListCreateAPIView):
     queryset=Schools.objects.all();
     serializer_class=SchoolsSerializer
     #permission_classes = (IsAdminUser,)
+def mycsv_reader(csv_reader):
+  while True:
+    try:
+      yield next(csv_reader)
+    except csv.Error:
+      # error handling what you want.
+      pass
+    continue
+  return
+
+class ImportSchools(APIView):
+    def post(self,request,format=None):
+        file=request.FILES["file"]
+        data = [row for row in csv.reader(file.read().splitlines())]
+        for indx,d in enumerate(data):
+            print indx
+            if(indx>22190):
+                ##Check if county present
+                coun=Counties.objects.filter(county_name__contains=d[2])
+                cn = Counties()
+                if(len(coun)>0):
+                    print (coun[0].county_name)
+                    cn=coun[0]
+                else:
+                    cn.county_name=d[2]
+                    cn.save()
+                #Check if subcounty present in db
+                sub=SubCounty.objects.filter(name__contains=d[3])
+                su = SubCounty()
+                if(len(sub)>0):
+                    print (sub[0].name)
+                    su=sub[0]
+                else:
+                    su.county=cn
+                    su.name=d[3]
+                    su.save()
+                #check if zone present in db
+                zones=Zone.objects.filter(name__contains=d[4])
+                zone = Zone()
+                if(len(zones)>0):
+                    print (zones[0].name)
+                    zone=zones[0]
+                else:
+
+                    zone.county=cn
+                    zone.subcounty=su
+                    zone.name=d[4]
+                    zone.save()
+                #Schools
+                schs=Schools.objects.filter(emis_code=d[1])
+                sch = Schools()
+                if(len(schs)>0):
+                    print (schs[0].school_name)
+                    sch = schs[0]
+                else:
+                    sch.school_name=d[5]
+                    sch.zone=zone
+                    sch.level=d[6].upper()
+                    sch.status=d[7].upper()
+                    sch.emis_code=d[1]
+                    sch.save()
+        return Response(data=data[1])
+
+

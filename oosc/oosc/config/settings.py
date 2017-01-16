@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 import dj_database_url # 3rd party database config helper
 
-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -53,6 +55,10 @@ INSTALLED_APPS = [
     'oosc.classes.apps.ClassesConfig',
     'oauth2_provider',
     'corsheaders',
+    'oosc.zone.apps.ZoneConfig',
+    'oosc.subcounty.apps.SubcountyConfig',
+    'oosc.absence.apps.AbsenceConfig',
+    'oosc.reason.apps.ReasonConfig',
 
 ]
 
