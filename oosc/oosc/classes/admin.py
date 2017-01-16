@@ -3,6 +3,6 @@ from oosc.classes.models import Classes
 # Register your models here.
 
 class classAdmin(admin.ModelAdmin):
-    list_display=['class_name','teacher_id']
+    list_display=['id','class_name','teacher_id']
 
 admin.site.register(Classes,classAdmin);
