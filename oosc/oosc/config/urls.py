@@ -21,14 +21,18 @@ from oosc.schools.views import ListCreateSchool,ImportSchools
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.classes.views import ListCreateClass
-from oosc.teachers.views import ListCreateTeachers
+from oosc.teachers.views import ListCreateTeachers,ListTeachers
 from oosc.students.views import ListCreateStudent
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from oosc.absence.views import GetEditAbsence
+from oosc.reason.views import ListCreatereason
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/attendance',TakeAttendance.as_view(),name="take_attendance"),
+    url(r'^api/absent/(?P<pk>[0-9]+)',GetEditAbsence.as_view(),name="Update_absent"),
+    url(r'^api/reasons',ListCreatereason.as_view(),name="list_create_reason"),
     url(r'^api/attendances',ListCreateAttendance.as_view(),name="attendance-list-create"),
     url(r'^api/schools/import',ImportSchools.as_view(),name="import_schools"),
     url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
@@ -37,7 +41,8 @@ urlpatterns = [
     url(r'^api/classes',ListCreateClass.as_view(),name="class-list-create"),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/students',ListCreateStudent.as_view(),name="list-create-student"),
-    url(r'^api/teachers',ListCreateTeachers.as_view(),name="List-create-teachers"),
+    url(r'^api/teacher$',ListCreateTeachers.as_view(),name="List-create-teachers"),
+    url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

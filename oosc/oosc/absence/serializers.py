@@ -6,7 +6,7 @@ from oosc.students.serializers import SimpleStudentSerializer
 class AbsenceSerializer(serializers.ModelSerializer):
     class Meta:
         model=Absence
-        fields=('id','student','reasons','date_from','date_to')
+        fields=('id','student','reasons','date_from','date_to','status')
 
 
 class DetailedAbsenceserializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class DetailedAbsenceserializer(serializers.ModelSerializer):
     days=serializers.SerializerMethodField()
     class Meta:
         model=Absence
-        fields=('id','student','days','student','reasons','date_from','date_to')
+        fields=('id','student','days','status','student','reasons','date_from','date_to')
 
     def get_student(self,obj):
         return SimpleStudentSerializer(obj.student).data

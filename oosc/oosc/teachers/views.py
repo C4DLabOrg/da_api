@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status,generics
 # Create your views here.
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer,UserSerializer
@@ -9,6 +9,11 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
 from oosc.teachers.serializers import UserSerializer,TeacherSerializer,TeacherAllSerializer
 from permission import IsHeadteacherOrAdmin
+
+class ListTeachers(generics.ListAPIView):
+    queryset = Teachers.objects.all()
+    serializer_class = TeacherSerializer
+
 
 class ListCreateTeachers(APIView):
     permission_classes = (IsHeadteacherOrAdmin,)
