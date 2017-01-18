@@ -10,6 +10,7 @@ from datetime import datetime
 # Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from datetime import datetime,timedelta
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class=AttendanceSerializer
@@ -70,6 +71,29 @@ class TakeAttendance(APIView):
             return Response(data=ser.data,status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={"error":type(e),"error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
+
+class WeeklyAttendanceReport(APIView):
+    def get(self,request,format=None):
+        fdate=datetime.now().date()
+        ldate=fdate-timedelta(days=5)
+        fdate=str(fdate)
+        ldate=str(ldate)
+        attends=Attendance.objects.filter(date__range=[ldate,fdate])
+        presentmales=attends.filter(student__gender="ML",status=1)
+        presentfemales=attends.filter(student__gender="FM",status=1)
+        absentmales=attends.filter(student__gender="ML",status=0)
+        absentfemales=attends.filter(student__gender="FM",status=0)
+        pmales=len(presentmales)
+        pmales=float(pmales)
+        pfemales=float(len(presentfemales))
+        amales=float(len(absentmales))
+        afemales=float(len(absentfemales))
+        total=float(pmales+pfemales+amales+afemales)
+        ptotal=float(pmales+pfemales)
+        atotal=float(amales+afemales)
+        return Response(data={"present":{"total":str(int((ptotal/total)*100))+"%","males":str(int((pmales/total)*100))+"%","females":str(int((pfemales/total)*100))+"%"},
+                              "absent":{"total":str(int((atotal/total)*100))+"%","males":str(int((amales/total)*100))+"%","females":str(int((afemales/total)*100))+"%"}})
+
 
 
 

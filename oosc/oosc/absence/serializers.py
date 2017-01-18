@@ -19,4 +19,5 @@ class DetailedAbsenceserializer(serializers.ModelSerializer):
     def get_student(self,obj):
         return SimpleStudentSerializer(obj.student).data
     def get_days(self,obj):
-        return (obj.date_to-obj.date_from)
+        dayte=obj.date_to-obj.date_from
+        return dayte.days
