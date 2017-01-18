@@ -6,7 +6,7 @@ from oosc.students.serializers import SimpleStudentSerializer
 class ClassesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classes
-        fields = ('class_name','school','teacher')
+        fields = ('id','class_name','school','teacher')
 class StudentsClassSerializer(serializers.ModelSerializer):
     students=serializers.SerializerMethodField()
     class Meta:
