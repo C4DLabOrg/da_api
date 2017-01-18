@@ -21,7 +21,7 @@ class Students(models.Model):
     stay_with  = models.CharField(max_length=200,null=True,blank=True)
     household  = models.IntegerField(default=0,null=True,blank=True)             #people in the same house
     meals_per_day   = models.IntegerField(default=0,null=True,blank=True)
-    not_in_school_before = models.IntegerField(default=0,null=True,blank=True)   #reason for not being in school before
+    not_in_school_before = models.BooleanField(default=False)   #reason for not being in school before
     emis_code_histories = models.CharField(max_length=200,null=True,blank=True)
     total_attendance =models.IntegerField(default=0,null=True,blank=True)
     total_absents=models.IntegerField(default=0,null=True,blank=True)
