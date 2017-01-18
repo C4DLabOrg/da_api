@@ -91,8 +91,8 @@ class WeeklyAttendanceReport(APIView):
         total=float(pmales+pfemales+amales+afemales)
         ptotal=float(pmales+pfemales)
         atotal=float(amales+afemales)
-        return Response(data={"present":{"total":str(int((ptotal/total)*100))+"%","males":str(int((pmales/total)*100))+"%","females":str(int((pfemales/total)*100))+"%"},
-                              "absent":{"total":str(int((atotal/total)*100))+"%","males":str(int((amales/total)*100))+"%","females":str(int((afemales/total)*100))+"%"}})
+        return Response(data={"present":{"total":int((ptotal/total)*100),"males":int((pmales/total)*100),"females":int((pfemales/total)*100)},
+                              "absent":{"total":int((atotal/total)*100),"males":int((amales/total)*100),"females":int((afemales/total)*100)}})
 
 
 
