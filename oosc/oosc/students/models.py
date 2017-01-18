@@ -8,7 +8,9 @@ class Students(models.Model):
     student_id    = models.IntegerField(default=0,null=True,blank=True)
     #school_id     = models.ForeignKey(Schools,on_delete = models.CASCADE)
     emis_code     = models.IntegerField(default=0,null=True,blank=True)
-    student_name  = models.CharField(max_length=200)
+    fstname  = models.CharField(max_length=200)
+    midname = models.CharField(max_length=200,null=True,blank=True)
+    lstname = models.CharField(max_length=200)
     date_of_birth = models.DateField(null=True,blank=True);
     admission_no  = models.IntegerField(default=0,null=True,blank=True)
     class_id      = models.ForeignKey(Classes,on_delete = models.CASCADE) #shows the current class
@@ -26,4 +28,4 @@ class Students(models.Model):
     last_attendance=models.DateField(null=True,blank=True)
 
     def __str__(self):
-        return self.student_name
+        return self.lstname
