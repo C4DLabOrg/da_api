@@ -48,8 +48,9 @@ class ListCreateTeachers(APIView):
         serializer=TeacherSerializer(data=details['details'])
         if(serializer.is_valid()):
             #Create the teacher
-            serializer.save()
-            return Response(serializer.validated_data,status=status.HTTP_201_CREATED)
+            dev = serializer.save()
+            ser = TeacherSerializer(dev)
+            return Response(ser.data,status=status.HTTP_201_CREATED)
         else:
             usr.delete()
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
