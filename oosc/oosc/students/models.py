@@ -17,7 +17,7 @@ class Students(models.Model):
     gender        = models.CharField(max_length=2,choices=GENDERS, default='ML')
     previous_class    = models.IntegerField(default=0,null=True,blank=True)
     mode_of_transport = models.CharField(max_length=200,null=True,blank=True)
-    time_to_school = models.IntegerField(default=0,null=True,blank=True)
+    time_to_school = models.CharField(max_length=50,default=0,null=True,blank=True)
     stay_with  = models.CharField(max_length=200,null=True,blank=True)
     household  = models.IntegerField(default=0,null=True,blank=True)             #people in the same house
     meals_per_day   = models.IntegerField(default=0,null=True,blank=True)
