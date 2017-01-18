@@ -18,5 +18,5 @@ class SimpleStudentSerializer(serializers.ModelSerializer):
         model=Students
         fields=('id','student_id','student_name', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
 
-        def get_student_name(self, obj):
-            return obj.fstname + " " + obj.lstname
+    def get_student_name(self, obj):
+        return obj.fstname + " " + obj.lstname
