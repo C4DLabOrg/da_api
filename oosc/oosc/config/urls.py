@@ -16,8 +16,8 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from oosc.attendance.views import ListCreateAttendance,TakeAttendance
-from oosc.schools.views import ListCreateSchool,ImportSchools
+from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport
+from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.classes.views import ListCreateClass
@@ -30,6 +30,7 @@ from oosc.absence.views import GetEditAbsence
 from oosc.reason.views import ListCreatereason
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
     url(r'^api/attendance',TakeAttendance.as_view(),name="take_attendance"),
     url(r'^api/absent/(?P<pk>[0-9]+)',GetEditAbsence.as_view(),name="Update_absent"),
     url(r'^api/reasons',ListCreatereason.as_view(),name="list_create_reason"),
@@ -43,6 +44,7 @@ urlpatterns = [
     url(r'^api/students',ListCreateStudent.as_view(),name="list-create-student"),
     url(r'^api/teacher$',ListCreateTeachers.as_view(),name="List-create-teachers"),
     url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
+    url('^api/statistics',GetAllReport.as_view(),name="all_students_teacgers-schools_number"),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 
