@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from oosc.counties.models import Counties
 from oosc.subcounty.models import SubCounty
 from oosc.zone.models import Zone
+from oosc.teachers.models import Teachers
+from oosc.students.models import Students
 
 
 from django.conf import settings
@@ -82,5 +84,18 @@ class ImportSchools(APIView):
                     sch.emis_code=d[1]
                     sch.save()
         return Response(data=data[1])
+
+
+class GetAllReport(APIView):
+    def get(self,request,format=None):
+        students=Students.objects.all()
+        mstudents=students.filter(gender="ML")
+        fstudents=students.filter(gender="FM")
+        mstudents=len(mstudents)
+        fstudents=len(fstudents)
+        schools=len(Schools.objects.all())
+        teachers=len(Teachers.objects.all())
+        return Response(data={"schools":schools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
+
 
 
