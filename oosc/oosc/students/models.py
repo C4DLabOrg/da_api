@@ -4,7 +4,7 @@ from oosc.schools.models import Schools
 
 # Create your models here.
 class Students(models.Model):
-    GENDERS = (('ML', 'MALE'), ('FM', 'FEMALE'))
+    GENDERS = (('M', 'MALE'), ('F', 'FEMALE'))
     student_id    = models.IntegerField(default=0,null=True,blank=True)
     #school_id     = models.ForeignKey(Schools,on_delete = models.CASCADE)
     emis_code     = models.IntegerField(default=0,null=True,blank=True)
