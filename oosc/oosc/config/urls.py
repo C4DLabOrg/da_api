@@ -22,7 +22,7 @@ from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.classes.views import ListCreateClass
 from oosc.teachers.views import ListCreateTeachers,ListTeachers
-from oosc.students.views import ListCreateStudent
+from oosc.students.views import ListCreateStudent,GetEnrolled
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^api/zones',ListCreateCounstituency.as_view(),name="zones-list-create"),
     url(r'^api/classes',ListCreateClass.as_view(),name="class-list-create"),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^api/students/enrolls',GetEnrolled.as_view(),name="list-create-student"),
     url(r'^api/students',ListCreateStudent.as_view(),name="list-create-student"),
     url(r'^api/teacher$',ListCreateTeachers.as_view(),name="List-create-teachers"),
     url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
