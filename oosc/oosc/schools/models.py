@@ -7,10 +7,10 @@ from django.contrib.auth.models import User
 class Schools(models.Model):
     LEVELS=(('PRIMARY','Primary'),('SECONDARY','Secondary'))
     STATUS=(('PUBLIC','Public'),('PRIVATE','Private'))
-    school_code = models.IntegerField(default=0)
+    school_code = models.IntegerField(default=0,null=True,blank=True)
     school_name = models.CharField(max_length = 200, default="schoolname")
     geo_cordinates  = models.CharField(max_length = 200,null=True,blank=True)
-    emis_code   = models.IntegerField(default = 0,)
+    emis_code   = models.IntegerField(default = 0,null=True,blank=True)
     zone = models.ForeignKey(Zone, on_delete = models.CASCADE)
     source_of_water = models.CharField(max_length = 200,null=True,blank=True)
     headteacher = models.OneToOneField(User,related_name="headteacher",null=True,blank=True)
