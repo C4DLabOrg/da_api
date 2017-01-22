@@ -4,7 +4,7 @@ from oosc.schools.models import Schools
 from django.contrib.auth.models import User
 # Create your models here.
 class Teachers(models.Model):
-    GENDERS = (('ML', 'MALE'), ('FM', 'FEMALE'))
+    GENDERS = (('M', 'MALE'), ('F', 'FEMALE'))
     TEACHER_TYPE=(('TSC','TSC'),('BRD','BOARD'))
     QUALIFICATIONS=(('UNI','UNIVERSITY'),('COL','COLLEGE'))
     user=models.OneToOneField(User,on_delete=models.CASCADE)
