@@ -22,6 +22,7 @@ class TakeAttendance(APIView):
         print (request.data)
         try:
             for i in request.data["present"]:
+                print ("present")
                 student=Students()
                 student=Students.objects.filter(id=i)[0]
                 student.total_absents=0
@@ -30,6 +31,8 @@ class TakeAttendance(APIView):
                 if(len(abs)>0):
                     print "reason for absence needed"
                     absents.append(student)
+                    print "added to absents"
+                print student
                 student.save()
                 attendance=Attendance()
                 attendance.date=datetime.now().date()
@@ -38,8 +41,10 @@ class TakeAttendance(APIView):
                 attendance._class=student.class_id
                 attendance.student=student
                 attendance.save()
+
                 print (attendance.id)
             for i in request.data["absent"]:
+                print ("Absemt")
                 student = Students()
                 student = Students.objects.filter(id=i)[0]
                 student.total_absents = student.total_absents + 1
@@ -50,13 +55,16 @@ class TakeAttendance(APIView):
                         abs[0].date_to=datetime.now().date()
                         abs[0].save()
                     else:
+                        print ("new saved")
                         ab=Absence()
                         ab.student=student
                         ab.date_to=datetime.now().date()
                         ab.date_from=student.last_attendance
                         ab.status=False
                         ab.save()
+                        print ("new saved")
                 else:
+                    print ("within ")
                     student.save()
                 attendance = Attendance()
                 attendance.date = datetime.now().date()
