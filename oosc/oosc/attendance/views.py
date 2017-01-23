@@ -55,14 +55,14 @@ class TakeAttendance(APIView):
                         abs[0].date_to=datetime.now().date()
                         abs[0].save()
                     else:
-                        print ("new saved")
+                        print ("saving ...")
                         ab=Absence()
                         ab.student=student
                         ab.date_to=datetime.now().date()
                         ab.date_from=student.last_attendance
                         ab.status=False
                         ab.save()
-                        print ("new saved")
+                        print ("Saved ...")
                 else:
                     print ("within ")
                     student.save()
