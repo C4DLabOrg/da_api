@@ -17,7 +17,7 @@ class GetEnrolled(APIView):
         lst=str(datetime.now().date()-timedelta(days=365))
         studs=Students.objects.filter(date_enrolled__range=[lst,now])
         ser=StudentsSerializer(studs,many=True)
-        females=studs.filter(gender='ML')
-        males=studs.filter(gender='FM')
+        females=studs.filter(gender='F')
+        males=studs.filter(gender='M')
         return Response({"total":len(studs),"males":len(males),
                          "females":len(females),"students":ser.data},status=status.HTTP_200_OK)
