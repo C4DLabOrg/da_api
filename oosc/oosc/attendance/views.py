@@ -28,12 +28,12 @@ class TakeAttendance(APIView):
                 student.total_absents=0
                 student.last_attendance=datetime.now().date()
                 abs = Absence.objects.filter(student=student, status=False)
-                if(len(abs)>0):
-                    print "reason for absence needed"
-                    absents.append(student)
-                    print "added to absents"
-                print student
-                student.save()
+                # if(len(abs)>0):
+                #     print "reason for absence needed"
+                #     absents.append(student)
+                #     print "added to absents"
+                # print student
+                # student.save()
                 attendance=Attendance()
                 attendance.date=datetime.now().date()
                 attendance.id=now+str(i)
@@ -47,25 +47,25 @@ class TakeAttendance(APIView):
                 print ("Absemt")
                 student = Students()
                 student = Students.objects.filter(id=i)[0]
-                student.total_absents = student.total_absents + 1
-                if(student.total_absents>4):
-                    abs=Absence.objects.filter(student=student,status=False)
-                    if(len(abs)>0):
-                        print ("found")
-                        abs[0].date_to=datetime.now().date()
-                        abs[0].save()
-                    else:
-                        print ("saving ...")
-                        ab=Absence()
-                        ab.student=student
-                        ab.date_to=datetime.now().date()
-                        ab.date_from=student.last_attendance
-                        ab.status=False
-                        ab.save()
-                        print ("Saved ...")
-                else:
-                    print ("within ")
-                    student.save()
+                # student.total_absents = student.total_absents + 1
+                # if(student.total_absents>4):
+                #     abs=Absence.objects.filter(student=student,status=False)
+                #     if(len(abs)>0):
+                #         print ("found")
+                #         abs[0].date_to=datetime.now().date()
+                #         abs[0].save()
+                #     else:
+                #         print ("saving ...")
+                #         ab=Absence()
+                #         ab.student=student
+                #         ab.date_to=datetime.now().date()
+                #         ab.date_from=student.last_attendance
+                #         ab.status=False
+                #         ab.save()
+                #         print ("Saved ...")
+                # else:
+                #     print ("within ")
+                #     student.save()
                 attendance = Attendance()
                 attendance.date = datetime.now().date()
                 attendance.id = now + str(i)
