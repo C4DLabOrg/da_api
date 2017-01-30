@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status,generics
 # Create your views here.
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer,UserSerializer
@@ -7,13 +7,23 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
-from oosc.teachers.serializers import UserSerializer,TeacherSerializer
+from oosc.teachers.serializers import UserSerializer,TeacherSerializer,TeacherAllSerializer
+from permission import IsHeadteacherOrAdmin
+
+class ListTeachers(generics.ListAPIView):
+    queryset = Teachers.objects.all()
+    serializer_class = TeacherSerializer
+
 
 class ListCreateTeachers(APIView):
+    permission_classes = (IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
-        teach=Teachers.objects.all();
-        teachers=TeacherSerializer(teach,many=True)
-        return Response(teachers.data)
+        teach=Teachers.objects.filter(user=self.request.user.id)
+        if(len(teach) > 0):
+            teachers=TeacherAllSerializer(teach[0])
+            return Response(data=teachers.data,status=status.HTTP_200_OK)
+        else:
+            return Response(data={"error":"Not a teacher"},status=status.HTTP_404_NOT_FOUND)
 
     def post(self,request,format=None):
         #data=request.data['user']
@@ -22,8 +32,9 @@ class ListCreateTeachers(APIView):
         #Create a user for the teacher with a default password 'p@ssw0rd'
         try:
             usr=User.objects.create_user(username=details['username'],password='p@ssw0rd')
-        except:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        except Exception as inst:
+            usr.delete()
+            return Response(data=inst,status=status.HTTP_400_BAD_REQUEST)
 
         #add the user to teachers group
         g=Group.objects.get(name="teachers")
@@ -37,8 +48,9 @@ class ListCreateTeachers(APIView):
         serializer=TeacherSerializer(data=details['details'])
         if(serializer.is_valid()):
             #Create the teacher
-            serializer.save()
-            return Response(serializer.validated_data,status=status.HTTP_201_CREATED)
+            dev = serializer.save()
+            ser = TeacherSerializer(dev)
+            return Response(ser.data,status=status.HTTP_201_CREATED)
         else:
             usr.delete()
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -55,7 +67,7 @@ class ListCreateTeachers(APIView):
                                     "headteacher":"True or False",
                                     "qualifications":"either COL for (college) or UNI for (university)",
                                     "subjects":["ids","of","subjects","required","integers"],
-                                    "school_id":"school_id",
+                                    "school":"school id",
                                     "date_started_teaching":"yyyy-mm-dd",
                                     "joined_current_school":"yyyy-mm-dd"
                                     }
