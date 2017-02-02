@@ -15,16 +15,22 @@ from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
 
 class AttendanceFilter(FilterSet):
-    class_name=django_filters.CharFilter(name="_class__class_name",lookup_expr='contains')
+    Class=django_filters.CharFilter(name="_class")
+    date=django_filters.DateFilter(name="date")
+    start_date = django_filters.DateFilter(name='date', lookup_expr=('gte'))
+    end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
+    #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
-        fields=['id','class_name']
+        fields=['Class','date','start_date','end_date','student']
+
 
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class=AttendanceSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
+
 
 
 class TakeAttendance(APIView):
