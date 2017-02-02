@@ -47,3 +47,18 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
 
+class Passwordserializer(serializers.Serializer):
+    old_password=serializers.CharField(required=True)
+    new_password=serializers.CharField(required=True)
+
+class ForgotPAsswordSerializer(serializers.Serializer):
+
+    def validate_username(self,value):
+        if not value:
+            raise serializers.ValidationError("This field required.")
+        if not User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("User not Found")
+        return value
+
+    username=serializers.CharField(required=True)
+
