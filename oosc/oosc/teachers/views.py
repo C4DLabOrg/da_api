@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework import status,generics
 # Create your views here.
+from rest_framework.permissions import IsAuthenticated
 from oosc.teachers.models import Teachers
-from oosc.teachers.serializers import TeacherSerializer,UserSerializer
-from rest_framework import serializers
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
-from oosc.teachers.serializers import UserSerializer,TeacherSerializer,TeacherAllSerializer
+from oosc.teachers.serializers import TeacherSerializer,TeacherAllSerializer,Passwordserializer,ForgotPAsswordSerializer
 from permission import IsHeadteacherOrAdmin
+from rest_framework.views import APIView
+
 
 class ListTeachers(generics.ListAPIView):
     queryset = Teachers.objects.all()
@@ -72,6 +72,50 @@ class ListCreateTeachers(APIView):
                                     "joined_current_school":"yyyy-mm-dd"
                                     }
                          })
+
+
+
+class ChangePassword(generics.UpdateAPIView):
+    serializer_class =Passwordserializer
+    model=User
+    permission_classes = (IsAuthenticated,)
+    def get_object(self):
+        obj=self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object=self.get_object()
+        serializer=self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            return Response("Success.", status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ForgotPasssword(generics.UpdateAPIView):
+    model=User
+    serializer_class = ForgotPAsswordSerializer
+    def get_object(self,username):
+        obj=User.objects.get(username=username)
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        serializer=self.get_serializer(data=self.request.data)
+        if serializer.is_valid():
+            self.object=self.get_object(serializer.data.get("username"))
+            if(self.object):
+                self.object.set_password("123")
+                self.object.save()
+                return Response("Success.", status=status.HTTP_200_OK)
+            else:
+                return Response("User Not Found",status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

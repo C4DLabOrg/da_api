@@ -11,9 +11,21 @@ from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import datetime,timedelta
+from django_filters.rest_framework import FilterSet,DjangoFilterBackend
+import django_filters
+
+class AttendanceFilter(FilterSet):
+    class_name=django_filters.CharFilter(name="_class__class_name",lookup_expr='contains')
+    class Meta:
+        model=Attendance
+        fields=['id','class_name']
+
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class=AttendanceSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=AttendanceFilter
+
 
 class TakeAttendance(APIView):
     def post(self,request,format=None):
@@ -101,6 +113,8 @@ class WeeklyAttendanceReport(APIView):
         atotal=float(amales+afemales)
         return Response(data={"present":{"total":int((ptotal/total)*100),"males":int((pmales/total)*100),"females":int((pfemales/total)*100)},
                               "absent":{"total":int((atotal/total)*100),"males":int((amales/total)*100),"females":int((afemales/total)*100)}})
+
+#class GraphAttendance()
 
 
 

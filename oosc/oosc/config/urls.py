@@ -21,7 +21,7 @@ from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.classes.views import ListCreateClass
-from oosc.teachers.views import ListCreateTeachers,ListTeachers
+from oosc.teachers.views import ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword
 from oosc.students.views import ListCreateStudent,GetEnrolled
 from django.conf.urls.static import static
 from django.conf import settings
@@ -31,10 +31,12 @@ from oosc.reason.views import ListCreatereason
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
+    url(r'^api/attendances',ListCreateAttendance.as_view(),name="attendance-list-create"),
     url(r'^api/attendance',TakeAttendance.as_view(),name="take_attendance"),
     url(r'^api/absent/(?P<pk>[0-9]+)',GetEditAbsence.as_view(),name="Update_absent"),
     url(r'^api/reasons',ListCreatereason.as_view(),name="list_create_reason"),
-    url(r'^api/attendances',ListCreateAttendance.as_view(),name="attendance-list-create"),
+    url(r'^api/change-password',ChangePassword.as_view(),name="change_password"),
+    url(r'^api/forgot-password',ForgotPasssword.as_view(),name="Forgot-password"),
     url(r'^api/schools/import',ImportSchools.as_view(),name="import_schools"),
     url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
     url(r'^api/counties',ListCreateCounty.as_view(),name="county-list-create"),

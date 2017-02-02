@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'oosc.subcounty.apps.SubcountyConfig',
     'oosc.absence.apps.AbsenceConfig',
     'oosc.reason.apps.ReasonConfig',
+    'crispy_forms'
 
 ]
 
