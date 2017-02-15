@@ -89,8 +89,8 @@ class ImportSchools(APIView):
 class GetAllReport(APIView):
     def get(self,request,format=None):
         students=Students.objects.all()
-        mstudents=students.filter(gender="ML")
-        fstudents=students.filter(gender="FM")
+        mstudents=students.filter(gender="M")
+        fstudents=students.filter(gender="F")
         mstudents=len(mstudents)
         fstudents=len(fstudents)
         schools=len(Schools.objects.all())
