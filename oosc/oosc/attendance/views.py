@@ -105,10 +105,10 @@ class WeeklyAttendanceReport(APIView):
         fdate=str(fdate)
         ldate=str(ldate)
         attends=Attendance.objects.filter(date__range=[ldate,fdate])
-        presentmales=attends.filter(student__gender="ML",status=1)
-        presentfemales=attends.filter(student__gender="FM",status=1)
-        absentmales=attends.filter(student__gender="ML",status=0)
-        absentfemales=attends.filter(student__gender="FM",status=0)
+        presentmales=attends.filter(student__gender="M",status=1)
+        presentfemales=attends.filter(student__gender="F",status=1)
+        absentmales=attends.filter(student__gender="M",status=0)
+        absentfemales=attends.filter(student__gender="F",status=0)
         pmales=len(presentmales)
         pmales=float(pmales)
         pfemales=float(len(presentfemales))
@@ -117,6 +117,10 @@ class WeeklyAttendanceReport(APIView):
         total=float(pmales+pfemales+amales+afemales)
         ptotal=float(pmales+pfemales)
         atotal=float(amales+afemales)
+        if(total==0):
+            total=1
+        print(pfemales,pmales,afemales,amales,total)
+
         return Response(data={"present":{"total":int((ptotal/total)*100),"males":int((pmales/total)*100),"females":int((pfemales/total)*100)},
                               "absent":{"total":int((atotal/total)*100),"males":int((amales/total)*100),"females":int((afemales/total)*100)}})
 
