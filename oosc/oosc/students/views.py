@@ -74,7 +74,7 @@ class ImportStudents(APIView):
 
             if ser.is_valid():
                 sch=Schools.objects.filter(emis_code=ser.data.get("school"))
-                teach=Teachers.objects.all()
+                teach=Teachers.objects.filter(school=sch)
                 if(sch.exists()):
                     sch=sch[0]
                     if(not teach.exists()):
