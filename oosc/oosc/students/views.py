@@ -74,9 +74,10 @@ class ImportStudents(APIView):
 
             if ser.is_valid():
                 sch=Schools.objects.filter(emis_code=ser.data.get("school"))
-                teach=Teachers.objects.filter(school=sch)
+                teach=Teachers()
                 if(sch.exists()):
                     sch=sch[0]
+                    teach = Teachers.objects.filter(school=sch)
                     if(not teach.exists()):
                         return Response("Create atleast one Teacher for the school")
                     else:
