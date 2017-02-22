@@ -40,17 +40,21 @@ class ImportStudentSerializer(serializers.Serializer):
     # emis_code=serializers.IntegerField(required=False,allow_null=True)
 
 
-def set_class(s):
+def sew_class(s):
     s=s.split(' ')[1]
     if s=="ECD":
         return "Std 1"
     return "Std "+str(int(s)+1)
 
+def set_class(s):
+    return "Std "+s
+
 def get_gender(s):
-    if s.lower() =="male":
+    if s.lower() =="male" or s.lower() == 'm':
         return "M"
-    elif s.lower()=='female':
+    elif s.lower()=='female' or s.lower() == 'f':
         return "F"
+
 def valid_date(date_text):
     try:
         datetime.strptime(date_text,'%Y-%m-%d')
