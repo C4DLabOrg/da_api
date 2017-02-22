@@ -8,4 +8,4 @@ class Classes(models.Model):
     teacher = models.ForeignKey(Teachers,related_name="class_teacher")
     #teacher_id=models.IntegerField(max_length=50)
     def __str__(self):
-        return self.class_name
+        return self.class_name+" ("+self.school.school_name+")"
