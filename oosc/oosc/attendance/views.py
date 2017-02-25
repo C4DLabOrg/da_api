@@ -13,23 +13,53 @@ from rest_framework.response import Response
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
-
+from django.db.models import Count,Case,When,IntegerField,Q
+from rest_framework import serializers
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
     date=django_filters.DateFilter(name="date")
     start_date = django_filters.DateFilter(name='date', lookup_expr=('gte'))
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
+    school=django_filters.BaseInFilter(name="_class__school",)
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
-        fields=['Class','date','start_date','end_date','student']
+        fields=['Class','date','start_date','end_date','_class',"school"]
 
+class SerializerAll(serializers.Serializer):
+    date=serializers.DateTimeField()
+    present_males=serializers.IntegerField()
+    present_females=serializers.IntegerField(allow_null=True,)
+    absent_males=serializers.IntegerField()
+    absent_females=serializers.IntegerField()
+    total=serializers.SerializerMethodField()
+
+    def get_total(self,obj):
+        total=obj["present_males"]+obj["present_females"]+obj["absent_males"]+obj["absent_females"]
+        return total
 
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class=AttendanceSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
+
+    def get_queryset(self):
+        atts=Attendance.objects.all()
+        atts=self.filter_queryset(atts)
+        pm =Count(Case(When(Q(student__gender="M") & Q(status=1),then=1),output_field=IntegerField(),))
+        pf =Count(Case(When(Q(student__gender="F") & Q(status=1),then=1),output_field=IntegerField(),))
+        af =Count(Case(When(Q(student__gender="F") & Q(status=0),then=1),output_field=IntegerField(),))
+        am =Count(Case(When(Q(student__gender="M") & Q(status=0),then=1),output_field=IntegerField(),))
+        at=atts.values("date").annotate(present_males=pm,present_females=pf,absent_males=am,absent_females=af)
+        #at["present_males"]=float(at["present_males"])/total
+        return  at
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return SerializerAll
+        elif self.request.method == 'POST':
+            return AttendanceSerializer
 
 
 
