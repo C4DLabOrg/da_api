@@ -13,7 +13,9 @@ from rest_framework.response import Response
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
-from django.db.models import Count,Case,When,IntegerField,Q
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField
+from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
+from django.db.models.functions import Concat
 from rest_framework import serializers
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
@@ -27,16 +29,37 @@ class AttendanceFilter(FilterSet):
         fields=['Class','date','start_date','end_date','_class',"school"]
 
 class SerializerAll(serializers.Serializer):
-    date=serializers.DateTimeField()
+    date=serializers.CharField()
     present_males=serializers.IntegerField()
     present_females=serializers.IntegerField(allow_null=True,)
     absent_males=serializers.IntegerField()
     absent_females=serializers.IntegerField()
     total=serializers.SerializerMethodField()
-
     def get_total(self,obj):
         total=obj["present_males"]+obj["present_females"]+obj["absent_males"]+obj["absent_females"]
         return total
+
+class SerializerAllPercentages(serializers.Serializer):
+    date=serializers.CharField()
+    present_males=serializers.IntegerField(write_only=True)
+    present_females=serializers.IntegerField(allow_null=True,write_only=True)
+    absent_males=serializers.IntegerField(write_only=True)
+    absent_females=serializers.IntegerField(write_only=True)
+    total=serializers.SerializerMethodField()
+    def get_total(self,obj):
+        total=float(obj["present_males"]+obj["present_females"]+obj["absent_males"]+obj["absent_females"])
+        return total
+    def males_present(self,obj):
+        return self.get_total(obj)
+    def get_pm(self,obj,field):
+        return round((obj[field]/self.get_total(obj))*100,2)
+
+    def to_representation(self, instance):
+        #print instance,self.get_total(instance)
+
+        return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
+                "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
+                "total":100}
 
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
@@ -47,19 +70,47 @@ class ListCreateAttendance(generics.ListAPIView):
     def get_queryset(self):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
-        pm =Count(Case(When(Q(student__gender="M") & Q(status=1),then=1),output_field=IntegerField(),))
-        pf =Count(Case(When(Q(student__gender="F") & Q(status=1),then=1),output_field=IntegerField(),))
-        af =Count(Case(When(Q(student__gender="F") & Q(status=0),then=1),output_field=IntegerField(),))
-        am =Count(Case(When(Q(student__gender="M") & Q(status=0),then=1),output_field=IntegerField(),))
-        at=atts.values("date").annotate(present_males=pm,present_females=pf,absent_males=am,absent_females=af)
+        format = self.kwargs['username']
+        at=self.get_formated_data(atts,format=format)
         #at["present_males"]=float(at["present_males"])/total
         return  at
 
     def get_serializer_class(self):
         if self.request.method == "GET":
+            format = self.kwargs['username']
+            if format != "daily":
+                return SerializerAllPercentages
             return SerializerAll
         elif self.request.method == 'POST':
             return AttendanceSerializer
+
+    def resp_fields(self):
+        pm = Count(Case(When(Q(student__gender="M") & Q(status=1), then=1), output_field=IntegerField(), ))
+        pf = Count(Case(When(Q(student__gender="F") & Q(status=1), then=1), output_field=IntegerField(), ))
+        af = Count(Case(When(Q(student__gender="F") & Q(status=0), then=1), output_field=IntegerField(), ))
+        am = Count(Case(When(Q(student__gender="M") & Q(status=0), then=1), output_field=IntegerField(), ))
+        return pm,pf,af,am
+
+    def get_formated_data(self,data,format):
+        pm, pf, af, am=self.resp_fields()
+        outp=Concat("month",Value(''),output_field=CharField())
+        at = data.annotate(month=self.get_format(format=format)).values("month").annotate(present_males=pm, present_females=pf,
+                                                                                absent_males=am, absent_females=af,date=outp)
+        return at
+
+
+    def get_format(self,format):
+        daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
+        if(format=="monthly"):
+            return Concat(Value('1/'),ExtractMonth('date'),Value('/'),ExtractYear("date"),output_field=CharField(),)
+        elif format=="daily":
+            return daily
+        elif format== "yearly":
+            return ExtractYear('date')
+        else:
+            return daily
+
+
 
 
 
