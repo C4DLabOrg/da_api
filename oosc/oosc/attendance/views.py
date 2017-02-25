@@ -59,7 +59,7 @@ class SerializerAllPercentages(serializers.Serializer):
 
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
-                "total":100}
+                "total":100,"date":instance["date"]}
 
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
