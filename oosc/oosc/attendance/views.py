@@ -22,7 +22,7 @@ class AttendanceFilter(FilterSet):
     date=django_filters.DateFilter(name="date")
     start_date = django_filters.DateFilter(name='date', lookup_expr=('gte'))
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
-    school=django_filters.BaseInFilter(name="_class__school",)
+    school=django_filters.NumberFilter(name="_class__school",)
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
