@@ -23,11 +23,11 @@ class GetEnrolled(APIView):
         now=str(datetime.now().date()+timedelta(days=1))
         lst=str(datetime.now().date()-timedelta(days=365))
         studs=Students.objects.filter(date_enrolled__range=[lst,now])
-        ser=StudentsSerializer(studs,many=True)
+
         females=studs.filter(gender='F')
         males=studs.filter(gender='M')
         return Response({"total":len(studs),"males":len(males),
-                         "females":len(females),"students":ser.data},status=status.HTTP_200_OK)
+                         "females":len(females)},status=status.HTTP_200_OK)
 
 class ImportStudentSerializer(serializers.Serializer):
     fstname=serializers.CharField(max_length=50)
