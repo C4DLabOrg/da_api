@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from oosc.attendance.models import Attendance
-from oosc.students.serializers import SimpleStudentSerializer
+from oosc.students.serializers import SimpleStudentSerializer,StudentsSerializer
 from oosc.students.models import Students
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,7 +16,7 @@ class AbsentStudentSerializer(serializers.ModelSerializer):
     def get_student(self,obj):
         stud=Students.objects.filter(id=obj.student_id)
         if(stud.exists()):
-            return SimpleStudentSerializer(stud[0]).data
+            return StudentsSerializer(stud[0]).data
         return None
     def to_representation(self, instance):
         return self.get_student(instance)
