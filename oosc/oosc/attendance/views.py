@@ -3,6 +3,7 @@ from oosc.attendance.models import Attendance
 from rest_framework import generics,status
 from datetime import datetime
 from oosc.students.models import Students
+from oosc.attendance.serializers import AbsentStudentSerializer
 from oosc.absence.serializers import DetailedAbsenceserializer
 from oosc.attendance.serializers import AttendanceSerializer
 from oosc.absence.models import Absence
@@ -13,10 +14,12 @@ from rest_framework.response import Response
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat,Cast
 from rest_framework import serializers
+
+
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
     date=django_filters.DateFilter(name="date")
@@ -27,6 +30,13 @@ class AttendanceFilter(FilterSet):
     class Meta:
         model=Attendance
         fields=['Class','date','start_date','end_date','_class',"school"]
+
+class AbsenteesFilter(FilterSet):
+    school = django_filters.NumberFilter(name="_class__school", )
+
+    class Meta:
+        model=Attendance
+        fields=['date','school','_class']
 
 class SerializerAll(serializers.Serializer):
     date=serializers.CharField()
@@ -53,13 +63,38 @@ class SerializerAllPercentages(serializers.Serializer):
         return self.get_total(obj)
     def get_pm(self,obj,field):
         return round((obj[field]/self.get_total(obj))*100,2)
-
     def to_representation(self, instance):
         #print instance,self.get_total(instance)
 
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
                 "total":100,"date":instance["date"]}
+
+
+class ListAbsentees(generics.ListAPIView):
+    queryset = Attendance.objects.all()
+    serializer_class = AbsentStudentSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=AbsenteesFilter
+
+    def get_queryset(self):
+        atts=Attendance.objects.filter(date__gte=datetime.now()-timedelta(days=7))
+        atts=self.filter_queryset(atts)
+        stds=self.get_absent_studs(data=atts)
+        a=atts.filter(student_id__in=stds)
+        d={}
+        for x in a:
+            d[x.student]=x
+        att=d.values()
+        return atts.filter(id__in=[g.id for g in att ])
+
+
+    def get_absent_studs(self,data):
+        r=Count(Case(When(status=0,then=1)))
+        at = data.annotate(stud=Cast("student_id",output_field=IntegerField())).values("stud").annotate(absent=r).filter(absent__gte=3)
+        return [st["stud"] for st in at]
+
+
 
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
@@ -70,14 +105,14 @@ class ListCreateAttendance(generics.ListAPIView):
     def get_queryset(self):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
-        format = self.kwargs['username']
+        format = self.kwargs['type']
         at=self.get_formated_data(atts,format=format)
         #at["present_males"]=float(at["present_males"])/total
         return  at
 
     def get_serializer_class(self):
         if self.request.method == "GET":
-            format = self.kwargs['username']
+            format = self.kwargs['type']
             if format != "daily":
                 return SerializerAllPercentages
             return SerializerAll
@@ -107,6 +142,9 @@ class ListCreateAttendance(generics.ListAPIView):
             return daily
         elif format== "yearly":
             return ExtractYear('date')
+        elif format=="class":
+            id=Cast("_class", output_field=TextField())
+            return Concat("_class__class_name",Value(' ,'),id)
         else:
             return daily
 

@@ -14,3 +14,5 @@ class Attendance(models.Model):
 
     def __str__(self):
         return str(self.student)
+    class Meta:
+        get_latest_by="date"

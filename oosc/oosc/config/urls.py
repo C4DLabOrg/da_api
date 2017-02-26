@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport
+from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport,ListAbsentees
 from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
@@ -31,8 +31,9 @@ from oosc.reason.views import ListCreatereason
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
-    url(r'^api/attendances/(?P<username>.+)',ListCreateAttendance.as_view(),name="attendance-list-create"),
+    url(r'^api/attendances/(?P<type>.+)',ListCreateAttendance.as_view(),name="attendance-list-create"),
     url(r'^api/attendance',TakeAttendance.as_view(),name="take_attendance"),
+    url(r'^api/absentees',ListAbsentees.as_view(),name="list_absentees_for_the_pastweek"),
     url(r'^api/absent/(?P<pk>[0-9]+)',GetEditAbsence.as_view(),name="Update_absent"),
     url(r'^api/reasons',ListCreatereason.as_view(),name="list_create_reason"),
     url(r'^api/change-password',ChangePassword.as_view(),name="change_password"),
