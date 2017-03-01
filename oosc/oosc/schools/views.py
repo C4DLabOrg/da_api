@@ -9,6 +9,7 @@ from oosc.subcounty.models import SubCounty
 from oosc.zone.models import Zone
 from oosc.teachers.models import Teachers
 from oosc.students.models import Students
+from django.http import Http404
 
 
 from django.conf import settings
@@ -84,6 +85,17 @@ class ImportSchools(APIView):
                     sch.emis_code=d[1]
                     sch.save()
         return Response(data=data[1])
+
+class SearchEmiscode(generics.RetrieveAPIView):
+    queryset = Schools.objects.all()
+    serializer_class = SchoolsSerializer
+
+    def get_object(self):
+        emiscode = self.kwargs['emiscode']
+        sch=Schools.objects.filter(emis_code=emiscode)
+        if(sch.exists()):
+            return sch[0]
+        raise Http404
 
 
 class GetAllReport(APIView):

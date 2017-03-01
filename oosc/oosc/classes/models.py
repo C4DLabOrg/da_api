@@ -9,3 +9,10 @@ class Classes(models.Model):
     #teacher_id=models.IntegerField(max_length=50)
     def __str__(self):
         return self.class_name+" ("+self.school.school_name+")"
+
+    def get_the_class(self):
+        m = list(self.class_name)
+        for n in m:
+            if n.isdigit():
+                print n
+                return n

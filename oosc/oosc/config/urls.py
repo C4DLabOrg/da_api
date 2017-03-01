@@ -17,7 +17,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport,ListAbsentees
-from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport
+from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.classes.views import ListCreateClass
@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^api/change-password',ChangePassword.as_view(),name="change_password"),
     url(r'^api/forgot-password',ForgotPasssword.as_view(),name="Forgot-password"),
     url(r'^api/schools/import',ImportSchools.as_view(),name="import_schools"),
+    url(r'^api/schools/(?P<emiscode>.+)',SearchEmiscode.as_view(),name="import_schools"),
     url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
     url(r'^api/counties',ListCreateCounty.as_view(),name="county-list-create"),
     url(r'^api/zones',ListCreateCounstituency.as_view(),name="zones-list-create"),

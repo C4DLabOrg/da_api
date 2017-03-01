@@ -96,6 +96,8 @@ class ListAbsentees(generics.ListAPIView):
 
 
 
+
+
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class=AttendanceSerializer
@@ -129,6 +131,7 @@ class ListCreateAttendance(generics.ListAPIView):
     def get_formated_data(self,data,format):
         pm, pf, af, am=self.resp_fields()
         outp=Concat("month",Value(''),output_field=CharField())
+
         at = data.annotate(month=self.get_format(format=format)).values("month").annotate(present_males=pm, present_females=pf,
                                                                                 absent_males=am, absent_females=af,date=outp)
         return at
@@ -144,8 +147,9 @@ class ListCreateAttendance(generics.ListAPIView):
             return ExtractYear('date')
         elif format=="class":
             id=Cast("_class", output_field=TextField())
-            return Concat("_class__class_name",Value(' ,'),id)
+            return Concat("_class__class_name",Value(','),id,output_field=CharField())
         else:
+            print daily
             return daily
 
 
