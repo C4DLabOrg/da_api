@@ -29,7 +29,7 @@ class AttendanceFilter(FilterSet):
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
-        fields=['Class','date','start_date','end_date','_class',"school"]
+        fields=['Class','date','start_date','end_date','_class',"school","student"]
 
 class AbsenteesFilter(FilterSet):
     school = django_filters.NumberFilter(name="_class__school", )
@@ -39,7 +39,7 @@ class AbsenteesFilter(FilterSet):
         fields=['date','school','_class']
 
 class SerializerAll(serializers.Serializer):
-    date=serializers.CharField()
+    value=serializers.CharField()
     present_males=serializers.IntegerField()
     present_females=serializers.IntegerField(allow_null=True,)
     absent_males=serializers.IntegerField()
@@ -49,8 +49,18 @@ class SerializerAll(serializers.Serializer):
         total=obj["present_males"]+obj["present_females"]+obj["absent_males"]+obj["absent_females"]
         return total
 
+    def to_representation(self, instance):
+        # print instance,self.get_total(instance)
+        stud = self.context.get("student")
+        type = self.context.get("type")
+        if stud:
+            return {"present": instance["present_males"] + instance["present_females"],
+                    "absent": instance["absent_males"] + instance["absent_females"],
+                    "total": int(self.get_total(instance)), "value": instance["value"]}
+        return super(SerializerAll, self).to_representation(instance)
+
 class SerializerAllPercentages(serializers.Serializer):
-    date=serializers.CharField()
+    value=serializers.CharField()
     present_males=serializers.IntegerField(write_only=True)
     present_females=serializers.IntegerField(allow_null=True,write_only=True)
     absent_males=serializers.IntegerField(write_only=True)
@@ -65,10 +75,13 @@ class SerializerAllPercentages(serializers.Serializer):
         return round((obj[field]/self.get_total(obj))*100,2)
     def to_representation(self, instance):
         #print instance,self.get_total(instance)
-
+        stud=self.context.get("student")
+        type=self.context.get("type")
+        if stud:
+            return {"present":instance["present_males"]+instance["present_females"],"absent":instance["absent_males"]+instance["absent_females"],"total":int(self.get_total(instance)),"value":instance["value"]}
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
-                "total":100,"date":instance["date"]}
+                "total":100,"value":instance["value"]}
 
 
 class ListAbsentees(generics.ListAPIView):
@@ -112,6 +125,11 @@ class ListCreateAttendance(generics.ListAPIView):
         #at["present_males"]=float(at["present_males"])/total
         return  at
 
+    def get_serializer_context(self):
+        print("setting the context")
+        student = self.request.query_params.get('student', None)
+        return {'type': self.kwargs['type'], "student": student}
+
     def get_serializer_class(self):
         if self.request.method == "GET":
             format = self.kwargs['type']
@@ -133,7 +151,7 @@ class ListCreateAttendance(generics.ListAPIView):
         outp=Concat("month",Value(''),output_field=CharField())
 
         at = data.annotate(month=self.get_format(format=format)).values("month").annotate(present_males=pm, present_females=pf,
-                                                                                absent_males=am, absent_females=af,date=outp)
+                                                                                absent_males=am, absent_females=af,value=outp)
         return at
 
 

@@ -33,15 +33,19 @@ class EnrollmentFilter(FilterSet):
         model=Students
         fields=['class_id','gender','school','start_date','end_date','year']
 
+
 class EnrollmentSerializer(serializers.Serializer):
     enrolled_males=serializers.IntegerField()
     enrolled_females=serializers.IntegerField()
     old_males=serializers.IntegerField()
     old_females=serializers.IntegerField()
-    date=serializers.CharField()
+    value=serializers.CharField()
     total=serializers.SerializerMethodField()
     def get_total(self,obj):
         return obj["enrolled_males"]+obj["enrolled_females"]+obj["old_males"]+obj["old_females"]
+    def to_representation(self, instance):
+        data = super(EnrollmentSerializer, self).to_representation(instance)
+        return data
 
 class GetEnrolled(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
@@ -49,10 +53,14 @@ class GetEnrolled(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
 
+
+
     def get_queryset(self):
         studs=self.filter_queryset(Students.objects.all())
         format = self.kwargs['type']
         at=self.get_formated_data(studs,format=format)
+
+
         return at
 
     def resp_fields(self):
@@ -77,7 +85,7 @@ class GetEnrolled(generics.ListAPIView):
         at = data.annotate(month=self.get_format(format=format)).values("month").annotate(enrolled_males=enrolledm,
                                                                                           enrolled_females=enrolledf,
                                                                                           old_males=oldm,
-                                                                                          old_females=oldf, date=outp).order_by('date')
+                                                                                          old_females=oldf, value=outp).order_by('value')
         return at
 
     def get_format(self,format):
@@ -91,6 +99,8 @@ class GetEnrolled(generics.ListAPIView):
             return daily
         elif format== "yearly":
             return ExtractYear('date_enrolled')
+        elif format=="gender":
+            return Concat(Value("gender"),Value(""),output_field=CharField())
         elif format=="school":
             id=Cast("class_id__school_id",output_field=TextField())
             return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
