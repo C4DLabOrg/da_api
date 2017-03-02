@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from oosc.students.serializers import StudentsSerializer
 from datetime import datetime,timedelta
+from django_filters.rest_framework import FilterSet,DjangoFilterBackend
+import django_filters
 import csv
 from rest_framework import serializers
 import json
@@ -12,22 +14,91 @@ from oosc.classes.models import Classes
 from oosc.schools.models import Schools
 from oosc.teachers.models import Teachers
 from datetime import datetime
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField
+from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
+from django.db.models.functions import Concat,Cast
 # Create your views here.
 
 class ListCreateStudent(generics.ListCreateAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
 
-class GetEnrolled(APIView):
-    def get(self,request,format=None):
-        now=str(datetime.now().date()+timedelta(days=1))
-        lst=str(datetime.now().date()-timedelta(days=365))
-        studs=Students.objects.filter(date_enrolled__range=[lst,now])
+class EnrollmentFilter(FilterSet):
+    school = django_filters.NumberFilter(name="class_id__school", )
+    start_date = django_filters.DateFilter(name='date_enrolled', lookup_expr=('gte'))
+    end_date = django_filters.DateFilter(name='date_enrolled', lookup_expr=('lte'))
+    year=django_filters.NumberFilter(name="date_enrolled",lookup_expr=('year'))
 
-        females=studs.filter(gender='F')
-        males=studs.filter(gender='M')
-        return Response({"total":len(studs),"males":len(males),
-                         "females":len(females)},status=status.HTTP_200_OK)
+    class Meta:
+        model=Students
+        fields=['class_id','gender','school','start_date','end_date','year']
+
+class EnrollmentSerializer(serializers.Serializer):
+    enrolled_males=serializers.IntegerField()
+    enrolled_females=serializers.IntegerField()
+    old_males=serializers.IntegerField()
+    old_females=serializers.IntegerField()
+    date=serializers.CharField()
+    total=serializers.SerializerMethodField()
+    def get_total(self,obj):
+        return obj["enrolled_males"]+obj["enrolled_females"]+obj["old_males"]+obj["old_females"]
+
+class GetEnrolled(generics.ListAPIView):
+    serializer_class = EnrollmentSerializer
+    queryset = Students.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = EnrollmentFilter
+
+    def get_queryset(self):
+        studs=self.filter_queryset(Students.objects.all())
+        format = self.kwargs['type']
+        at=self.get_formated_data(studs,format=format)
+        return at
+
+    def resp_fields(self):
+        lst = str(datetime.now().date() - timedelta(days=365))
+        enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
+        oldf = Count(Case(When(Q(gender="F") & Q(date_enrolled__lte=lst), then=1), output_field=IntegerField(), ))
+        enrolledf = Count(Case(When(Q(gender="F") & Q(date_enrolled__gte=lst), then=1), output_field=IntegerField(), ))
+        oldm = Count(Case(When(Q(gender="M") & Q(date_enrolled__lte=lst), then=1), output_field=IntegerField(), ))
+        return enrolledm,oldf,enrolledf,oldm
+    # def get(self,request,format=None):
+    #     now=str(datetime.now().date()+timedelta(days=1))
+    #     lst=str(datetime.now().date()-timedelta(days=365))
+    #     studs=Students.objects.filter(date_enrolled__range=[lst,now])
+    #
+    #     females=studs.filter(gender='F')
+    #     males=studs.filter(gender='M')
+    #     return Response({"total":len(studs),"males":len(males),
+    #                      "females":len(females)},status=status.HTTP_200_OK)
+    def get_formated_data(self, data, format):
+        enrolledm, oldf, enrolledf, oldm = self.resp_fields()
+        outp = Concat("month", Value(''), output_field=CharField())
+        at = data.annotate(month=self.get_format(format=format)).values("month").annotate(enrolled_males=enrolledm,
+                                                                                          enrolled_females=enrolledf,
+                                                                                          old_males=oldm,
+                                                                                          old_females=oldf, date=outp).order_by('date')
+        return at
+
+    def get_format(self,format):
+        daily=Concat(TruncDate("date_enrolled"),Value(''),output_field=CharField(),)
+        monthly= Concat(Value('1/'), ExtractMonth('date_enrolled'), Value('/'), ExtractYear("date_enrolled"),
+                      output_field=CharField(), )
+
+        if(format=="monthly"):
+            return monthly
+        elif format=="daily":
+            return daily
+        elif format== "yearly":
+            return ExtractYear('date_enrolled')
+        elif format=="school":
+            id=Cast("class_id__school_id",output_field=TextField())
+            return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
+        elif format=="class":
+            id=Cast("class_id", output_field=TextField())
+            return Concat("class_id__class_name",Value(','),id,output_field=CharField())
+        else:
+            return monthly
 
 class ImportStudentSerializer(serializers.Serializer):
     fstname=serializers.CharField(max_length=50)
