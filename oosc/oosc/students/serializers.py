@@ -7,7 +7,7 @@ class StudentsSerializer(serializers.ModelSerializer):
     school_name=serializers.SerializerMethodField()
     class Meta:
         model = Students
-        fields = ('student_id','date_enrolled', 'emis_code','last_attendance','class_name','school_name','total_absents','student_name', 'fstname','midname','lstname','date_of_birth', 'admission_no', 'class_id',
+        fields = ('id','student_id','date_enrolled', 'emis_code','last_attendance','class_name','school_name','total_absents','student_name', 'fstname','midname','lstname','date_of_birth', 'admission_no', 'class_id',
         'gender', 'previous_class', 'mode_of_transport','time_to_school', 'stay_with', 'household',
         'meals_per_day', 'not_in_school_before', 'emis_code_histories')
     def get_student_name(self,obj):

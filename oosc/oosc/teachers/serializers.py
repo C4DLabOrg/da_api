@@ -46,6 +46,8 @@ class TeacherAllSerializer(serializers.ModelSerializer):
         return TeacherSerializer(obj).data
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
+    def get_teachers(self,obj):
+        return TeacherSerializer(Teachers.objects.filter(school=obj.school),many=True).data
 
 class Passwordserializer(serializers.Serializer):
     old_password=serializers.CharField(required=True)

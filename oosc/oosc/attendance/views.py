@@ -176,8 +176,9 @@ class ListCreateAttendance(generics.ListAPIView):
 
 class TakeAttendance(APIView):
     def post(self,request,format=None):
-        now=str(datetime.now().date()).replace('-','')
+        now=self.request.data["date"].replace('-','')
         absents=[]
+        thedate=self.request.data["date"]
         print (request.data)
         try:
             for i in request.data["present"]:
@@ -194,7 +195,7 @@ class TakeAttendance(APIView):
                 # print student
                 # student.save()
                 attendance=Attendance()
-                attendance.date=datetime.now().date()
+                attendance.date=thedate
                 attendance.id=now+str(i)
                 attendance.status=1
                 attendance._class=student.class_id
@@ -226,18 +227,18 @@ class TakeAttendance(APIView):
                 #     print ("within ")
                 #     student.save()
                 attendance = Attendance()
-                attendance.date = datetime.now().date()
+                attendance.date = thedate
                 attendance.id = now + str(i)
                 attendance.status = 0
                 attendance._class = student.class_id
                 attendance.student = student
                 attendance.save()
-            print(absents)
+            print("Done replying")
             absnts=Absence.objects.filter(student__in=absents)
-            ser=DetailedAbsenceserializer(absnts,many=True)
-            return Response(data=ser.data,status=status.HTTP_201_CREATED)
+            #ser=DetailedAbsenceserializer(absnts,many=True)
+            return Response(data=[],status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response(data={"error":type(e),"error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
 
 class WeeklyAttendanceReport(APIView):
     def get(self,request,format=None):

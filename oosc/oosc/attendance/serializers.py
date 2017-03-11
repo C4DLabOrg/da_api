@@ -5,7 +5,7 @@ from oosc.students.models import Students
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('id','student','date','status','cause_of_absence','_class')
+        fields = ('id','student','date','created','modified','status','cause_of_absence','_class')
 
 class AbsentStudentSerializer(serializers.ModelSerializer):
     student=serializers.SerializerMethodField()

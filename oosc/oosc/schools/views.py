@@ -10,7 +10,8 @@ from oosc.zone.models import Zone
 from oosc.teachers.models import Teachers
 from oosc.students.models import Students
 from django.http import Http404
-
+from django_filters.rest_framework import FilterSet,DjangoFilterBackend
+import django_filters
 
 from django.conf import settings
 import csv,codecs
@@ -99,6 +100,7 @@ class SearchEmiscode(generics.RetrieveAPIView):
 
 
 class GetAllReport(APIView):
+
     def get(self,request,format=None):
         students=Students.objects.all()
         mstudents=students.filter(gender="M")

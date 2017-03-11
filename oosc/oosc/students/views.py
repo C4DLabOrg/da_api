@@ -23,6 +23,10 @@ class ListCreateStudent(generics.ListCreateAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
 
+class RetrieveUpdateStudent(generics.RetrieveUpdateAPIView):
+    queryset=Students.objects.all()
+    serializer_class=StudentsSerializer
+
 class EnrollmentFilter(FilterSet):
     school = django_filters.NumberFilter(name="class_id__school", )
     start_date = django_filters.DateFilter(name='date_enrolled', lookup_expr=('gte'))
