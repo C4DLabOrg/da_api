@@ -30,4 +30,4 @@ class Students(models.Model):
 
 
     def __str__(self):
-        return self.lstname
+        return self.lstname+" "+self.fstname
