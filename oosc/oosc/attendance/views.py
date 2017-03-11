@@ -19,7 +19,7 @@ from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Text
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework import serializers
-
+from django.db import transaction
 
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
@@ -171,73 +171,142 @@ class ListCreateAttendance(generics.ListAPIView):
             print daily
             return daily
 
+# class TakeAttendance(APIView):
+#     def post(self, request, format=None):
+#         now = self.request.data["date"].replace('-', '')
+#         absents = []
+#         thedate = self.request.data["date"]
+#         print (request.data)
+#         batchatts=[]
+#         try:
+#             for i in request.data["present"]:
+#                 print ("present")
+#                 student = Students()
+#                 student = Students.objects.filter(id=i)[0]
+#                 student.total_absents = 0
+#                 student.last_attendance = datetime.now().date()
+#                 abs = Absence.objects.filter(student=student, status=False)
+#                 # if(len(abs)>0):
+#                 #     print "reason for absence needed"
+#                 #     absents.append(student)
+#                 #     print "added to absents"
+#                 # print student
+#                 # student.save()
+#                 attendance = Attendance()
+#                 attendance.date = thedate
+#                 attendance.id = now + str(i)
+#                 attendance.status = 1
+#                 attendance._class = student.class_id
+#                 attendance.student = student
+#                 batchatts.append(attendance)
+#                 print (attendance.id)
+#             for i in request.data["absent"]:
+#                 print ("Absemt")
+#                 student = Students()
+#                 student = Students.objects.filter(id=i)[0]
+#                 # student.total_absents = student.total_absents + 1
+#                 # if(student.total_absents>4):
+#                 #     abs=Absence.objects.filter(student=student,status=False)
+#                 #     if(len(abs)>0):
+#                 #         print ("found")
+#                 #         abs[0].date_to=datetime.now().date()
+#                 #         abs[0].save()
+#                 #     else:
+#                 #         print ("saving ...")
+#                 #         ab=Absence()
+#                 #         ab.student=student
+#                 #         ab.date_to=datetime.now().date()
+#                 #         ab.date_from=student.last_attendance
+#                 #         ab.status=False
+#                 #         ab.save()
+#                 #         print ("Saved ...")
+#                 # else:
+#                 #     print ("within ")
+#                 #     student.save()
+#                 attendance = Attendance()
+#                 attendance.date = thedate
+#                 attendance.id = now + str(i)
+#                 attendance.status = 0
+#                 attendance._class = student.class_id
+#                 attendance.student = student
+#                 batchatts.append(attendance)
+#             #tt=Attendance.objects.bulk_create(batchatts)
+#             bulk_update(batchatts)
+#             print("Done replying ")
+#             absnts = Absence.objects.filter(student__in=absents)
+#             # ser=DetailedAbsenceserializer(absnts,many=True)
+#             return Response(data=[], status=status.HTTP_201_CREATED)
+#         except Exception as e:
+#             return Response(data={"error": "Error", "error_description": e.message},status=status.HTTP_400_BAD_REQUEST)
+
+
 class TakeAttendance(APIView):
-    def post(self, request, format=None):
-        now = self.request.data["date"].replace('-', '')
-        absents = []
-        thedate = self.request.data["date"]
+
+    def post(self,request,format=None):
+        now=self.request.data["date"].replace('-','')
+        absents=[]
+        thedate=self.request.data["date"]
         print (request.data)
-        batchatts=[]
         try:
-            for i in request.data["present"]:
-                print ("present")
-                student = Students()
-                student = Students.objects.filter(id=i)[0]
-                student.total_absents = 0
-                student.last_attendance = datetime.now().date()
-                abs = Absence.objects.filter(student=student, status=False)
-                # if(len(abs)>0):
-                #     print "reason for absence needed"
-                #     absents.append(student)
-                #     print "added to absents"
-                # print student
-                # student.save()
-                attendance = Attendance()
-                attendance.date = thedate
-                attendance.id = now + str(i)
-                attendance.status = 1
-                attendance._class = student.class_id
-                attendance.student = student
-                batchatts.append(attendance)
-                print (attendance.id)
-            for i in request.data["absent"]:
-                print ("Absemt")
-                student = Students()
-                student = Students.objects.filter(id=i)[0]
-                # student.total_absents = student.total_absents + 1
-                # if(student.total_absents>4):
-                #     abs=Absence.objects.filter(student=student,status=False)
-                #     if(len(abs)>0):
-                #         print ("found")
-                #         abs[0].date_to=datetime.now().date()
-                #         abs[0].save()
-                #     else:
-                #         print ("saving ...")
-                #         ab=Absence()
-                #         ab.student=student
-                #         ab.date_to=datetime.now().date()
-                #         ab.date_from=student.last_attendance
-                #         ab.status=False
-                #         ab.save()
-                #         print ("Saved ...")
-                # else:
-                #     print ("within ")
-                #     student.save()
-                attendance = Attendance()
-                attendance.date = thedate
-                attendance.id = now + str(i)
-                attendance.status = 0
-                attendance._class = student.class_id
-                attendance.student = student
-                batchatts.append(attendance)
-            #tt=Attendance.objects.bulk_create(batchatts)
-            bulk_update(batchatts)
-            print("Done replying ")
-            absnts = Absence.objects.filter(student__in=absents)
-            # ser=DetailedAbsenceserializer(absnts,many=True)
-            return Response(data=[], status=status.HTTP_201_CREATED)
+            with transaction.atomic():
+                for i in request.data["present"]:
+                    print ("present")
+                    student=Students()
+                    student=Students.objects.filter(id=i)[0]
+                    student.total_absents=0
+                    student.last_attendance=datetime.now().date()
+                    abs = Absence.objects.filter(student=student, status=False)
+                    # if(len(abs)>0):
+                    #     print "reason for absence needed"
+                    #     absents.append(student)
+                    #     print "added to absents"
+                    # print student
+                    # student.save()
+                    attendance=Attendance()
+                    attendance.date=thedate
+                    attendance.id=now+str(i)
+                    attendance.status=1
+                    attendance._class=student.class_id
+                    attendance.student=student
+                    attendance.save()
+
+                    print (attendance.id)
+                for i in request.data["absent"]:
+                    print ("Absemt")
+                    student = Students()
+                    student = Students.objects.filter(id=i)[0]
+                    # student.total_absents = student.total_absents + 1
+                    # if(student.total_absents>4):
+                    #     abs=Absence.objects.filter(student=student,status=False)
+                    #     if(len(abs)>0):
+                    #         print ("found")
+                    #         abs[0].date_to=datetime.now().date()
+                    #         abs[0].save()
+                    #     else:
+                    #         print ("saving ...")
+                    #         ab=Absence()
+                    #         ab.student=student
+                    #         ab.date_to=datetime.now().date()
+                    #         ab.date_from=student.last_attendance
+                    #         ab.status=False
+                    #         ab.save()
+                    #         print ("Saved ...")
+                    # else:
+                    #     print ("within ")
+                    #     student.save()
+                    attendance = Attendance()
+                    attendance.date = thedate
+                    attendance.id = now + str(i)
+                    attendance.status = 0
+                    attendance._class = student.class_id
+                    attendance.student = student
+                    attendance.save()
+            print("Done replying")
+            absnts=Absence.objects.filter(student__in=absents)
+            #ser=DetailedAbsenceserializer(absnts,many=True)
+            return Response(data=[],status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response(data={"error": "Error", "error_description": e.message},status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
 
 
 #
