@@ -86,6 +86,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'oosc.config.urls'
 
+OAUTH2_PROVIDER = {
+    'AUTHORIZATION_CODE_EXPIRE_SECONDS': 60 * 60,
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365
+}
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -113,7 +117,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'OPTIONS': {
+            # ...
+            'timeout': 5,
+            # ...
+        }
     }
+
 }
 #Production Only
 # DATABASES = {

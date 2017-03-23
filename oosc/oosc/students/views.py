@@ -23,7 +23,7 @@ class ListCreateStudent(generics.ListCreateAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
 
-class RetrieveUpdateStudent(generics.RetrieveUpdateAPIView):
+class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
 
@@ -56,8 +56,6 @@ class GetEnrolled(generics.ListAPIView):
     queryset = Students.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
-
-
 
     def get_queryset(self):
         studs=self.filter_queryset(Students.objects.all())
