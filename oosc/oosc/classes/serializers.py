@@ -7,6 +7,7 @@ class ClassesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classes
         fields = ('id','class_name','school','teacher')
+
 class StudentsClassSerializer(serializers.ModelSerializer):
     students=serializers.SerializerMethodField()
     class Meta:

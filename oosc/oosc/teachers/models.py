@@ -24,4 +24,4 @@ class Teachers(models.Model):
     joined_current_school = models.DateField()
 
     def __str__(self):
-        return self.user.username
+        return self.user.username+"   ("+self.school.school_name+")"

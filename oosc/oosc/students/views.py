@@ -158,7 +158,6 @@ class ImportStudents(APIView):
             dt={"fstname":dat[6],"midname":dat[7],"lstname":dat[8], "school":dat[5],
                 "clas":dat[13],"gender":dat[11]}
             ser=ImportStudentSerializer(data=dt)
-
             if ser.is_valid():
                 sch=Schools.objects.filter(emis_code=ser.data.get("school"))
                 teach=Teachers()

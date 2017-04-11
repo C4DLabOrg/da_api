@@ -39,7 +39,12 @@ class TeacherAllSerializer(serializers.ModelSerializer):
         return ser.data
 
     def get_classes(self,obj):
-        queryset=Classes.objects.filter(teacher =obj.id).order_by("class_name",)
+        if obj.headteacher:
+            queryset=Classes.objects.filter(school =obj.school).order_by("class_name",)
+            print("Headteacher")
+        else:
+            print("Normal Teacher") 
+            queryset = Classes.objects.filter(teacher=obj.id).order_by("class_name", )
         ser=StudentsClassSerializer(queryset,many=True)
         return ser.data
     def get_profile(self,obj):
