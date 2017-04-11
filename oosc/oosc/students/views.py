@@ -17,15 +17,94 @@ from datetime import datetime
 from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
+from rest_framework.response import Response
+from rest_framework import status
+from oosc.history.models import History
 # Create your views here.
 
 class ListCreateStudent(generics.ListCreateAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
 
+    def perform_create(self, serializer):
+        #obj=self.get_object()
+        stud=serializer.save()
+        hist=History()
+        hist.student=stud
+        hist._class=stud.class_id
+        hist.joined=stud.date_enrolled
+        if stud.not_in_school_before:
+            hist.joined_description="Not in School Before"
+        else:
+            hist.joined_description="In school before"
+        hist.save()
+        serializer.save()
+
+
+
+class DeleteSerializer(serializers.Serializer):
+    reason=serializers.CharField(max_length=20,required=True)
+    def validate_reason(self,value):
+        LEFT_CHOICES = ['DROP', 'TRANS']
+        if value is None:
+            raise serializers.ValidationError("reason must be present")
+        elif value not in LEFT_CHOICES:
+            raise serializers.ValidationError("Either DROP or TRANS")
+        return value
+
 class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
+
+    def get_serializer_class(self):
+        if self.request.method=="DELETE":
+            return DeleteSerializer
+        return StudentsSerializer
+
+
+    def perform_update(self, serializer):
+        obj=self.get_object()
+        if obj.class_id !=serializer.validated_data.get("class_id"):
+            stud=obj
+            hist = History()
+            hist.student = stud
+            hist._class = serializer.validated_data.get("class_id")
+            hist.joined = stud.date_enrolled
+            hist.joined_description="Class Change"
+            hist.save()
+            serializer.save(previous_class=obj.class_id_id)
+        else:
+            serializer.save()
+
+
+
+    def delete(self, request, *args, **kwargs):
+        params=self.request.query_params
+        ser=DeleteSerializer(data=params)
+        if not ser.is_valid():
+            return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
+        object=self.get_object()
+        print (object)
+        object.active=False
+        object.save()
+        hist=History.objects.filter(student=object,_class=object.class_id)
+        if(hist.exists()):
+            hist=hist[0]
+            hist.left=datetime.now()
+            hist.left_description=ser.data["reason"]
+
+        else:
+            stud=object
+            hist=History()
+            hist.student = stud
+            hist._class = stud.class_id
+            hist.left = datetime.now()
+            hist.left_description=ser.data["reason"]
+            hist.save()
+        return Response("",status=status.HTTP_204_NO_CONTENT)
+
+
+
 
 class EnrollmentFilter(FilterSet):
     school = django_filters.NumberFilter(name="class_id__school", )
@@ -58,7 +137,7 @@ class GetEnrolled(generics.ListAPIView):
     filter_class = EnrollmentFilter
 
     def get_queryset(self):
-        studs=self.filter_queryset(Students.objects.all())
+        studs=self.filter_queryset(Students.objects.filter(active=True))
         format = self.kwargs['type']
         at=self.get_formated_data(studs,format=format)
 

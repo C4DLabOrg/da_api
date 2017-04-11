@@ -15,6 +15,6 @@ class StudentsClassSerializer(serializers.ModelSerializer):
         fields=('id','class_name','students')
 
     def get_students(self,obj):
-        queryset=Students.objects.filter(class_id=obj.id)
+        queryset=Students.objects.filter(class_id=obj.id,active=True)
         ser=SimpleStudentSerializer(queryset,many=True)
         return ser.data
