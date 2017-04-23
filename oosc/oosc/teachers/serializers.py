@@ -8,13 +8,16 @@ from oosc.classes.serializers import StudentsClassSerializer
 from oosc.reason.models import Reason
 from oosc.reason.serializers import ReasonSerializer
 
+
 class TeacherSerializer(serializers.ModelSerializer):
     school_name=serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('user','name','lstname','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','subjects','school','date_started_teaching','joined_current_school','school_name')
+        fields = ('id','user','name','lstname','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','subjects','school','date_started_teaching','joined_current_school','school_name')
     def get_school_name(self,obj):
+        if not obj.school:
+            return None
         return obj.school.school_name
     def get_name(self,obj):
         return obj.fstname+" "+obj.lstname
@@ -29,9 +32,10 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     classes=serializers.SerializerMethodField()
     profile=serializers.SerializerMethodField()
     reasons=serializers.SerializerMethodField()
+    teachers=serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('profile','subjects','classes','reasons')
+        fields = ('id','profile','subjects','classes','reasons','teachers')
 
     def get_subjects(self,obj):
         queryset=Subjects.objects.filter(id__in=obj.subjects.all())
@@ -52,7 +56,9 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
     def get_teachers(self,obj):
-        return TeacherSerializer(Teachers.objects.filter(school=obj.school),many=True).data
+        if not obj.headteacher:
+            return None
+        return TeacherSerializer(Teachers.objects.filter(school=obj.school,active=True),many=True).data
 
 class Passwordserializer(serializers.Serializer):
     old_password=serializers.CharField(required=True)

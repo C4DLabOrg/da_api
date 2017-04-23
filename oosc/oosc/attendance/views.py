@@ -118,6 +118,10 @@ class ListCreateAttendance(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
 
+    def get(self, request, *args, **kwargs):
+        obj=self.get_queryset()
+        return Response(obj,status=status.HTTP_200_OK)
+
     def get_queryset(self):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
@@ -141,20 +145,18 @@ class ListCreateAttendance(generics.ListAPIView):
             return AttendanceSerializer
 
     def resp_fields(self):
-        pm = Count(Case(When(Q(student__gender="M") & Q(status=1), then=1), output_field=IntegerField(), ))
-        pf = Count(Case(When(Q(student__gender="F") & Q(status=1), then=1), output_field=IntegerField(), ))
-        af = Count(Case(When(Q(student__gender="F") & Q(status=0), then=1), output_field=IntegerField(), ))
-        am = Count(Case(When(Q(student__gender="M") & Q(status=0), then=1), output_field=IntegerField(), ))
+        pm = Count(Case(When(Q(student__gender="M") & Q(status=1) & Q(student__active=True), then=1), output_field=IntegerField(), ))
+        pf = Count(Case(When(Q(student__gender="F") & Q(status=1) & Q(student__active=True), then=1), output_field=IntegerField(), ))
+        af = Count(Case(When(Q(student__gender="F") & Q(status=0)& Q(student__active=True), then=1), output_field=IntegerField(), ))
+        am = Count(Case(When(Q(student__gender="M") & Q(status=0)& Q(student__active=True), then=1), output_field=IntegerField(), ))
         return pm,pf,af,am
 
     def get_formated_data(self,data,format):
         pm, pf, af, am=self.resp_fields()
         outp=Concat("month",Value(''),output_field=CharField())
-
-        at = data.annotate(month=self.get_format(format=format)).values("month").annotate(present_males=pm, present_females=pf,
-                                                                                absent_males=am, absent_females=af,value=outp)
+        at = data.annotate(month=self.get_format(format=format)).values("month")
+        at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
         return at
-
 
     def get_format(self,format):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
@@ -168,7 +170,7 @@ class ListCreateAttendance(generics.ListAPIView):
             id=Cast("_class", output_field=TextField())
             return Concat("_class__class_name",Value(','),id,output_field=CharField())
         else:
-            print daily
+            # print daily
             return daily
 
 # class TakeAttendance(APIView):
@@ -383,10 +385,10 @@ class WeeklyAttendanceReport(APIView):
         fdate=str(fdate)
         ldate=str(ldate)
         attends=Attendance.objects.filter(date__range=[ldate,fdate])
-        presentmales=attends.filter(student__gender="M",status=1)
-        presentfemales=attends.filter(student__gender="F",status=1)
-        absentmales=attends.filter(student__gender="M",status=0)
-        absentfemales=attends.filter(student__gender="F",status=0)
+        presentmales=attends.filter(student__gender="M",status=1,student__active=True)
+        presentfemales=attends.filter(student__gender="F",status=1,student__active=True)
+        absentmales=attends.filter(student__gender="M",status=0,student__active=True)
+        absentfemales=attends.filter(student__gender="F",status=0,student__active=True)
         pmales=len(presentmales)
         pmales=float(pmales)
         pfemales=float(len(presentfemales))

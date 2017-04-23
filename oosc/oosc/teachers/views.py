@@ -14,6 +14,9 @@ class ListTeachers(generics.ListAPIView):
     queryset = Teachers.objects.all()
     serializer_class = TeacherSerializer
 
+    def get_queryset(self):
+        return Teachers.objects.filter(active=True)
+
 
 class ListCreateTeachers(APIView):
     permission_classes = (IsHeadteacherOrAdmin,)
@@ -30,6 +33,7 @@ class ListCreateTeachers(APIView):
         details=request.data
         details["details"]["cleanings"]=0
         #Create a user for the teacher with a default password 'p@ssw0rd'
+        usr=User()
         try:
             usr=User.objects.create_user(username=details['username'],password='p@ssw0rd')
         except Exception as inst:
@@ -72,6 +76,19 @@ class ListCreateTeachers(APIView):
                                     "joined_current_school":"yyyy-mm-dd"
                                     }
                          })
+
+class RetrieveUpdateTeacher(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Teachers.objects.all()
+    serializer_class = TeacherSerializer
+
+    def delete(self, request, *args, **kwargs):
+        object=self.get_object()
+        object.active=False
+        object.class_teachers.clear()
+        object.headteacher=False
+        object.save()
+        return Response("", status=status.HTTP_204_NO_CONTENT)
+
 
 
 
