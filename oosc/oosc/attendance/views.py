@@ -118,9 +118,7 @@ class ListCreateAttendance(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
 
-    def get(self, request, *args, **kwargs):
-        obj=self.get_queryset()
-        return Response(obj,status=status.HTTP_200_OK)
+
 
     def get_queryset(self):
         atts=Attendance.objects.all()
