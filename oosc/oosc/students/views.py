@@ -187,9 +187,11 @@ class GetEnrolled(generics.ListAPIView):
         elif format=="school":
             id=Cast("class_id__school_id",output_field=TextField())
             return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
+        elif format=="stream":
+            return Concat("class_id__class_name",Value(''),output_field=CharField())
         elif format=="class":
             id=Cast("class_id", output_field=TextField())
-            return Concat("class_id__class_name",Value(','),id,output_field=CharField())
+            return Concat("class_id___class",Value(''),output_field=CharField())
         else:
             return monthly
 

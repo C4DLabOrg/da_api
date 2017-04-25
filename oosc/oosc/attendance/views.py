@@ -164,9 +164,10 @@ class ListCreateAttendance(generics.ListAPIView):
             return daily
         elif format== "yearly":
             return ExtractYear('date')
+        elif format == "stream":
+            return Concat("_class__class_name", Value(''), output_field=CharField())
         elif format=="class":
-            id=Cast("_class", output_field=TextField())
-            return Concat("_class__class_name",Value(','),id,output_field=CharField())
+            return Concat("_class___class",Value(''),output_field=CharField())
         else:
             # print daily
             return daily
