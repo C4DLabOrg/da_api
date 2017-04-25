@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User,Group
+from django.db import transaction
 from django.shortcuts import render
 from oosc.students.models import Students
 from rest_framework import generics,status
@@ -10,7 +12,7 @@ import django_filters
 import csv
 from rest_framework import serializers
 import json
-from oosc.classes.models import Classes
+from oosc.stream.models import Stream
 from oosc.schools.models import Schools
 from oosc.teachers.models import Teachers
 from datetime import datetime
@@ -202,14 +204,26 @@ class ImportStudentSerializer(serializers.Serializer):
     # emis_code=serializers.IntegerField(required=False,allow_null=True)
 
 
-def sew_class(s):
+def next_class(s):
     s=s.split(' ')[1]
     if s=="ECD":
         return "Std 1"
     return "Std "+str(int(s)+1)
 
-def set_class(s):
-    return "Std "+s
+def get_class(s):
+    s=list(s)
+    theclass=""
+    for d in s:
+        if d.isdigit():
+            theclass=d
+            break
+    return theclass
+
+def get_stream(s):
+    d=list(s)
+    theclass=get_class(s)
+    d.pop(d.index(theclass))
+    return ''.join(d)
 
 def get_gender(s):
     if s.lower() =="male" or s.lower() == 'm':
@@ -224,81 +238,112 @@ def valid_date(date_text):
     except ValueError:
         return False
 
+def create_user(username):
+    users=User.objects.filter(username=username)
+    if not users.exists():
+        user = User.objects.create_user(username=username, password="admin")
+        g = Group.objects.get(name="teachers")
+        g.user_set.add(user)
+        return user
+    return users[0]
+
 class ImportStudents(APIView):
     def post(self,request,format=None):
+        #File with students details
         file=request.FILES["file"]
+        #Convert each row into array
         data = [row for row in csv.reader(file.read().splitlines())]
         d=""
         s=0
         rowindex=[]
         err=""
         the_data=data[1:]
-        for i,dat in enumerate(the_data):
-            dt={"fstname":dat[6],"midname":dat[7],"lstname":dat[8], "school":dat[5],
-                "clas":dat[13],"gender":dat[11]}
-            ser=ImportStudentSerializer(data=dt)
-            if ser.is_valid():
-                sch=Schools.objects.filter(emis_code=ser.data.get("school"))
-                teach=Teachers()
-                if(sch.exists()):
-                    sch=sch[0]
-                    teach = Teachers.objects.filter(school=sch)
-                    if(not teach.exists()):
-                        return Response("Create atleast one Teacher for the school")
-                    else:
-                        teach=teach[0]
-                else:
-                    print (ser.data.get("school"))
-                    return Response("Create School First")
-                nxt_class=set_class(ser.data.get("clas"))
-                if not nxt_class == "Std 9":
-                    cls=Classes.objects.filter(class_name=nxt_class)
-                    cl = Classes()
-                    if(cls.exists()):
-                        cl=cls[0]
-                    else:
-                        cl.class_name=nxt_class
-                        cl.school=sch
-                        cl.teacher=teach
-                        cl.save()
-                    std=Students.objects.filter(fstname=ser.data.get("fstname"),lstname=ser.data.get("lstname"),midname=ser.data.get("midname"),
-                                                class_id=cl)
-                    #check if student Exists
-                    if(std.exists()):
-                        #print "Found"
-                        pass
-                    else:
-                        std=Students()
-                        std.fstname=ser.data.get("fstname")
-                        std.midname=ser.data.get("midname")
-                        std.lstname=ser.data.get("lstname")
-                        std.gender=get_gender(ser.data.get("gender"))
-                        std.class_id=cl
-                        if(valid_date(dat[2])):
-                            std.date_enrolled=dat[2]
+        with transaction.atomic():
+            for i,dat in enumerate(the_data):
+                dt={"fstname":dat[6],"midname":dat[7],"lstname":dat[8], "school":dat[5],
+                    "clas":dat[13],"gender":dat[11]}
+                ser=ImportStudentSerializer(data=dt)
+                if ser.is_valid():
+                    sch=Schools.objects.filter(emis_code=ser.data.get("school"))
+                    teach=Teachers()
+                    if(sch.exists()):
+                        sch=sch[0]
+                        teach = Teachers.objects.filter(school=sch)
+                        if(not teach.exists()):
+                            user=create_user(sch.emis_code)
+                            teacher=Teachers()
+                            teacher.user=user
+                            teacher.headteacher=True
+                            teacher.active=True
+                            teacher.fstname="Admin"
+                            teacher.lstname=sch.school_name.split(' ')[0]
+                            teacher.teacher_type="TSC"
+                            teacher.gender="M"
+                            teacher.school=sch
+                            teacher.phone_no="99999999999"
+                            teacher.save()
+                            teach=teacher
+                            #return Response("Create atleast one Teacher for the school")
                         else:
-                            std.date_enrolled=datetime.now()
-                        std.save()
-                        s += 1
+                            teachs=teach.filter(headteacher=True)
+                            if not teachs.exists():
+                                teach=teach[0]
+                            else:
+                                teach=teachs[0]
+                    else:
+                        print (ser.data.get("school"))
+                        return Response("Create School First")
+                    nxt_class=ser.data.get("clas")
+                    theclass=get_class(nxt_class)
+                    if not nxt_class == "Std 9":
+                        cls=Stream.objects.filter(class_name=nxt_class)
+                        cl = Stream()
+                        if(cls.exists()):
+                            cl=cls[0]
+                        else:
+                            cl.class_name=nxt_class
+                            cl._class_id=theclass
+                            cl.school=sch
+                            cl.teacher=teach
+                            cl.save()
+                        std=Students.objects.filter(fstname=ser.data.get("fstname"),lstname=ser.data.get("lstname"),midname=ser.data.get("midname"),
+                                                    class_id=cl)
+                        #check if student Exists
+                        if(std.exists()):
+                            #print "Found"
+                            pass
+                        else:
+                            std=Students()
+                            std.fstname=ser.data.get("fstname")
+                            std.midname=ser.data.get("midname")
+                            std.lstname=ser.data.get("lstname")
+                            std.gender=get_gender(ser.data.get("gender"))
+                            std.class_id=cl
+                            if(valid_date(dat[2])):
+                                std.date_enrolled=dat[2]
+                            else:
+                                std.date_enrolled=datetime.now()
+                            std.save()
+                            s += 1
 
+                    else:
+                        print("Done Kcpe")
                 else:
-                    print("Done Kcpe")
-            else:
-                err=ser.errors
-            # schl=dat[5]
-            # clas=dat[6]
-            # if  clas and schl:
-            #     pass
-            # else:
-            #     print dat
-            #     return Response("Make Sure The Data is correct "+str(i)+" "+dat[6])
-            # s=i
-            # d=dat[4]
-        f=s
-        s=int((float(s)/float(len(the_data)))*100)
-        rowindex.append({"name":"Import Summary","index":str(s)+"%, "+str(f)+" of  "+str(len(the_data))})
-        rowindex.append({"name":"Errors","index":err})
-        for i,dat in enumerate(data[0]):
-            rw={'name':dat,'index':i}
-            rowindex.append(rw)
-        return Response(data=json.loads(json.dumps(rowindex)))
+                    err=ser.errors
+                # schl=dat[5]
+                # clas=dat[6]
+                # if  clas and schl:
+                #     pass
+                # else:
+                #     print dat
+                #     return Response("Make Sure The Data is correct "+str(i)+" "+dat[6])
+                # s=i
+                # d=dat[4]
+            f=s
+            s=int((float(s)/float(len(the_data)))*100)
+            rowindex.append({"name":"Import Summary","index":str(s)+"%, "+str(f)+" of  "+str(len(the_data))})
+            rowindex.append({"name":"Errors","index":err})
+            for i,dat in enumerate(data[0]):
+                rw={'name':dat,'index':i}
+                rowindex.append(rw)
+            return Response(data=json.loads(json.dumps(rowindex)))

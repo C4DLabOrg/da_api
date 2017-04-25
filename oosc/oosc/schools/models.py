@@ -2,13 +2,14 @@ from django.db import models
 #from oosc.teachers.models import Teachers
 from oosc.zone.models import Zone
 from django.contrib.auth.models import User
+
 #from oosc.teachers.models import Teachers
 # Create your models here.
 class Schools(models.Model):
     LEVELS=(('PRIMARY','Primary'),('SECONDARY','Secondary'))
     STATUS=(('PUBLIC','Public'),('PRIVATE','Private'))
     school_code = models.IntegerField(default=0,null=True,blank=True)
-    school_name = models.CharField(max_length = 200, default="schoolname")
+    school_name = models.CharField(max_length = 200, )
     latitude  = models.FloatField(null=True,blank=True)
     longitude=models.FloatField(null=True,blank=True)
     emis_code   = models.IntegerField(default = 0,null=True,blank=True)

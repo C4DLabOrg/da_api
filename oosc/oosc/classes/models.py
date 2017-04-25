@@ -1,22 +1,15 @@
+from __future__ import unicode_literals
+
 from django.db import models
-from oosc.schools.models import Schools
-from oosc.teachers.models import Teachers
+
 # Create your models here.
+
 class Classes(models.Model):
+    name=models.CharField(max_length=3,primary_key=True)
+    created=models.DateTimeField(auto_now=True)
+    modified=models.DateTimeField(auto_now_add=True)
 
-    class_name = models.CharField(max_length = 200)
-    school = models.ForeignKey(Schools, on_delete=models.CASCADE)
-    teachers = models.ManyToManyField(Teachers,related_name="class_teachers")
-    #teacher_id=models.IntegerField(max_length=50)
+
     def __str__(self):
-        return self.class_name+" ("+self.school.school_name+")"
-
-    def get_the_class(self):
-        m = list(self.class_name)
-        for n in m:
-            if n.isdigit():
-                print n
-                return n
-
-
+        return self.name
 

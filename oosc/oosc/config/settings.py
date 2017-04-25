@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'oosc.counties.apps.CountiesConfig',
     'oosc.constituencies.apps.ConstituenciesConfig',
     'oosc.classes.apps.ClassesConfig',
+    'oosc.stream.apps.StreamConfig',
     'oauth2_provider',
     'corsheaders',
     'oosc.zone.apps.ZoneConfig',

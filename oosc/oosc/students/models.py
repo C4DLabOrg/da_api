@@ -1,5 +1,5 @@
 from django.db import models
-from oosc.classes.models import Classes
+from oosc.stream.models import Stream
 from oosc.schools.models import Schools
 
 # Create your models here.
@@ -14,7 +14,7 @@ class Students(models.Model):
     date_of_birth = models.DateField(null=True,blank=True)
     date_enrolled=models.DateField(auto_created=True)
     admission_no  = models.IntegerField(default=0,null=True,blank=True)
-    class_id      = models.ForeignKey(Classes,on_delete = models.CASCADE) #shows the current class
+    class_id      = models.ForeignKey(Stream, on_delete = models.CASCADE) #shows the current class
     gender        = models.CharField(max_length=2,choices=GENDERS, default='ML')
     previous_class    = models.IntegerField(default=0,null=True,blank=True)
     mode_of_transport = models.CharField(max_length=200,null=True,blank=True)

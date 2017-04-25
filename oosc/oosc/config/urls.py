@@ -20,7 +20,7 @@ from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAtte
 from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
-from oosc.classes.views import ListCreateClass
+from oosc.stream.views import ListCreateClass
 from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword
 from oosc.students.views import ListCreateStudent,GetEnrolled,ImportStudents,RetrieveUpdateStudent
 from django.conf.urls.static import static
@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
     url(r'^api/counties',ListCreateCounty.as_view(),name="county-list-create"),
     url(r'^api/zones',ListCreateCounstituency.as_view(),name="zones-list-create"),
-    url(r'^api/classes',ListCreateClass.as_view(),name="class-list-create"),
+    url(r'^api/stream',ListCreateClass.as_view(),name="class-list-create"),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/students/enrolls/(?P<type>.+)',GetEnrolled.as_view(),name="list-create-student"),
     url(r'^api/students/import',ImportStudents.as_view(),name="import-student"),

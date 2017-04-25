@@ -3,8 +3,8 @@ from oosc.teachers.models import Teachers
 from django.contrib.auth.models import User
 from oosc.subjects.models import Subjects
 from oosc.subjects.serializers import SubjectSerializer
-from oosc.classes.models import Classes
-from oosc.classes.serializers import StudentsClassSerializer
+from oosc.stream.models import Stream
+from oosc.stream.serializers import StudentsStreamSerializer
 from oosc.reason.models import Reason
 from oosc.reason.serializers import ReasonSerializer
 
@@ -44,12 +44,12 @@ class TeacherAllSerializer(serializers.ModelSerializer):
 
     def get_classes(self,obj):
         if obj.headteacher:
-            queryset=Classes.objects.filter(school =obj.school).order_by("class_name",)
+            queryset=Stream.objects.filter(school =obj.school).order_by("class_name", )
             print("Headteacher")
         else:
             print("Normal Teacher") 
-            queryset = Classes.objects.filter(teacher=obj.id).order_by("class_name", )
-        ser=StudentsClassSerializer(queryset,many=True)
+            queryset = Stream.objects.filter(teacher=obj.id).order_by("class_name", )
+        ser=StudentsStreamSerializer(queryset, many=True)
         return ser.data
     def get_profile(self,obj):
         return TeacherSerializer(obj).data
