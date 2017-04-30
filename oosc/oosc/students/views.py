@@ -361,6 +361,7 @@ class AbsentStudentSerializer(serializers.Serializer):
     guardian_phone=serializers.CharField(required=False)
     guardian_name=serializers.CharField(required=False)
     gender=serializers.CharField(required=False)
+    present_count=serializers.IntegerField(required=False)
 
 
 class ListAbsentStudents(generics.ListAPIView):
