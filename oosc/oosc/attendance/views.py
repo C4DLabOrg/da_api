@@ -4,7 +4,7 @@ from rest_framework import generics,status
 from datetime import datetime
 from oosc.students.models import Students
 from oosc.attendance.serializers import AbsentStudentSerializer
-from oosc.absence.serializers import DetailedAbsenceserializer
+from oosc.absence.serializers import DetailedAbsenceserializer, AbsenceSerializer
 from oosc.attendance.serializers import AttendanceSerializer
 from oosc.absence.models import Absence
 from datetime import datetime
@@ -301,9 +301,9 @@ class TakeAttendance(APIView):
                     attendance.student = student
                     attendance.save()
             print("Done replying")
-            absnts=Absence.objects.filter(student__in=absents,active=True)
-            #ser=DetailedAbsenceserializer(absnts,many=True)
-            return Response(data=[],status=status.HTTP_201_CREATED)
+            ##Get the students with an open absence record
+            absnts=DetailedAbsenceserializer(Absence.objects.filter(student_id__in=request.data["absent"],status=True),many=True)
+            return Response(data=absnts.data,status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
 

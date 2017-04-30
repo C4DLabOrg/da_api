@@ -34,7 +34,6 @@ def d(school):
     ## Get Students absent from school for the last 2 weeks continous
     students=[d["student_id"] if d["absent_count"]>=DROPOUT_MIN_COUNT else None for d in drops]
     while None in students:students.remove(None)
-
     ##Get Students already with an open absence record
     former_absents=[s.student_id for s in Absence.objects.filter(status=True,student_id__in=students)]
 

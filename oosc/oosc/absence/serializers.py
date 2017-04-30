@@ -2,7 +2,7 @@
 from oosc.absence.models import Absence
 from rest_framework import serializers
 from oosc.students.serializers import SimpleStudentSerializer
-
+from datetime import datetime
 
 class AbsenceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,5 +20,6 @@ class DetailedAbsenceserializer(serializers.ModelSerializer):
     def get_student(self,obj):
         return SimpleStudentSerializer(obj.student).data
     def get_days(self,obj):
-        dayte=obj.date_to-obj.date_from
-        return dayte.days
+        if obj.date_to:
+            return (obj.date_to-obj.date_from).days
+        return (datetime.now().date()-obj.date_from).days
