@@ -185,8 +185,8 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="90">
-                  <caret line="363" column="58" lean-forward="false" selection-start-line="363" selection-start-column="58" selection-end-line="363" selection-end-column="58" />
+                <state relative-caret-position="188">
+                  <caret line="361" column="37" lean-forward="false" selection-start-line="361" selection-start-column="37" selection-end-line="361" selection-end-column="37" />
                   <folding>
                     <element signature="e#0#49#0" expanded="true" />
                     <element signature="e#1218#1728#0" expanded="false" />
@@ -627,7 +627,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="30" width="1366" height="738" extended-state="0" />
+    <frame x="0" y="30" width="1366" height="738" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.101265825" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1087,8 +1087,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="363" column="58" lean-forward="false" selection-start-line="363" selection-start-column="58" selection-end-line="363" selection-end-column="58" />
+        <state relative-caret-position="188">
+          <caret line="361" column="37" lean-forward="false" selection-start-line="361" selection-start-column="37" selection-end-line="361" selection-end-column="37" />
           <folding>
             <element signature="e#0#49#0" expanded="true" />
             <element signature="e#1218#1728#0" expanded="false" />

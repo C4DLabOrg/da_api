@@ -358,6 +358,8 @@ class AbsentStudentSerializer(serializers.Serializer):
     absent_count=serializers.IntegerField(required=False)
     name=serializers.CharField(required=False)
     school_name=serializers.CharField(required=False)
+    class_name=serializers.CharField(required=False)
+    class_id=serializers.IntegerField(required=False)
     guardian_phone=serializers.CharField(required=False)
     guardian_name=serializers.CharField(required=False)
     gender=serializers.CharField(required=False)
