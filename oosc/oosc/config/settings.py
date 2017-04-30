@@ -92,6 +92,10 @@ OAUTH2_PROVIDER = {
     'AUTHORIZATION_CODE_EXPIRE_SECONDS': 60 * 60,
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365
 }
+
+##To generate the dropout list weekly
+DROPOUT_MIN_COUNT=1
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

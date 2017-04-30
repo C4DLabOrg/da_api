@@ -118,8 +118,6 @@ class ListCreateAttendance(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
 
-
-
     def get_queryset(self):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
@@ -303,7 +301,7 @@ class TakeAttendance(APIView):
                     attendance.student = student
                     attendance.save()
             print("Done replying")
-            absnts=Absence.objects.filter(student__in=absents)
+            absnts=Absence.objects.filter(student__in=absents,active=True)
             #ser=DetailedAbsenceserializer(absnts,many=True)
             return Response(data=[],status=status.HTTP_201_CREATED)
         except Exception as e:

@@ -35,7 +35,7 @@ class Students(models.Model):
 
 
     def __str__(self):
-        return self.lstname+" "+self.fstname
+        return self.lstname+" "+self.fstname+"("+self.class_id.class_name+")"
 
     class Meta:
         ordering=['-gender']
