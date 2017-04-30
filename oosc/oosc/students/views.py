@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User,Group
 from django.db import transaction
 from django.shortcuts import render
+
+from oosc.attendance.views import AbsenteesFilter
 from oosc.students.models import Students
 from rest_framework import generics,status
 from rest_framework.response import Response
@@ -16,12 +18,13 @@ from oosc.stream.models import Stream
 from oosc.schools.models import Schools
 from oosc.teachers.models import Teachers
 from datetime import datetime
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField,F
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework.response import Response
 from rest_framework import status
 from oosc.history.models import History
+from oosc.attendance.models import Attendance
 # Create your views here.
 
 class ListCreateStudent(generics.ListCreateAPIView):
@@ -349,3 +352,42 @@ class ImportStudents(APIView):
                 rw={'name':dat,'index':i}
                 rowindex.append(rw)
             return Response(data=json.loads(json.dumps(rowindex)))
+
+class AbsentStudentSerializer(serializers.Serializer):
+    student_id=serializers.IntegerField(required=False)
+    absent_count=serializers.IntegerField(required=False)
+    name=serializers.CharField(required=False)
+    school_name=serializers.CharField(required=False)
+    guardian_phone=serializers.CharField(required=False)
+    guardian_name=serializers.CharField(required=False)
+    gender=serializers.CharField(required=False)
+
+
+class ListAbsentStudents(generics.ListAPIView):
+    queryset=Attendance.objects.all()
+    serializer_class = StudentsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = AbsenteesFilter
+
+    def get_queryset(self):
+        atts=Attendance.objects.all()
+        atts=self.filter_queryset(atts)
+        atts=atts.order_by('student').values("student_id")\
+            .annotate(present_count=Count(Case(When(status=1,then=1),
+            output_field=IntegerField())),
+            name=Concat(F("student__fstname"),Value(' '),F("student__lstname")),
+            school_name=F("student__class_id__school__school_name"),
+            class_name=F("student__class_id__class_name"),
+            class_id=F('student__class_id'),
+            guardian_phone=F("student__guardian_phone"),
+            guardian_name=F("student__guardian_name"),
+            gender=F("student__gender"),
+            absent_count=Count(Case(When(status=0,then=1),
+            student_id='student',
+            output_field=IntegerField())))
+        print(atts)
+        return atts
+
+    def get_serializer_class(self):
+        return AbsentStudentSerializer
+

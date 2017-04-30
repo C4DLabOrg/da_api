@@ -15,11 +15,12 @@ from rest_framework.response import Response
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework import serializers
 from django.db import transaction
+from django.utils.dateparse import parse_date
 
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
@@ -124,7 +125,7 @@ class ListCreateAttendance(generics.ListAPIView):
         format = self.kwargs['type']
         at=self.get_formated_data(atts,format=format)
         #at["present_males"]=float(at["present_males"])/total
-        return  at
+        return at
 
     def get_serializer_context(self):
         print("setting the context")
@@ -152,6 +153,7 @@ class ListCreateAttendance(generics.ListAPIView):
         outp=Concat("month",Value(''),output_field=CharField())
         at = data.annotate(month=self.get_format(format=format)).values("month")
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
+        #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
         return at
 
     def get_format(self,format):
