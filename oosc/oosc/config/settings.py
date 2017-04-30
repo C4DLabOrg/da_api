@@ -11,11 +11,16 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import dj_database_url # 3rd party database config helper
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
+# from dateutil import parser
+# from django.forms import fields
+# fields.DateTimeField.strptime = lambda o, v, f: parser.parse(v)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -24,10 +29,11 @@ SECRET_KEY = '=l())7cafv22l7*yz)rf=g*kb@)0(f__e7$bp73!ibx#32k6e+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL=True
+USE_TZ=True
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,8 +44,35 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'oosc.subjects.apps.SubjectsConfig',
     'oosc.teachers.apps.TeachersConfig',
+    'oosc.students.apps.StudentsConfig',
+    'oosc.attendance.apps.AttendanceConfig',
+    'oosc.parents.apps.ParentsConfig',
+    'oosc.schools.apps.SchoolsConfig',
+    'oosc.promotions.apps.PromotionsConfig',
+    'oosc.counties.apps.CountiesConfig',
+    'oosc.constituencies.apps.ConstituenciesConfig',
+    'oosc.classes.apps.ClassesConfig',
+    'oosc.stream.apps.StreamConfig',
+    'oauth2_provider',
+    'corsheaders',
+    'oosc.zone.apps.ZoneConfig',
+    'oosc.subcounty.apps.SubcountyConfig',
+    'oosc.absence.apps.AbsenceConfig',
+    'oosc.reason.apps.ReasonConfig',
+    'oosc.history.apps.HistoryConfig',
+
+    'crispy_forms'
+
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    ),
+
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,9 +82,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'oosc.config.urls'
+
+OAUTH2_PROVIDER = {
+    'AUTHORIZATION_CODE_EXPIRE_SECONDS': 60 * 60,
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365
+}
+
+##To generate the dropout list weekly
+DROPOUT_MIN_COUNT=1
 
 TEMPLATES = [
     {
@@ -75,13 +118,30 @@ WSGI_APPLICATION = 'oosc.config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+#Development Only
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'OPTIONS': {
+            # ...
+            'timeout': 5,
+            # ...
+        }
     }
-}
 
+}
+#Production Only
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': 'oosc',        # Or path to database file if using sqlite3.
+#         'USER': 'oosc',                   # Not used with sqlite3.
+#         'PASSWORD': 'p@ssw0rd',            # Not used with sqlite3.
+#         'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
+#         'PORT': '5432',                  # Set to empty string for default. Not used with sqlite3.
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -120,3 +180,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_ROOT=os.path.join(BASE_DIR,'..','uploads')
+MEDIA_URL="/media/"
