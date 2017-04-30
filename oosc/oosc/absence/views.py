@@ -11,6 +11,7 @@ from oosc.absence.models import Absence
 from oosc.students.models import Students
 from oosc.config.settings import DROPOUT_MIN_COUNT
 from oosc.schools.models import Schools
+from rest_framework import generics
 
 
 class GetEditAbsence(generics.RetrieveUpdateAPIView):
@@ -52,7 +53,6 @@ def GenerateReport():
     for s in schools:
         d(s)
         print (s)
-
 
 
 

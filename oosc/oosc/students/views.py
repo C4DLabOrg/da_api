@@ -394,3 +394,9 @@ class ListAbsentStudents(generics.ListAPIView):
     def get_serializer_class(self):
         return AbsentStudentSerializer
 
+
+class ListDropouts(generics.ListAPIView):
+    queryset = Students.objects.filter(active=False)
+    serializer_class = StudentsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = EnrollmentFilter
