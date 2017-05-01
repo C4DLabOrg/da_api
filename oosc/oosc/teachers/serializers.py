@@ -7,6 +7,7 @@ from oosc.stream.models import Stream
 from oosc.stream.serializers import StudentsStreamSerializer
 from oosc.reason.models import Reason
 from oosc.reason.serializers import ReasonSerializer
+from oosc.students.models import Students
 
 
 class TeacherSerializer(serializers.ModelSerializer):
@@ -33,9 +34,10 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     profile=serializers.SerializerMethodField()
     reasons=serializers.SerializerMethodField()
     teachers=serializers.SerializerMethodField()
+    schoolinfo=serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('id','profile','subjects','classes','reasons','teachers')
+        fields = ('id','profile','subjects','classes','reasons','teachers','schoolinfo')
 
     def get_subjects(self,obj):
         queryset=Subjects.objects.filter(id__in=obj.subjects.all())
@@ -53,6 +55,14 @@ class TeacherAllSerializer(serializers.ModelSerializer):
         return ser.data
     def get_profile(self,obj):
         return TeacherSerializer(obj).data
+
+    def get_schoolinfo(self,obj):
+        students=Students.objects.filter(active=True,class_id__school=obj.school).count()
+        streams=len(self.get_classes(obj))
+        teachers=len(self.get_teachers(obj))
+        return {"teachers":teachers,"classes":streams,"students":students}
+
+
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
     def get_teachers(self,obj):

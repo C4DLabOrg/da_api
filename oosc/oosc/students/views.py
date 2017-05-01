@@ -2,7 +2,7 @@ from django.contrib.auth.models import User,Group
 from django.db import transaction
 from django.shortcuts import render
 
-from oosc.attendance.views import AbsenteesFilter
+from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
 from oosc.students.models import Students
 from rest_framework import generics,status
 from rest_framework.response import Response
@@ -370,11 +370,12 @@ class ListAbsentStudents(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class = StudentsSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = AbsenteesFilter
+    filter_class = AttendanceFilter
 
     def get_queryset(self):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
+
         atts=atts.order_by('student').values("student_id")\
             .annotate(present_count=Count(Case(When(status=1,then=1),
             output_field=IntegerField())),
@@ -388,7 +389,7 @@ class ListAbsentStudents(generics.ListAPIView):
             absent_count=Count(Case(When(status=0,then=1),
             student_id='student',
             output_field=IntegerField())))
-        print(atts)
+        atts = atts.exclude(absent_count=0)
         return atts
 
     def get_serializer_class(self):
