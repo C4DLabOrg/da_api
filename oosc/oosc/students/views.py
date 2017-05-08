@@ -247,7 +247,8 @@ def create_user(username):
     users=User.objects.filter(username=username)
     if not users.exists():
         user = User.objects.create_user(username=username, password="admin")
-        g = Group.objects.get(name="teachers")
+        g,created = Group.objects.get_or_create(name="teachers")
+        print (g,created)
         g.user_set.add(user)
         return user
     return users[0]
@@ -275,6 +276,7 @@ class ImportStudents(APIView):
                         sch=sch[0]
                         teach = Teachers.objects.filter(school=sch)
                         if(not teach.exists()):
+                            print ("No teacher")
                             user=create_user(sch.emis_code)
                             teacher=Teachers()
                             teacher.user=user
@@ -284,10 +286,12 @@ class ImportStudents(APIView):
                             teacher.lstname=sch.school_name.split(' ')[0]
                             teacher.teacher_type="TSC"
                             teacher.gender="M"
+
                             teacher.school=sch
                             teacher.phone_no="99999999999"
-                            teacher.save()
-                            teach=teacher
+
+                            teach =teacher.save()
+                            print (teach)
                             #return Response("Create atleast one Teacher for the school")
                         else:
                             teachs=teach.filter(headteacher=True)

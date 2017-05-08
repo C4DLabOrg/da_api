@@ -14,6 +14,7 @@ oauthlib==1.0.3
 olefile==0.43
 packaging==16.8
 Pillow==4.0.0
+psycopg2==2.7.1
 pyparsing==2.1.10
 python-dateutil==2.6.0
 pytz==2016.10

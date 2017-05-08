@@ -34,6 +34,8 @@ def mycsv_reader(csv_reader):
     continue
   return
 
+
+
 class ImportSchools(APIView):
     def post(self,request,format=None):
         file=request.FILES["file"]
