@@ -12,7 +12,7 @@ class Schools(models.Model):
     school_name = models.CharField(max_length = 200, )
     latitude  = models.FloatField(null=True,blank=True)
     longitude=models.FloatField(null=True,blank=True)
-    emis_code   = models.IntegerField(default = 0,null=True,blank=True)
+    emis_code   = models.BigIntegerField(default = 0,null=True,blank=True)
     zone = models.ForeignKey(Zone, on_delete = models.CASCADE)
     source_of_water = models.CharField(max_length = 200,null=True,blank=True)
     headteacher = models.OneToOneField(User,related_name="headteacher",null=True,blank=True)

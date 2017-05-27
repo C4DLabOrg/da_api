@@ -209,6 +209,7 @@ class ImportStudentSerializer(serializers.Serializer):
     # emis_code=serializers.IntegerField(required=False,allow_null=True)
 
 
+
 def next_class(s):
     s=s.split(' ')[1]
     if s=="ECD":
@@ -248,7 +249,7 @@ def create_user(username):
     if not users.exists():
         user = User.objects.create_user(username=username, password="admin")
         g,created = Group.objects.get_or_create(name="teachers")
-        print (g,created)
+        #print (g,created)
         g.user_set.add(user)
         return user
     return users[0]
@@ -265,10 +266,15 @@ class ImportStudents(APIView):
         err=""
         the_data=data[1:]
         with transaction.atomic():
+            thelen=len(the_data)
             for i,dat in enumerate(the_data):
+                print (i)
+
+                #print (str((float(i)/float(thelen))*100)+" %")
                 dt={"fstname":dat[6],"midname":dat[7],"lstname":dat[8], "school":dat[5],
                     "clas":dat[13],"gender":dat[11]}
                 ser=ImportStudentSerializer(data=dt)
+                school_name=dat[4]
                 if ser.is_valid():
                     sch=Schools.objects.filter(emis_code=ser.data.get("school"))
                     teach=Teachers()
@@ -276,7 +282,7 @@ class ImportStudents(APIView):
                         sch=sch[0]
                         teach = Teachers.objects.filter(school=sch)
                         if(not teach.exists()):
-                            print ("No teacher")
+                            #print ("No teacher")
                             user=create_user(sch.emis_code)
                             teacher=Teachers()
                             teacher.user=user
@@ -286,12 +292,10 @@ class ImportStudents(APIView):
                             teacher.lstname=sch.school_name.split(' ')[0]
                             teacher.teacher_type="TSC"
                             teacher.gender="M"
-
                             teacher.school=sch
                             teacher.phone_no="99999999999"
-
                             teach =teacher.save()
-                            print (teach)
+                            #print (teach)
                             #return Response("Create atleast one Teacher for the school")
                         else:
                             teachs=teach.filter(headteacher=True)
@@ -300,23 +304,31 @@ class ImportStudents(APIView):
                             else:
                                 teach=teachs[0]
                     else:
-                        print (ser.data.get("school"))
-                        return Response("Create School First")
+                        print ("Create "+school_name +" First")
+                        continue
+                        #return Response("Create School First")
                     nxt_class=ser.data.get("clas")
                     theclass=get_class(nxt_class)
+                    ##Confirm a class has been entered
+                    #print ("Class "+theclass)
+                    if theclass is None:
+                        continue
                     if not nxt_class == "Std 9":
-                        cls=Stream.objects.filter(class_name=nxt_class)
+                        cls=Stream.objects.filter(class_name=nxt_class,school=sch)
                         cl = Stream()
-                        if(cls.exists()):
-                            cl=cls[0]
-                        else:
+                        if not (cls.exists()):
                             cl.class_name=nxt_class
                             cl._class_id=theclass
                             cl.school=sch
                             cl.teacher=teach
-                            cl.save()
+                            cl=cl.save()
+                        else:
+                            cl = cls[0]
+                        if(cl is None):
+                            continue
                         std=Students.objects.filter(fstname=ser.data.get("fstname"),lstname=ser.data.get("lstname"),midname=ser.data.get("midname"),
                                                     class_id=cl)
+
                         #check if student Exists
                         if(std.exists()):
                             #print "Found"
@@ -332,13 +344,16 @@ class ImportStudents(APIView):
                                 std.date_enrolled=dat[2]
                             else:
                                 std.date_enrolled=datetime.now()
+                            print(std.class_id)
                             std.save()
                             s += 1
 
                     else:
                         print("Done Kcpe")
                 else:
+
                     err=ser.errors
+                    print(err)
                 # schl=dat[5]
                 # clas=dat[6]
                 # if  clas and schl:

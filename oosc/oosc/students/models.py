@@ -32,6 +32,8 @@ class Students(models.Model):
     active=models.BooleanField(default=True)
     created=models.DateTimeField(auto_now_add=True)
     modified=models.DateTimeField(auto_now=True)
+    ## Is it an out of school children
+    ##
 
 
     def __str__(self):
