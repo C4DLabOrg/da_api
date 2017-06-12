@@ -6,8 +6,10 @@ from oosc.teachers.models import Teachers
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
 from oosc.teachers.serializers import TeacherSerializer,TeacherAllSerializer,Passwordserializer,ForgotPAsswordSerializer
+from oosc.partner.models import Partner
 from permission import IsHeadteacherOrAdmin
 from rest_framework.views import APIView
+
 
 
 class ListTeachers(generics.ListAPIView):
@@ -111,7 +113,6 @@ class ChangePassword(generics.UpdateAPIView):
             self.object.set_password(serializer.data.get("new_password"))
             self.object.save()
             return Response("Success.", status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ForgotPasssword(generics.UpdateAPIView):
@@ -133,6 +134,22 @@ class ForgotPasssword(generics.UpdateAPIView):
                 return Response("User Not Found",status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class GetUserType(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self,request,format=None):
+        #return Response("hello")
+        user=request.user
+        partner=Partner.objects.filter(user=user)
+        teacher=Teachers.objects.filter(user=user)
+        if(user.is_superuser):
+            return Response({"type":"admin"})
+        elif(partner.exists()):
+            return Response({"type":"partner"})
+        elif(teacher.exists()):
+            return Response({"type":"teacher"})
+        else:
+            return Response({"type":"unknown"})
 
 
 

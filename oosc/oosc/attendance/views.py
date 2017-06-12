@@ -243,7 +243,7 @@ class ListCreateAttendance(generics.ListAPIView):
 
 
 class TakeAttendance(APIView):
-    permission_classes = (IsTeacherOfTheSchool)
+    permission_classes = (IsTeacherOfTheSchool,)
     def post(self,request,format=None):
         now=self.request.data["date"].replace('-','')
         absents=[]

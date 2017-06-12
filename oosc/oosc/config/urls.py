@@ -21,7 +21,8 @@ from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,Searc
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.stream.views import ListCreateClass
-from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword
+from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword, \
+    GetUserType
 from oosc.students.views import ListCreateStudent,GetEnrolled,ImportStudents,RetrieveUpdateStudent, ListAbsentStudents, \
     ListDropouts
 from django.conf.urls.static import static
@@ -29,6 +30,8 @@ from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from oosc.absence.views import GetEditAbsence
 from oosc.reason.views import ListCreatereason
+from oosc.partner.views import ListCreatePartner
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
@@ -55,6 +58,8 @@ urlpatterns = [
     url(r'^api/teacher$',ListCreateTeachers.as_view(),name="List-create-teachers"),
     url(r'^api/teachers/(?P<pk>[0-9]+)',RetrieveUpdateTeacher.as_view(),name="Retrieve_update_delete_Teachers"),
     url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
+    url(r'^api/partners',ListCreatePartner.as_view(),name="List_create_partner"),
+    url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
     url('^api/statistics',GetAllReport.as_view(),name="all_students_teacgers-schools_number"),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
