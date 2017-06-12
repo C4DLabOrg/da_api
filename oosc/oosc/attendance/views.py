@@ -7,6 +7,7 @@ from oosc.attendance.serializers import AbsentStudentSerializer
 from oosc.absence.serializers import DetailedAbsenceserializer, AbsenceSerializer
 from oosc.attendance.serializers import AttendanceSerializer
 from oosc.absence.models import Absence
+from oosc.attendance.permissions import IsTeacherOfTheSchool
 from datetime import datetime
 # Create your views here.
 from bulk_update.helper import bulk_update
@@ -242,7 +243,7 @@ class ListCreateAttendance(generics.ListAPIView):
 
 
 class TakeAttendance(APIView):
-
+    permission_classes = (IsTeacherOfTheSchool)
     def post(self,request,format=None):
         now=self.request.data["date"].replace('-','')
         absents=[]
