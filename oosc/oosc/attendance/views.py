@@ -29,10 +29,12 @@ class AttendanceFilter(FilterSet):
     start_date = django_filters.DateFilter(name='date', lookup_expr=('gte'))
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
     school=django_filters.NumberFilter(name="_class__school",)
+    county=django_filters.NumberFilter(name="_class__school__zone__subcounty__county")
+    county_name=django_filters.CharFilter(name="_class__school__zone__subcounty__county__county_name",lookup_expr="icontains")
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
-        fields=['Class','date','start_date','end_date','_class',"school","student"]
+        fields=['Class','date','start_date','end_date','_class',"school","student","county","county_name"]
 
 class AbsenteesFilter(FilterSet):
     school = django_filters.NumberFilter(name="_class__school", )

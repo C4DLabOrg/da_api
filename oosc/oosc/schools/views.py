@@ -22,11 +22,23 @@ from rest_framework.views import APIView
 from django.core.files.storage import FileSystemStorage
 import time
 
+from oosc.partner.models import Partner
+from schools.permissions import IsPartner
+
+
+class SchoolsFilter(FilterSet):
+    county=django_filters.NumberFilter(name="zone__subcounty__county")
+    school_name=django_filters.CharFilter(name='school_name',lookup_expr="icontains")
+    class Meta:
+        model=Schools
+        fields=('id','emis_code','zone','county',"school_name",'partner')
+
 class ListCreateSchool(generics.ListCreateAPIView):
     queryset=Schools.objects.all();
     serializer_class=SchoolsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=SchoolsFilter
     #permission_classes = (IsAdminUser,)
-
 def mycsv_reader(csv_reader):
   while True:
     try:
@@ -36,16 +48,13 @@ def mycsv_reader(csv_reader):
       pass
     continue
   return
-
-
 def convert_to_emis_code_number(emis_code):
     emis=''.join(c for c in emis_code if c.isdigit())
     #print (emis)
     return emis
 
-
-
 class ImportSchools(APIView):
+    permission_classes = (IsPartner,)
     def post(self,request,format=None):
         file=request.FILES["file"]
         data = [row for row in csv.reader(file.read().splitlines())]
@@ -57,6 +66,7 @@ class ImportSchools(APIView):
                 if not emis.isdigit():
                     continue
                 emis=int(emis)
+                partner=Partner.objects.filter(user=request.user)[0]
                 if(indx>=0):
                     ##Check if county present
                     coun=Counties.objects.filter(county_name__contains=d[2])
@@ -102,6 +112,7 @@ class ImportSchools(APIView):
                         sch.level=d[6].upper()
                         sch.status=d[7].upper()
                         sch.emis_code=emis
+                        sch.partner=partner
                         sch.save()
         print(time.time()-start)
         return Response(data=data[1])

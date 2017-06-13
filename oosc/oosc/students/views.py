@@ -28,10 +28,27 @@ from oosc.history.models import History
 from oosc.attendance.models import Attendance
 # Create your views here.
 
+
+class StudentFilter(FilterSet):
+    name = django_filters.CharFilter(name="student__name", method="filter_name")
+    Class=django_filters.NumberFilter(name="class_id")
+    school=django_filters.NumberFilter(name="class_id__school")
+    school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code")
+    partner=django_filters.NumberFilter(name="class_id__school__partner")
+    county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county")
+
+
+    class Meta:
+        model=Students
+        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county')
+    def filter_name(self,queryset,name,value):
+        return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
+
 class ListCreateStudent(generics.ListCreateAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
-
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=StudentFilter
     def perform_create(self, serializer):
         #obj=self.get_object()
         stud=serializer.save()
@@ -45,8 +62,6 @@ class ListCreateStudent(generics.ListCreateAPIView):
             hist.joined_description="In school before"
         hist.save()
         serializer.save()
-
-
 
 class DeleteSerializer(serializers.Serializer):
     reason=serializers.CharField(max_length=20,required=True)
@@ -108,8 +123,6 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
             hist.left_description=ser.data["reason"]
             hist.save()
         return Response("",status=status.HTTP_204_NO_CONTENT)
-
-
 
 
 class EnrollmentFilter(FilterSet):

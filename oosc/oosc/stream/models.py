@@ -9,7 +9,7 @@ class Stream(models.Model):
     class_name = models.CharField(max_length = 200)
     school = models.ForeignKey(Schools, on_delete=models.CASCADE)
     _class = models.ForeignKey(Classes)
-    teachers = models.ManyToManyField(Teachers,related_name="class_teachers")
+    teachers = models.ManyToManyField(Teachers,related_name="class_teachers",null=True,blank=True)
     #teacher_id=models.IntegerField(max_length=50)
     def __str__(self):
         return self.class_name+" ("+self.school.school_name+")"
