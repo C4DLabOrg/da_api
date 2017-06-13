@@ -23,7 +23,7 @@ from django.core.files.storage import FileSystemStorage
 import time
 
 from oosc.partner.models import Partner
-from schools.permissions import IsPartner
+from oosc.schools.permissions import IsPartner
 
 
 class SchoolsFilter(FilterSet):
