@@ -28,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         model=User
         fields=('username','id')
 
+
 class TeacherAllSerializer(serializers.ModelSerializer):
     subjects=serializers.SerializerMethodField()
     classes=serializers.SerializerMethodField()

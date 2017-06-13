@@ -7,10 +7,9 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
 from oosc.teachers.serializers import TeacherSerializer,TeacherAllSerializer,Passwordserializer,ForgotPAsswordSerializer
 from oosc.partner.models import Partner
+from oosc.partner.serializers import PartnerSerializer
 from permission import IsHeadteacherOrAdmin
 from rest_framework.views import APIView
-
-
 
 class ListTeachers(generics.ListAPIView):
     queryset = Teachers.objects.all()
@@ -145,11 +144,15 @@ class GetUserType(APIView):
         if(user.is_superuser):
             return Response({"type":"admin"})
         elif(partner.exists()):
-            return Response({"type":"partner"})
+            partner=partner[0]
+            return Response({"type":"partner","info":PartnerSerializer(partner).data})
         elif(teacher.exists()):
-            return Response({"type":"teacher"})
+            teacher=teacher[0]
+            if teacher.headteacher:
+                return Response({"type":"teacher","info":TeacherAllSerializer(teacher).data})
+            return Response({"details":"You must be an admin of the school"},status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({"type":"unknown"})
+            return Response({"type":"unknown"},status=status.HTTP_401_UNAUTHORIZED)
 
 
 

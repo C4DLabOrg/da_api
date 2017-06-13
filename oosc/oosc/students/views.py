@@ -12,6 +12,7 @@ from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
 import csv
+from oosc.students.permissions import IsTeacherOrAdmin, IsTeacherOrPartner
 from rest_framework import serializers
 import json
 from oosc.stream.models import Stream
@@ -255,6 +256,7 @@ def create_user(username):
     return users[0]
 
 class ImportStudents(APIView):
+    permission_classes = (IsTeacherOrPartner,)
     def post(self,request,format=None):
         #File with students details
         file=request.FILES["file"]
