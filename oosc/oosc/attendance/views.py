@@ -169,6 +169,8 @@ class ListCreateAttendance(generics.ListAPIView):
             return ExtractYear('date')
         elif format == "stream":
             return Concat("_class__class_name", Value(''), output_field=CharField())
+        elif format =="county":
+            return Concat("_class__school__zone__subcounty__county__county_name",Value(''),output_field=CharField())
         elif format=="class":
             return Concat("_class___class",Value(''),output_field=CharField())
         else:

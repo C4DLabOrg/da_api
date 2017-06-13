@@ -159,8 +159,6 @@ class GetEnrolled(generics.ListAPIView):
         studs=self.filter_queryset(Students.objects.filter(active=True))
         format = self.kwargs['type']
         at=self.get_formated_data(studs,format=format)
-
-
         return at
 
     def resp_fields(self):
@@ -206,6 +204,8 @@ class GetEnrolled(generics.ListAPIView):
             return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
         elif format=="stream":
             return Concat("class_id__class_name",Value(''),output_field=CharField())
+        elif format=="county":
+            return Concat("class_id__school__zone__subcounty__county__county_name",Value(''),output_field=CharField())
         elif format=="class":
             id=Cast("class_id", output_field=TextField())
             return Concat("class_id___class",Value(''),output_field=CharField())
