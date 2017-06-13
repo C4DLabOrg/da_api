@@ -51,18 +51,21 @@ class TeacherAllSerializer(serializers.ModelSerializer):
             print("Headteacher")
         else:
             print("Normal Teacher") 
-            queryset = Stream.objects.filter(teacher=obj.id).order_by("class_name", )
+            queryset = obj.class_teachers.all()
+            print (queryset)
         ser=StudentsStreamSerializer(queryset, many=True)
+        print(ser.data)
         return ser.data
     def get_profile(self,obj):
         return TeacherSerializer(obj).data
 
     def get_schoolinfo(self,obj):
-        students=Students.objects.filter(active=True,class_id__school=obj.school).count()
-        streams=len(self.get_classes(obj))
-        teachers=len(self.get_teachers(obj))
-        return {"teachers":teachers,"classes":streams,"students":students}
-
+        if obj.headteacher:
+            students=Students.objects.filter(active=True,class_id__school=obj.school).count()
+            streams=len(self.get_classes(obj))
+            teachers=len(self.get_teachers(obj))
+            return {"teachers":teachers,"classes":streams,"students":students}
+        else:return {"teachers":[],"classes":[],"students":[]}
 
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
