@@ -8,7 +8,7 @@ from oosc.partner.permissions import IsAdmin
 
 class ListCreatePartner(generics.ListCreateAPIView):
     queryset = Partner.objects.all()
-    serializer_class = PostPartnerSerializer
+    serializer_class = PartnerSerializer
     permission_classes = (IsAdmin,)
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -19,7 +19,7 @@ class ListCreatePartner(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         username=serializer.validated_data.get("email")
-        password=serializer.validated_data.get("password")
+        password="#partner"
         name=serializer.validated_data.get("name")
         user=User.objects.create_user(username=username,
                                       email=username,password=password)

@@ -54,14 +54,15 @@ def convert_to_emis_code_number(emis_code):
     return emis
 
 class ImportSchools(APIView):
-    permission_classes = (IsPartner,)
+    #permission_classes = (IsPartner,)
     def post(self,request,format=None):
         file=request.FILES["file"]
         data = [row for row in csv.reader(file.read().splitlines())]
+        print (data)
         start=time.time()
         with transaction.atomic():
             for indx,d in enumerate(data):
-                print indx
+                print (indx,len(data))
                 emis = convert_to_emis_code_number(d[1])
                 if not emis.isdigit():
                     continue
