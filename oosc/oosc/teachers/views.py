@@ -155,6 +155,12 @@ class GetUserType(APIView):
             return Response({"type":"unknown"},status=status.HTTP_401_UNAUTHORIZED)
 
 
+class PingServer(APIView):
+    def get(self,request,format=None):
+        return Response("")
+
+
+
 
 
 

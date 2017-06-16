@@ -15,4 +15,4 @@ class History(models.Model):
     left=models.DateField(null=True,blank=True)
     created=models.DateTimeField(auto_now_add=True)
     modified=models.DateTimeField(auto_now=True)
-    left_description=models.CharField(choices=LEFT_CHOICES,max_length=10,null=True,blank=True)
+    left_description=models.CharField(max_length=100,null=True,blank=True)

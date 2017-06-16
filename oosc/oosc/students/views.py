@@ -61,17 +61,10 @@ class ListCreateStudent(generics.ListCreateAPIView):
         else:
             hist.joined_description="In school before"
         hist.save()
-        serializer.save()
+
 
 class DeleteSerializer(serializers.Serializer):
     reason=serializers.CharField(max_length=20,required=True)
-    def validate_reason(self,value):
-        LEFT_CHOICES = ['DROP', 'TRANS']
-        if value is None:
-            raise serializers.ValidationError("reason must be present")
-        elif value not in LEFT_CHOICES:
-            raise serializers.ValidationError("Either DROP or TRANS")
-        return value
 
 class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
     queryset=Students.objects.all()
@@ -105,7 +98,9 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
         if not ser.is_valid():
             return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
         object=self.get_object()
-        print (object)
+        if(ser.data["reason"].lower() == "error"):
+            object.delete()
+            return Response("",status=status.HTTP_204_NO_CONTENT);
         object.active=False
         object.save()
         hist=History.objects.filter(student=object,_class=object.class_id)

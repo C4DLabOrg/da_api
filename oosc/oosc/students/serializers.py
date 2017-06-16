@@ -19,10 +19,12 @@ class StudentsSerializer(serializers.ModelSerializer):
         return obj.class_id.class_name
     def get_school_name(self,obj):
         return obj.class_id.school.school_name
-
     def get_newly_enrolled(self,obj):
         lst = dateutil.parser.parse(str(datetime.now().date() - timedelta(days=365))).date()
         return obj.date_enrolled > lst
+
+    def validate(self, attrs):
+        print (attrs);
 
 
 

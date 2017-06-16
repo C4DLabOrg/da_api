@@ -22,7 +22,7 @@ from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.stream.views import ListCreateClass
 from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword, \
-    GetUserType
+    GetUserType, PingServer
 from oosc.students.views import ListCreateStudent,GetEnrolled,ImportStudents,RetrieveUpdateStudent, ListAbsentStudents, \
     ListDropouts
 from django.conf.urls.static import static
@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
     url(r'^api/partners',ListCreatePartner.as_view(),name="List_create_partner"),
     url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
+    url(r'^api/ping$',PingServer.as_view(),name="ping_test_for_server"),
     url('^api/statistics',GetAllReport.as_view(),name="all_students_teacgers-schools_number"),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
