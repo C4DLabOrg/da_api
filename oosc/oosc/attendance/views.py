@@ -1,3 +1,4 @@
+from django.db.models.functions import Trunc
 from django.shortcuts import render
 from oosc.attendance.models import Attendance
 from rest_framework import generics,status
@@ -157,14 +158,17 @@ class ListCreateAttendance(generics.ListAPIView):
         at = data.annotate(month=self.get_format(format=format)).values("month")
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
-        return at
+        return at.order_by(outp)
 
     def get_format(self,format):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
+        weekly=Concat(Trunc("date","week"),Value(''),output_field=CharField(),)
         if(format=="monthly"):
             return Concat(Value('1/'),ExtractMonth('date'),Value('/'),ExtractYear("date"),output_field=CharField(),)
         elif format=="daily":
             return daily
+        elif format=="weekly":
+            return weekly
         elif format== "yearly":
             return ExtractYear('date')
         elif format == "stream":
