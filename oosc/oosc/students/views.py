@@ -28,6 +28,7 @@ from oosc.history.models import History
 from oosc.attendance.models import Attendance
 from rest_framework.pagination import PageNumberPagination
 # Create your views here.
+from oosc.partner.models import Partner
 
 
 class StudentFilter(FilterSet):
@@ -292,17 +293,23 @@ class ImportStudents(APIView):
             thelen=len(the_data)
             for i,dat in enumerate(the_data):
                 print (i)
-
                 #print (str((float(i)/float(thelen))*100)+" %")
                 dt={"fstname":dat[6],"midname":dat[7],"lstname":dat[8], "school":dat[5],
                     "clas":dat[13],"gender":dat[11]}
                 ser=ImportStudentSerializer(data=dt)
+                is_partner = Group.objects.get(name="partners").user_set.filter(id=request.user.id).exists()
+                partner = None
+                if is_partner:
+                    partner = Partner.objects.filter(user=request.user)[0]
                 school_name=dat[4]
                 if ser.is_valid():
                     sch=Schools.objects.filter(emis_code=ser.data.get("school"))
                     teach=Teachers()
                     if(sch.exists()):
                         sch=sch[0]
+                        if partner:
+                            if not partner in sch.partners.all():
+                                sch.partners.add(partner)
                         teach = Teachers.objects.filter(school=sch)
                         if(not teach.exists()):
                             #print ("No teacher")

@@ -90,12 +90,11 @@ class SerializerAllPercentages(serializers.Serializer):
         #print instance,self.get_total(instance)
         stud=self.context.get("student")
         type=self.context.get("type")
-        if stud:
-            return {"present":instance["present_males"]+instance["present_females"],"absent":instance["absent_males"]+instance["absent_females"],"total":int(self.get_total(instance)),"value":instance["value"]}
+        # if stud:
+        #     return {"present":instance["present_males"]+instance["present_females"],"absent":instance["absent_males"]+instance["absent_females"],"total":int(self.get_total(instance)),"value":instance["value"]}
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
                 "total":100,"value":instance["value"]}
-
 
 class ListAbsentees(generics.ListAPIView):
     queryset = Attendance.objects.all()

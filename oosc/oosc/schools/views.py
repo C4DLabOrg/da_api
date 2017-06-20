@@ -13,6 +13,8 @@ from oosc.students.models import Students
 from django.http import Http404
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
+from django.contrib.auth.models import Group
+
 
 from django.conf import settings
 import csv,codecs
@@ -68,7 +70,7 @@ def convert_to_emis_code_number(emis_code):
     return emis
 
 class ImportSchools(APIView):
-    #permission_classes = (IsPartner,)
+    permission_classes = (IsPartner,)
     def post(self,request,format=None):
         file=request.FILES["file"]
         data = [row for row in csv.reader(file.read().splitlines())]
@@ -81,7 +83,10 @@ class ImportSchools(APIView):
                 if not emis.isdigit():
                     continue
                 emis=int(emis)
-                partner=Partner.objects.filter(user=request.user)[0]
+                is_partner = Group.objects.get(name="partners").user_set.filter(id=request.user.id).exists()
+                partner=None
+                if is_partner:
+                    partner=Partner.objects.filter(user=request.user)[0]
                 if(indx>=0):
                     ##Check if county present
                     coun=Counties.objects.filter(county_name__contains=d[2])
@@ -127,8 +132,9 @@ class ImportSchools(APIView):
                         sch.level=d[6].upper()
                         sch.status=d[7].upper()
                         sch.emis_code=emis
-                        sch.partners.add(partner)
                         sch.save()
+                        if partner:
+                            sch.partners.add(partner)
         print(time.time()-start)
         return Response(data=data[1])
 
