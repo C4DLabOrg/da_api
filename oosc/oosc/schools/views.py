@@ -21,6 +21,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 from django.core.files.storage import FileSystemStorage
 import time
+from rest_framework.pagination import PageNumberPagination
 
 from oosc.partner.models import Partner
 from oosc.schools.permissions import IsPartner
@@ -33,12 +34,21 @@ class SchoolsFilter(FilterSet):
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner')
 
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
 class ListCreateSchool(generics.ListCreateAPIView):
     queryset=Schools.objects.all();
     serializer_class=SchoolsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=SchoolsFilter
+    pagination_class = StandardresultPagination
     #permission_classes = (IsAdminUser,)
+
+
+
 def mycsv_reader(csv_reader):
   while True:
     try:

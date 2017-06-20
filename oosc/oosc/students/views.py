@@ -26,6 +26,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from oosc.history.models import History
 from oosc.attendance.models import Attendance
+from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 
 
@@ -44,11 +45,18 @@ class StudentFilter(FilterSet):
     def filter_name(self,queryset,name,value):
         return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
 
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
 class ListCreateStudent(generics.ListCreateAPIView):
     queryset=Students.objects.all()
     serializer_class=StudentsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=StudentFilter
+    pagination_class = StandardresultPagination
+
     def perform_create(self, serializer):
         #obj=self.get_object()
         stud=serializer.save()

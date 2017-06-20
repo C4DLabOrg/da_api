@@ -22,6 +22,7 @@ from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,Trunc
 from django.db.models.functions import Concat,Cast
 from rest_framework import serializers
 from django.db import transaction
+from rest_framework.pagination import PageNumberPagination
 from django.utils.dateparse import parse_date
 
 class AttendanceFilter(FilterSet):
@@ -113,7 +114,10 @@ class ListAbsentees(generics.ListAPIView):
         at = data.annotate(stud=Cast("student_id",output_field=IntegerField())).values("stud").annotate(absent=r).filter(absent__gte=3)
         return [st["stud"] for st in at]
 
-
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
 
 
 
@@ -122,6 +126,7 @@ class ListCreateAttendance(generics.ListAPIView):
     serializer_class=AttendanceSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
+    pagination_class = StandardresultPagination
 
     def get_queryset(self):
         atts=Attendance.objects.all()
