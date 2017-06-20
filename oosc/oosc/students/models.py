@@ -32,6 +32,7 @@ class Students(models.Model):
     active=models.BooleanField(default=True)
     created=models.DateTimeField(auto_now_add=True)
     modified=models.DateTimeField(auto_now=True)
+    is_oosc=models.BooleanField(default=False)
     ## Is it an out of school children
     ##
 

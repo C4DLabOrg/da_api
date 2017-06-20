@@ -30,9 +30,13 @@ from oosc.schools.permissions import IsPartner
 class SchoolsFilter(FilterSet):
     county=django_filters.NumberFilter(name="zone__subcounty__county")
     school_name=django_filters.CharFilter(name='school_name',lookup_expr="icontains")
+    partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner')
+
+    def filter_partner(self,queryset,name,value):
+        return queryset.filter(partners__id=value)
 
 class StandardresultPagination(PageNumberPagination):
     page_size = 100

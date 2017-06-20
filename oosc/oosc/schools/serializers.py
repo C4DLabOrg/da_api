@@ -6,8 +6,8 @@ class PostSchoolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Schools
-        fields=('id','school_code', 'school_name','level','status','partner', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
-        'headteacher','phone_no')
+        fields=('id','school_code', 'school_name','level','status','partners', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
+        'headteacher','phone_no','partners')
 class SchoolsSerializer(serializers.ModelSerializer):
     #headteacher_name=serializers.SerializerMethodField()
     geo_coordinates=serializers.SerializerMethodField()
@@ -15,7 +15,7 @@ class SchoolsSerializer(serializers.ModelSerializer):
     county=serializers.SerializerMethodField()
     class Meta:
         model = Schools
-        fields = ('id','school_code', 'school_name','partner','level','county','status', 'geo_coordinates', 'emis_code', 'zone', 'source_of_water',
+        fields = ('id','school_code', 'school_name','partners','level','county','status', 'geo_coordinates', 'emis_code', 'zone', 'source_of_water',
         'headteacher','phone_no')
 
     def get_geo_coordinates(self,obj):

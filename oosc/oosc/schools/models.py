@@ -22,7 +22,7 @@ class Schools(models.Model):
     phone_no    = models.IntegerField(default=0,)
     level=models.CharField(choices=LEVELS,max_length=50,default='PRIMARY')
     status=models.CharField(choices=STATUS,max_length=50,default='PUBLIC')
-    partner=models.ForeignKey(Partner,null=True,blank=True)
+    partners=models.ManyToManyField(Partner,null=True,blank=True)
 
     def __str__(self):
         return self.school_name

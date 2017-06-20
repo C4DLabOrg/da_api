@@ -35,15 +35,19 @@ class StudentFilter(FilterSet):
     Class=django_filters.NumberFilter(name="class_id")
     school=django_filters.NumberFilter(name="class_id__school")
     school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code")
-    partner=django_filters.NumberFilter(name="class_id__school__partner")
+    partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county")
 
 
     class Meta:
         model=Students
-        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county')
+        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
     def filter_name(self,queryset,name,value):
         return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
+
+    def filter_partner(self, queryset, name, value):
+        return queryset.filter(partners__id=value)
+
 
 class StandardresultPagination(PageNumberPagination):
     page_size = 100
@@ -165,11 +169,12 @@ class GetEnrolled(generics.ListAPIView):
         return at
 
     def resp_fields(self):
-        lst = str(datetime.now().date() - timedelta(days=365))
-        enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
-        oldf = Count(Case(When(Q(gender="F") & Q(date_enrolled__lte=lst), then=1), output_field=IntegerField(), ))
-        enrolledf = Count(Case(When(Q(gender="F") & Q(date_enrolled__gte=lst), then=1), output_field=IntegerField(), ))
-        oldm = Count(Case(When(Q(gender="M") & Q(date_enrolled__lte=lst), then=1), output_field=IntegerField(), ))
+        #lst = str(datetime.now().date() - timedelta(days=365))
+        #enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
+        enrolledm = Count(Case(When(Q(is_oosc=True) & Q(gender="M"), then=1), output_field=IntegerField(), ))
+        oldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False), then=1), output_field=IntegerField(), ))
+        enrolledf = Count(Case(When(Q(gender="F") & Q(is_oosc=True), then=1), output_field=IntegerField(), ))
+        oldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False), then=1), output_field=IntegerField(), ))
         return enrolledm,oldf,enrolledf,oldm
     # def get(self,request,format=None):
     #     now=str(datetime.now().date()+timedelta(days=1))
@@ -360,8 +365,14 @@ class ImportStudents(APIView):
                             std.class_id=cl
                             if(valid_date(dat[2])):
                                 std.date_enrolled=dat[2]
+                                lst = str(datetime.now().date() - timedelta(days=35))
+                                if(std.date_enrolled>lst):
+                                    std.is_oosc=True
+                                else:
+                                    std.is_oosc=False
                             else:
                                 std.date_enrolled=datetime.now()
+                                std.is_oosc=True
                             print(std.class_id)
                             std.save()
                             s += 1
