@@ -41,7 +41,7 @@ class AttendanceFilter(FilterSet):
         fields=['Class','date','start_date','end_date','_class',"school","student","county","partner","county_name"]
 
     def filter_partner(self, queryset, name, value):
-        return queryset.filter(partners__id=value)
+        return queryset.filter(_class__school__partners__id=value)
 
 
 class AbsenteesFilter(FilterSet):

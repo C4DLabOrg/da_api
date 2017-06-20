@@ -46,7 +46,7 @@ class StudentFilter(FilterSet):
         return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
 
     def filter_partner(self, queryset, name, value):
-        return queryset.filter(partners__id=value)
+        return queryset.filter(class_id__school__partners__id=value)
 
 
 class StandardresultPagination(PageNumberPagination):

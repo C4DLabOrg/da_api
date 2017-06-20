@@ -127,7 +127,7 @@ class ImportSchools(APIView):
                         sch.level=d[6].upper()
                         sch.status=d[7].upper()
                         sch.emis_code=emis
-                        sch.partner=partner
+                        sch.partners.add(partner)
                         sch.save()
         print(time.time()-start)
         return Response(data=data[1])
