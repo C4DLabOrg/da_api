@@ -152,12 +152,18 @@ class SearchEmiscode(generics.RetrieveAPIView):
 class GetAllReport(APIView):
     def get(self,request,format=None):
         students=Students.objects.all()
-        mstudents=students.filter(gender="M")
-        fstudents=students.filter(gender="F")
-        mstudents=len(mstudents)
-        fstudents=len(fstudents)
-        schools=len(Schools.objects.all())
-        teachers=len(Teachers.objects.all())
+        schools = Schools.objects.all()
+        teachers = Teachers.objects.all()
+        partner=request.query_params.get("partner",None)
+        if partner:
+            students=students.filter(class_id__school__partners__id=partner)
+            teachers=teachers.filter(school__partners__id=partner)
+            schools=schools.filter(partners__id=partner)
+        mstudents=students.filter(gender="M").count()
+        fstudents=students.filter(gender="F").count()
+        teachers=teachers.count()
+        schools=schools.count()
+
         return Response(data={"schools":schools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
 
 
