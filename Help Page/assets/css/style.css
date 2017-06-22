@@ -1,0 +1,93 @@
+body {
+  color: #555;
+  background: #f3f3f3;
+  font-family: 'Roboto','Helvetica',sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+a{
+    text-decoration: none;
+    cursor: pointer;
+    color: #3f51b5;
+}
+
+.heading{
+    background-color: #3f51b5;
+}
+
+.section{
+  padding:50px 200px 50px 200px;
+}
+
+.submenu{
+  padding:0px 0px 0 20px;
+}
+
+.heading h2 {
+  padding-top: 80px;
+  padding-bottom: 20px;
+  font-weight: 400;
+  color:#fff;
+  padding-left: 30px;
+}
+.section h2{
+    color: #f44336;
+    /*color: #3f51b5;*/
+    font-weight: 500;
+}
+
+.section h3{
+    color: #3f51b5;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.section hr{
+    width: 20px;
+    height: 4px;
+    border: none;
+    background-color: #3f51b5;
+}
+
+button{
+    text-transform: uppercase;
+}
+
+div.tab {
+    overflow: hidden;
+    background-color: #303f9f;
+}
+
+div.tab button {
+    background-color: #303f9f;
+    color: #e3e3e3;
+    font-weight: 500;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+}
+
+div.tab button.active {
+    border-bottom: 3px solid #fff;
+    color: #fff;
+}
+
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border-left: 1px solid #c0c0c0;
+}
+
+footer{
+  min-height: 20px;
+  background-color: #3f51b5;
+}

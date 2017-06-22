@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html >
+	<head>
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+	  <title>Documentation</title>
+	    <link href="assets/css/style.css" rel="stylesheet" />
+	    <script src="assets/javascript/tab.js"></script>
+	</head>
+
+	<body>
+		<div class="heading">
+			<h2>Documentation</h2>
+			<div class="tab">
+			  <button class="tablinks" onclick="openTab(event, 'Overview')" id="defaultOpen">Overview</button>
+			  <button class="tablinks" onclick="openTab(event, 'Getting Started')">Getting Started</button>
+			  <button class="tablinks" onclick="openTab(event, 'The Mobile App')">The Mobile App</button>
+			</div>
+		</div>
+
+		<div class="section">
+			<div id="Overview" class="tabcontent">
+			  <h2>Overview</h2>
+			  <p>The Digital Attendance web & mobile application is a child attendance tracking tool that helps stakeholders in the education system to monitor the rate of school dropouts.
+			  <br>
+			  Teachers are able to digitally take child attendance in class via the <a onclick="openTab(event, 'The Mobile App')">mobile application</a> and reports are sent to the different stakeholders in realtime for analysis.<br></p>
+				<div class="submenu">
+					<h3>The Web App</h3>
+					<p>The web application can be accessed online through a web browser via <a href="https://www.attendance.co.ke" target="_blank">this link</a> or by entering <a href="https://www.attendance.co.ke" target="_blank">www.attendance.co.ke</a> on your browser address bar.
+					<br><br>
+					To log in, a user must have the proper credentials given to them prior by the admin.
+					<br><br>
+					<img src="assets/images/login.png" style="width: 300px; height: 300px">
+				  	</p>
+
+				  	<h3>The Mobile App</h3>
+				  	<p>The mobile application can be downloaded from the Google Play Store under the name <a href="https://play.google.com/store/apps/details?id=com.c4dlab.sisitechoosc" target="_blank">Digital Attendance.</a>
+				  	<br><br>
+				  	<img src="assets/images/playstore.png" style="width: 380px; height: 300px">
+				  	&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+				  	<img src="assets/images/daplaystore.png" style="width: 400px; height: 300px">
+				  	<br><br>
+				  	To log in, a user must have the proper credentials given to them prior by the admin.
+				  	</p> 	
+				</div>
+			</div>
+
+			<div id="Getting Started" class="tabcontent">
+			  <h2>Getting Started</h2>
+				<div class="submenu">
+				<h3>Installation and Logging In</h3>
+				The web application can be accessed online through a web browser thus there is no need for an installation.<br>To log in, a user must have the proper credentials given to them prior by the admin.<br><br> To log into the system, type <a href="https://www.attendance.co.ke" target="_blank">www.attendance.co.ke</a> on your browser e.g. google chrome.<br><br>
+				<h3>Screen 1: Log In</h3>
+				The online dashboard has a main navigation bar with a search box, a full screen button and a user profile drop-down menu. It also has a drop down sidebar menu having several sub-menus.<br><br>
+				<h3>Screen 2: Homescreen</h3>
+				<p>The home screen is the main screen for the web dashboard. Different stakeholders have different information on the dashbaord. The stakeholders include : implementing partners, administrators and schools.</p>
+				<h3>Screen 3: Schools</h3>
+				<p>In order to access information for a specific school, click the “Schools” tab on the sidebar menu. A user can “Add Schools” or “View Schools”.</p>
+				<h3>Screen 4: Teachers</h3>
+				<p>In order to access information for a specific teacher, click the “Teachers” tab on the sidebar menu. A user can “Add Teachers” or “View Teachers”.</p>
+				<h3>Screen 5: Children</h3>
+				<p>The ‘Children’ tab allows users to add new students and view individual student attendance.</p>
+				<h3>Screen 6: Import</h3>
+				<p>The ‘Import’ tab allows implementing partners/administrators to upload student information off excel sheets.</p>
+				<h3>Screen 7: Partners</h3>
+				<p>An administrator can add partners by clicking the “Partners” tab</p>
+				<h3>Screen 8: Settings</h3>
+				<p>Users can change their account password and view the profile by clicking on the ‘settings’ tab.</p>
+				<h3>Screen 9: Logout</h3>
+				<p>To logout from the system click the “Profile” icon on the top right, and select Sign Out</p>
+				</div>
+			</div>
+
+			<div id="The Mobile App" class="tabcontent">
+			  <h2>The Mobile App</h2>
+			  <div class="submenu">
+				  <h3>Overview</h3>
+				  <p>The application can operate in both offline and online mode.<br>&nbsp&nbsp&nbsp&nbspIn online mode, the user has to have mobile data/wifi in order to mark student attendance in class.<br><br>&nbsp&nbsp&nbsp&nbspOffline mode works in that information collected is stored within the mobile application until an active Internet connection is &nbsp&nbsp&nbsp&nbspaccessed and once that is established, the information is automatically synced to our cloud servers.<br><br>However, a user requires internet connection to log into the system.</p>
+				  <h3>Screen 1: Login</h3>
+				  <p>After installation of the mobile application, teachers/head-teachers will need to login into the system via a username and password.
+				  <br><br>
+				  <img src="assets/images/mlogin.png" style="width: 250px; height: 400px"></p>
+				  <h3>Screen 2: Mark Attendance</h3>
+				  <p>The Mark Attendance screen allows the teacher to mark class attendance for students in different classes.</p>
+				  <h3>Screen 3: My School</h3>
+				  <p>My School allows the headteacher to add, edit or delete students, teachers or classes into the system.<br>When deleting a student, a headteacher is required to state reason for deleting/removing the student from the school.<br><h4>View Student Details</h4> The students tab for a teacher’s access allows access to view individual student details.<br> Teachers can search for student names based on the class they are in, and contact their guardian through the application.<br><br>The ‘Add/Edit Teachers’ page allows the headteacher to add,edit or remove information on respective teachers.<br> <br>The ‘Add/Edit Classes’ page allows the headteacher to add, edit or remove classes from their school.</p>
+				  <h3>Screen 4: Attendance Report</h3>
+				  <p>The reports tab allows the head-teacher to view an aggregated list of student attendance performance per class, based on gender. Head-teacher's can also view on a daily basis a list of absent students from every class on a certain date.<br><br>The daily attendance report is compiled everytime a teacher takes attendance in their class and submits the information by clicking the ‘SUBMIT’ button.</p>
+				  <h3>Screen 5: User Profile</h3>
+				  <p>The user profile tab allows the user to change their password, view notifications, claim available rewards, sync off-line attendance with the database, update class registry as well as log out and access the About and Help page.</p>
+			  </div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			document.getElementById("defaultOpen").click();
+		</script>
+	</body>
+</html>
