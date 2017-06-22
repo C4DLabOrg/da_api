@@ -15,8 +15,6 @@ class ListCreatePartner(generics.ListCreateAPIView):
             return PostPartnerSerializer
         else:
             return PartnerSerializer
-
-
     def perform_create(self, serializer):
         username=serializer.validated_data.get("email")
         password="#partner"
@@ -34,3 +32,9 @@ class ListCreatePartner(generics.ListCreateAPIView):
         else:
             #
             partner.save()
+
+
+class RetrieveUpdateDestroyPartner(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Partner.objects.all()
+    serializer_class = PartnerSerializer
+    permission_classes = (IsAdmin,)

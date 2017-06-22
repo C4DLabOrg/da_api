@@ -6,7 +6,7 @@ class PartnerSerializer(serializers.ModelSerializer):
     email=serializers.SerializerMethodField()
     class Meta:
         model=Partner
-        fields=('id','name','user','email','phone')
+        fields=('id','name','email','phone')
     def get_email(self,obj):
         return obj.user.username
 
