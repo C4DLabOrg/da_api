@@ -28,7 +28,7 @@ class SimpleStudentSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
     class Meta:
         model=Students
-        fields=('id','student_id','guardian_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','newly_enrolled','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
+        fields=('id','student_id','guardian_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
 
     def get_student_name(self, obj):
         return obj.fstname + " " + obj.lstname
