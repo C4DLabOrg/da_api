@@ -4,8 +4,9 @@ from django.contrib.auth.models import User, Group
 
 SAFE=["OPTIONS","GET","HEAD"]
 class IsAdmin(BasePermission):
+    message="You must be admins are allowed"
     def has_permission(self, request, view):
         is_in_unicef = Group.objects.get(name="unicef").user_set.filter(id=request.user.id).exists()
-        if( request.method in SAFE or is_in_unicef or request.user and request.user.is_authenticated() and request.user.is_superuser):
+        if( (request.method in SAFE or is_in_unicef or request.user.is_superuser ) and request.user.is_authenticated() and request.user):
             return True
         return False
