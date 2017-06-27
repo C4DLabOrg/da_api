@@ -7,6 +7,6 @@ class IsAdmin(BasePermission):
     message="Only unicef admins are allowed"
     def has_permission(self, request, view):
         is_in_unicef = Group.objects.get(name="unicef").user_set.filter(id=request.user.id).exists()
-        if( (request.method in SAFE or is_in_unicef or request.user.is_superuser ) and request.user.is_authenticated() and request.user):
+        if( request.method in SAFE or ( is_in_unicef or request.user.is_superuser ) and request.user.is_authenticated() and request.user):
             return True
         return False

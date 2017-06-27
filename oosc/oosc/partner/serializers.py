@@ -23,3 +23,9 @@ class PostPartnerSerializer(serializers.Serializer):
     email=serializers.CharField(max_length=50)
     phone=serializers.CharField(max_length=50)
     user=serializers.IntegerField(required=False)
+
+    def validate_name(self, value):
+        partners=Partner.objects.filter(name=value)
+        if(partners.exists()):
+            raise serializers.ValidationError("Partner name already taken")
+        return value
