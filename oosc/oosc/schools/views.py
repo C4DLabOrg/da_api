@@ -30,15 +30,19 @@ from oosc.schools.permissions import IsPartner
 
 
 class SchoolsFilter(FilterSet):
-    county=django_filters.NumberFilter(name="zone__subcounty__county")
-    school_name=django_filters.CharFilter(name='school_name',lookup_expr="icontains")
-    partner=django_filters.NumberFilter(name="partner",method="filter_partner")
+    county=django_filters.NumberFilter(name="zone__subcounty__county",label="County Id")
+    school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
+    partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
+    active=django_filters.BooleanFilter(name="active" ,label="Active (1=True,2=False)" ,method="filter_active")
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner')
 
     def filter_partner(self,queryset,name,value):
         return queryset.filter(partners__id=value)
+
+    def filter_active(self, queryset, name, value):
+        return queryset.filter(stream__isnull=False).distinct()
 
 class StandardresultPagination(PageNumberPagination):
     page_size = 100
@@ -66,7 +70,7 @@ def mycsv_reader(csv_reader):
   return
 def convert_to_emis_code_number(emis_code):
     emis=''.join(c for c in emis_code if c.isdigit())
-    #print (emis)
+    ##print (emis)
     return emis
 
 class ImportSchools(APIView):
@@ -92,7 +96,7 @@ class ImportSchools(APIView):
                     coun=Counties.objects.filter(county_name__contains=d[2])
                     cn = Counties()
                     if(len(coun)>0):
-                        #print (coun[0].county_name)
+                        ##print (coun[0].county_name)
                         cn=coun[0]
                     else:
                         cn.county_name=d[2]
@@ -101,7 +105,7 @@ class ImportSchools(APIView):
                     sub=SubCounty.objects.filter(name__contains=d[3])
                     su = SubCounty()
                     if(len(sub)>0):
-                        #print (sub[0].name)
+                        ##print (sub[0].name)
                         su=sub[0]
                     else:
                         su.county=cn
@@ -111,7 +115,7 @@ class ImportSchools(APIView):
                     zones=Zone.objects.filter(name__contains=d[4])
                     zone = Zone()
                     if(len(zones)>0):
-                        #print (zones[0].name)
+                        ##print (zones[0].name)
                         zone=zones[0]
                     else:
 
