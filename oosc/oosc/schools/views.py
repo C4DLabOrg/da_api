@@ -153,18 +153,21 @@ class GetAllReport(APIView):
     def get(self,request,format=None):
         students=Students.objects.all()
         schools = Schools.objects.all()
+        activeschools=schools.filter(stream__isnull=False).distinct()
         teachers = Teachers.objects.all()
         partner=request.query_params.get("partner",None)
         if partner:
             students=students.filter(class_id__school__partners__id=partner)
             teachers=teachers.filter(school__partners__id=partner)
             schools=schools.filter(partners__id=partner)
+            activeschools=activeschools.filter(partners__id=partner)
         mstudents=students.filter(gender="M").count()
         fstudents=students.filter(gender="F").count()
+        activeschools=activeschools.count()
         teachers=teachers.count()
         schools=schools.count()
 
-        return Response(data={"schools":schools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
+        return Response(data={"schools":schools,"active_schools":activeschools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
 
 
 
