@@ -7,10 +7,21 @@ from oosc.partner.serializers import PartnerSerializer, PostPartnerSerializer, S
 from oosc.partner.permissions import IsAdmin
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
+from django_filters.rest_framework import FilterSet,DjangoFilterBackend
+import django_filters
+from django.db.models import Q
 
 class NameDuplicationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = u'User already exist'
+
+class PartnerFilter(FilterSet):
+    name=django_filters.CharFilter(name="name",lookup_expr="icontains")
+    class Meta:
+        model=Partner
+        fields=['name']
+
+
 
 class PartnerSaveFail(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -20,6 +31,8 @@ class ListCreatePartner(generics.ListCreateAPIView):
     queryset = Partner.objects.all()
     serializer_class = PartnerSerializer
     permission_classes = (IsAdmin,)
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=PartnerFilter
     def get_serializer_class(self):
         if self.request.method == "POST":
             return PostPartnerSerializer

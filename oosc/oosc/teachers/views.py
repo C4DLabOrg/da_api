@@ -10,10 +10,22 @@ from oosc.partner.models import Partner
 from oosc.partner.serializers import PartnerSerializer
 from permission import IsHeadteacherOrAdmin
 from rest_framework.views import APIView
+from django_filters.rest_framework import FilterSet,DjangoFilterBackend
+import django_filters
+from django.db.models import Q
+class TeacherFilter(FilterSet):
+    name=django_filters.CharFilter(name="name",label="name",method="filter_name")
+    class Meta:
+        model=Teachers
+        fields=['name','tsc_no','qualifications','school','active','gender','headteacher']
+    def filter_name(self,queryset,name,value):
+        return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value))
 
 class ListTeachers(generics.ListAPIView):
     queryset = Teachers.objects.all()
     serializer_class = TeacherSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=TeacherFilter
 
     def get_queryset(self):
         return Teachers.objects.filter(active=True)
