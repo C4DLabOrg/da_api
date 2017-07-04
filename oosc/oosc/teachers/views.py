@@ -22,6 +22,11 @@ class TeacherFilter(FilterSet):
     def filter_name(self,queryset,name,value):
         return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value))
 
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
 class ListTeachers(generics.ListAPIView):
     queryset = Teachers.objects.all()
     serializer_class = TeacherSerializer
@@ -32,10 +37,7 @@ class ListTeachers(generics.ListAPIView):
     def get_queryset(self):
         return Teachers.objects.filter(active=True)
 
-class StandardresultPagination(PageNumberPagination):
-    page_size = 100
-    max_page_size = 1000
-    page_size_query_param = 'page_size'
+
 
 
 class ListCreateTeachers(APIView):
