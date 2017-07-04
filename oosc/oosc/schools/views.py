@@ -75,14 +75,17 @@ def convert_to_emis_code_number(emis_code):
 
 class ImportSchools(APIView):
     permission_classes = (IsPartner,)
+    thezone=Zone()
     def post(self,request,format=None):
         file=request.FILES["file"]
         data = [row for row in csv.reader(file.read().splitlines())]
         print (data)
         start=time.time()
+        schools=[]
+
         with transaction.atomic():
             for indx,d in enumerate(data):
-                print (indx,len(data))
+                #print (indx,len(data))
                 emis = convert_to_emis_code_number(d[1])
                 if not emis.isdigit():
                     continue
@@ -93,38 +96,41 @@ class ImportSchools(APIView):
                     partner=Partner.objects.filter(user=request.user)[0]
                 if(indx>=0):
                     ##Check if county present
-                    coun=Counties.objects.filter(county_name__contains=d[2])
-                    cn = Counties()
-                    if(len(coun)>0):
-                        ##print (coun[0].county_name)
-                        cn=coun[0]
-                    else:
-                        cn.county_name=d[2]
-                        cn.save()
-                    #Check if subcounty present in db
-                    sub=SubCounty.objects.filter(name__contains=d[3])
-                    su = SubCounty()
-                    if(len(sub)>0):
-                        ##print (sub[0].name)
-                        su=sub[0]
-                    else:
-                        su.county=cn
-                        su.name=d[3]
-                        su.save()
-                    #check if zone present in db
-                    zones=Zone.objects.filter(name__contains=d[4])
-                    zone = Zone()
-                    if(len(zones)>0):
-                        ##print (zones[0].name)
-                        zone=zones[0]
-                    else:
+                    if self.thezone.name!=d[4]:
+                        coun=Counties.objects.filter(county_name__contains=d[2])
+                        cn = Counties()
+                        if(len(coun)>0):
+                            ##print (coun[0].county_name)
+                            cn=coun[0]
+                        else:
+                            cn.county_name=d[2]
+                            cn.save()
+                        #Check if subcounty present in db
+                        sub=SubCounty.objects.filter(name__contains=d[3])
+                        su = SubCounty()
+                        if(len(sub)>0):
+                            ##print (sub[0].name)
+                            su=sub[0]
+                        else:
+                            su.county=cn
+                            su.name=d[3]
+                            su.save()
+                        #check if zone present in db
+                        zones=Zone.objects.filter(name__contains=d[4])
+                        zone = Zone()
+                        if(len(zones)>0):
+                            ##print (zones[0].name)
+                            zone=zones[0]
+                        else:
 
-                        zone.county=cn
-                        zone.subcounty=su
-                        zone.name=d[4]
-                        zone.save()
+                            zone.county=cn
+                            zone.subcounty=su
+                            zone.name=d[4]
+                            zone.save()
+                        self.thezone=zone
+                    else:
+                        zone=self.thezone
                     #Schools
-
                     schs=Schools.objects.filter(emis_code=emis)
                     sch = Schools()
                     if(len(schs)>0):
@@ -136,10 +142,13 @@ class ImportSchools(APIView):
                         sch.level=d[6].upper()
                         sch.status=d[7].upper()
                         sch.emis_code=emis
-                        sch.save()
-                        if partner:
-                            sch.partners.add(partner)
-        print(time.time()-start)
+                        schools.append(sch)
+                        # sch.save()
+                        # if partner:
+                        #     sch.partners.add(partner)
+        sc=[]
+        sc=Schools.objects.bulk_create(schools)
+        print(time.time()-start,len(sc))
         return Response(data=data[1])
 
 class SearchEmiscode(generics.RetrieveAPIView):

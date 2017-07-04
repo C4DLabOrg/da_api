@@ -3,11 +3,11 @@ from django.db import transaction
 from django.shortcuts import render
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
-from oosc.students.models import Students
+from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from oosc.students.serializers import StudentsSerializer
+from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
@@ -246,7 +246,7 @@ def get_class(s):
         if d.isdigit():
             theclass=d
             break
-    return theclass
+    return str(theclass)
 
 def get_stream(s):
     d=list(s)
@@ -420,6 +420,182 @@ class AbsentStudentSerializer(serializers.Serializer):
     gender=serializers.CharField(required=False)
     present_count=serializers.IntegerField(required=False)
 
+
+class ImportStudentsV2(APIView):
+    total_success = 0
+    total_fails = 0
+    def post(self,request,format=None):
+        file=""
+        results=""
+        verify=request.query_params.get('verify',None)
+        try:
+            file = request.FILES["file"]
+        except:
+            Response("No .csv file sent", status=status.HTTP_400_BAD_REQUEST)
+        data=""
+        # Convert each row into array and ignore the header row
+        if file:
+            data = [row for row in csv.reader(file.read().splitlines())][1:]
+
+        if(verify):
+            results=self.verify_data(data)
+        else:
+            results=self.import_data(data)
+
+        return Response(results)
+
+
+    def verify_data(self,data):
+        results="verified results"
+        total_success=0
+        total_fails=0
+        errors=[]
+        schools_not_created=[]
+        with transaction.atomic():
+            for i, dat in enumerate(data):
+                dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                      "clas": dat[13], "gender": dat[11]}
+                ser = ImportStudentSerializer(data=dt)
+                if(ser.is_valid()):
+                    ##Confirm the school in the db
+                    school=Schools.objects.filter(emis_code=ser.validated_data.get("school"))
+                    if(school):
+                        total_success = total_success + 1
+                    else:
+                        total_fails += 1
+                        error = ImportError(i + 2, "Create school first", json.dumps(dt))
+                        # errors.append(error)
+                        # continue
+                        if ser.validated_data.get("school") not in schools_not_created:
+                            errors.append(error)
+                            schools_not_created.append(ser.validated_data.get("school"))
+                        # if ser.validated_data.get("school") not in schools_not_created:
+                        #     errors.append(error)
+                        #     schools_not_created.append(ser.validated_data.get("school"))
+                else:
+                    total_fails=total_fails+1
+                    #Adding 2 to row error due to header plus header is removed
+                    error=ImportError(i+2,ser.errors,json.dumps(dt))
+                    errors.append(error)
+        res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails)
+        return ImportResultsSerializer(res).data
+    def import_data(self,data):
+        results="Imported results"
+
+        errors = []
+        school=""
+        schools_not_created = []
+        students=[]
+        for i, dat in enumerate(data):
+            dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                  "clas": dat[13], "gender": dat[11]}
+            ser = ImportStudentSerializer(data=dt)
+            if (ser.is_valid()):
+                ##Confirm the school in the db
+                school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
+                if (school.exists()):
+                    try:
+                        school=school[0]
+                        ##Confirm a teacher is present for login
+                        teach =self.get_school_teacher(school)
+                        clas=self.get_class(school,ser.validated_data.get("clas"))
+                        student=self.create_student(clas,ser,dat[2])
+                        if student is not None:
+                            students.append(student)
+
+                    except Exception as e:
+                        self.total_fails += 1
+                        error=ImportError(i + 2, e.message, json.dumps(dt))
+                        errors.append(error)
+                else:
+                    self.total_fails += 1
+                    error = ImportError(i + 2, "Create school first", json.dumps(dt))
+                    #errors.append(error)
+                    #continue
+                    if ser.validated_data.get("school") not in schools_not_created:
+                        errors.append(error)
+                        schools_not_created.append(ser.validated_data.get("school"))
+            else:
+                self.total_fails += 1
+                # Adding 2 to row error due to header plus header is removed
+                error = ImportError(i + 2, ser.errors, json.dumps(dt))
+                errors.append(error)
+        try:
+            resa = Students.objects.bulk_create(students)
+            self.total_success=len(resa)
+        except Exception as e:
+            print (e.message)
+        res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails)
+        return ImportResultsSerializer(res).data
+
+    def get_school_teacher(self,sch):
+        teach=Teachers.objects.filter(school=sch)
+        if (not teach.exists()):
+            # print ("No teacher")
+            user = create_user(sch.emis_code)
+            teacher = Teachers()
+            teacher.user = user
+            teacher.headteacher = True
+            teacher.active = True
+            teacher.fstname = "Admin"
+            teacher.lstname = sch.school_name.split(' ')[0]
+            teacher.teacher_type = "TSC"
+            teacher.gender = "M"
+            teacher.school = sch
+            teacher.phone_no = "99999999999"
+            teach = teacher.save()
+            # print (teach)
+            # return Response("Create atleast one Teacher for the school")
+        else:
+            teachs = teach.filter(headteacher=True)
+            if not teachs.exists():
+                teach = teach[0]
+            else:
+                teach = teachs[0]
+        return teach
+
+
+    def get_class(self, school,clas):
+        cls = Stream.objects.filter(class_name=clas, school=school)
+        cl = Stream()
+        if not (cls.exists()):
+            cl.class_name = clas
+            cl._class_id =get_class(clas)
+            cl.school = school
+            cl.save()
+        else:
+            cl = cls[0]
+        return cl
+
+    def create_student(self, cl, ser,date_enrolled):
+        std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
+                                      midname=ser.data.get("midname"),
+                                      class_id=cl)
+        # check if student Exists
+        if (std.exists()):
+            # print "Found"
+            std=None
+            self.total_fails += 1
+        else:
+            std = Students()
+            std.fstname = ser.data.get("fstname")
+            std.midname = ser.data.get("midname")
+            std.lstname = ser.data.get("lstname")
+            std.gender = get_gender(ser.data.get("gender"))
+            std.class_id = cl
+            if (valid_date(date_enrolled)):
+                std.date_enrolled = date_enrolled
+                lst = str(datetime.now().date() - timedelta(days=35))
+                if (std.date_enrolled > lst):
+                    std.is_oosc = True
+                else:
+                    std.is_oosc = False
+            else:
+                std.date_enrolled = datetime.now()
+                std.is_oosc = True
+            #std.save()
+            self.total_success += 1
+        return std
 
 class ListAbsentStudents(generics.ListAPIView):
     queryset=Attendance.objects.all()

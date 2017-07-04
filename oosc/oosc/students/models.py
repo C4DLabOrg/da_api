@@ -10,7 +10,7 @@ class Students(models.Model):
     emis_code     = models.BigIntegerField(default=0,null=True,blank=True)
     fstname  = models.CharField(max_length=200)
     midname = models.CharField(max_length=200,null=True,blank=True)
-    lstname = models.CharField(max_length=200)
+    lstname = models.CharField(max_length=200,null=True,blank=True)
     date_of_birth = models.DateField(null=True,blank=True)
     date_enrolled=models.DateField(auto_created=True)
     admission_no  = models.BigIntegerField(default=0,null=True,blank=True)
@@ -35,11 +35,22 @@ class Students(models.Model):
     is_oosc=models.BooleanField(default=False)
     ## Is it an out of school children
     ##
-
-
     def __str__(self):
         return self.lstname+" "+self.fstname+"("+self.class_id.class_name+")"
 
     class Meta:
         ordering=['-gender']
+
+
+class ImportError:
+    def __init__(self,row_number,error_message,row_details):
+        self.row_number=row_number
+        self.error_message=error_message
+        self.row_details=row_details
+
+class ImportResults:
+    def __init__(self,errors,total_success,total_fails):
+        self.errors=errors
+        self.total_success=total_success
+        self.total_fails=total_fails
 
