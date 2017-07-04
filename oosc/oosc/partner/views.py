@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from rest_framework.pagination import PageNumberPagination
+
 from oosc.partner.models import Partner
 # Create your views here.
 from rest_framework import generics,status
@@ -22,6 +24,10 @@ class PartnerFilter(FilterSet):
         fields=['name']
 
 
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
 
 class PartnerSaveFail(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -33,6 +39,8 @@ class ListCreatePartner(generics.ListCreateAPIView):
     permission_classes = (IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
     filter_class=PartnerFilter
+    pagination_class = StandardresultPagination
+
     def get_serializer_class(self):
         if self.request.method == "POST":
             return PostPartnerSerializer

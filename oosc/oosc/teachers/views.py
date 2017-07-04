@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status,generics
 # Create your views here.
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from oosc.teachers.models import Teachers
 from rest_framework.response import Response
@@ -26,9 +27,15 @@ class ListTeachers(generics.ListAPIView):
     serializer_class = TeacherSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=TeacherFilter
+    pagination_class = StandardresultPagination
 
     def get_queryset(self):
         return Teachers.objects.filter(active=True)
+
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
 
 
 class ListCreateTeachers(APIView):
