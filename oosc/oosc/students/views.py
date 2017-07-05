@@ -498,7 +498,7 @@ class ImportStudentsV2(APIView):
         print total
         for i, dat in enumerate(data):
             if (total is not 0):
-                percentage = str(int(i / float(total) * 100)) + "%"
+                percentage = str(int(i+1 / float(total) * 100)) + "%"
                 stdout.write("\rImporting %s " % percentage)
                 stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
