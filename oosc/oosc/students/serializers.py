@@ -48,4 +48,7 @@ class ImportResultsSerializer(serializers.Serializer):
     total_fails=serializers.IntegerField()
     success_percentage=serializers.SerializerMethodField()
     def get_success_percentage(self,obj):
-        return str(int(obj.total_success/float(obj.total_fails+obj.total_success)*100))+"%"
+        total=obj.total_fails+obj.total_success
+        if total ==0:
+            return "0%"
+        return str(int(obj.total_success/float(total)*100))+"%"

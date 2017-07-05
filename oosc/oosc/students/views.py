@@ -29,6 +29,7 @@ from oosc.attendance.models import Attendance
 from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 from oosc.partner.models import Partner
+from sys import stdout
 
 
 class StudentFilter(FilterSet):
@@ -451,8 +452,13 @@ class ImportStudentsV2(APIView):
         total_fails=0
         errors=[]
         schools_not_created=[]
+        total = len(data)
         with transaction.atomic():
             for i, dat in enumerate(data):
+                if (total is not 0):
+                    percentage=str(int(i / float(total) * 100))+"%"
+                    stdout.write("\rVerifying %s " % percentage)
+                    stdout.flush()
                 dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
                       "clas": dat[13], "gender": dat[11]}
                 ser = ImportStudentSerializer(data=dt)
@@ -477,6 +483,8 @@ class ImportStudentsV2(APIView):
                     #Adding 2 to row error due to header plus header is removed
                     error=ImportError(i+2,ser.errors,json.dumps(dt))
                     errors.append(error)
+            #Print a new line
+            print("")
         res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails)
         return ImportResultsSerializer(res).data
     def import_data(self,data):
@@ -486,7 +494,13 @@ class ImportStudentsV2(APIView):
         school=""
         schools_not_created = []
         students=[]
+        total=len(data)
+        print total
         for i, dat in enumerate(data):
+            if (total is not 0):
+                percentage = str(int(i / float(total) * 100)) + "%"
+                stdout.write("\rImporting %s " % percentage)
+                stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
                   "clas": dat[13], "gender": dat[11]}
             ser = ImportStudentSerializer(data=dt)
