@@ -222,6 +222,15 @@ class GetEnrolled(generics.ListAPIView):
         else:
             return monthly
 
+def get_class(s):
+    s=list(s)
+    theclass=""
+    for d in s:
+        if d.isdigit():
+            theclass=d
+            break
+    return str(theclass)
+
 class ImportStudentSerializer(serializers.Serializer):
     fstname=serializers.CharField(max_length=50)
     midname=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
@@ -231,6 +240,22 @@ class ImportStudentSerializer(serializers.Serializer):
     gender=serializers.CharField(max_length=20)
     #date_enrolled=serializers.DateField(required=False,allow_null=True)
     # emis_code=serializers.IntegerField(required=False,allow_null=True)
+    def validate_gender(self,value):
+        allowed_gender_values=['m','f','female','male']
+        if value.lower() not in allowed_gender_values:
+            raise serializers.ValidationError("Wrong gender format")
+        return value
+
+    def validate_clas(self,value):
+        cl=get_class(value)
+        if cl=="":
+            raise serializers.ValidationError("Only students between class 1 and 8")
+        return value
+
+
+
+
+
 
 
 
@@ -240,14 +265,7 @@ def next_class(s):
         return "Std 1"
     return "Std "+str(int(s)+1)
 
-def get_class(s):
-    s=list(s)
-    theclass=""
-    for d in s:
-        if d.isdigit():
-            theclass=d
-            break
-    return str(theclass)
+
 
 def get_stream(s):
     d=list(s)
@@ -495,7 +513,7 @@ class ImportStudentsV2(APIView):
         schools_not_created = []
         students=[]
         total=len(data)
-        print total
+        print ("%d" %total)
         for i, dat in enumerate(data):
             if (total is not 0):
                 percentage = str(int(i+1 / float(total) * 100)) + "%"
