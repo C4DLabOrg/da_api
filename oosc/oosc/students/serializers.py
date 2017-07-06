@@ -20,8 +20,7 @@ class StudentsSerializer(serializers.ModelSerializer):
         return obj.class_id.class_name
     def get_school_name(self,obj):
         return obj.class_id.school.school_name
-    def validate(self, attrs):
-        print (attrs);
+
 
 
 
