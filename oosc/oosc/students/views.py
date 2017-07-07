@@ -459,7 +459,7 @@ class ImportStudentsV2(APIView):
         if(verify):
             results=self.verify_data(data)
         else:
-            results=self.import_data(data)
+            results=self.import_data(data,request)
 
         return Response(results)
 
@@ -505,7 +505,7 @@ class ImportStudentsV2(APIView):
             print("")
         res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails)
         return ImportResultsSerializer(res).data
-    def import_data(self,data):
+    def import_data(self,data,request):
         results="Imported results"
 
         errors = []
@@ -513,6 +513,10 @@ class ImportStudentsV2(APIView):
         schools_not_created = []
         students=[]
         total=len(data)
+        is_partner = Group.objects.get(name="partners").user_set.filter(id=request.user.id).exists()
+        partner = None
+        if is_partner:
+            partner = Partner.objects.filter(user=request.user)[0]
         print ("%d" %total)
         for i, dat in enumerate(data):
             if (total is not 0):
@@ -524,10 +528,14 @@ class ImportStudentsV2(APIView):
             ser = ImportStudentSerializer(data=dt)
             if (ser.is_valid()):
                 ##Confirm the school in the db
+
                 school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
                 if (school.exists()):
                     try:
                         school=school[0]
+                        if partner:
+                            if not partner in school.partners.all():
+                                school.partners.add(partner)
                         ##Confirm a teacher is present for login
                         teach =self.get_school_teacher(school)
                         clas=self.get_class(school,ser.validated_data.get("clas"))
