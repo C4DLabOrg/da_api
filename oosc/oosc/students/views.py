@@ -596,10 +596,10 @@ class ImportStudentsV2(APIView):
 
 
     def get_class(self, school,clas):
-        cls = Stream.objects.filter(class_name=clas, school=school)
+        cls = Stream.objects.filter(class_name=clas.upper(), school=school)
         cl = Stream()
         if not (cls.exists()):
-            cl.class_name = clas
+            cl.class_name = clas.upper()
             cl._class_id =get_class(clas)
             cl.school = school
             cl.save()

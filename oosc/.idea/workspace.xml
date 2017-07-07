@@ -19,7 +19,7 @@
     <favorites_list name="oosc" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.2575188">
+    <splitter split-orientation="horizontal" split-proportion="0.19548872">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
@@ -235,8 +235,8 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="315">
-                  <caret line="545" column="42" lean-forward="true" selection-start-line="545" selection-start-column="42" selection-end-line="545" selection-end-column="42" />
+                <state relative-caret-position="133">
+                  <caret line="601" column="40" lean-forward="true" selection-start-line="601" selection-start-column="40" selection-end-line="601" selection-end-column="40" />
                   <folding>
                     <element signature="e#0#49#0" expanded="true" />
                     <element signature="e#1485#2399#0" expanded="false" />
@@ -255,8 +255,8 @@
                     <element signature="e#16674#16755#0" expanded="false" />
                     <element signature="e#17846#18384#0" expanded="false" />
                     <element signature="e#19119#21184#0" expanded="false" />
-                    <element signature="e#26634#27754#0" expanded="false" />
-                    <element signature="e#27803#27974#0" expanded="false" />
+                    <element signature="e#26650#27770#0" expanded="false" />
+                    <element signature="e#27819#27990#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -630,7 +630,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="30" width="1366" height="738" extended-state="1" />
+    <frame x="0" y="30" width="1366" height="738" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20774385" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -638,9 +638,9 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19193548" sideWeight="0.52345496" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32419354" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.38709676" sideWeight="0.48175725" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.60806453" sideWeight="0.48175725" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15322581" sideWeight="0.47654504" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15322581" sideWeight="0.47654504" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1076,8 +1076,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="545" column="42" lean-forward="true" selection-start-line="545" selection-start-column="42" selection-end-line="545" selection-end-column="42" />
+        <state relative-caret-position="133">
+          <caret line="601" column="40" lean-forward="true" selection-start-line="601" selection-start-column="40" selection-end-line="601" selection-end-column="40" />
           <folding>
             <element signature="e#0#49#0" expanded="true" />
             <element signature="e#1485#2399#0" expanded="false" />
@@ -1096,8 +1096,8 @@
             <element signature="e#16674#16755#0" expanded="false" />
             <element signature="e#17846#18384#0" expanded="false" />
             <element signature="e#19119#21184#0" expanded="false" />
-            <element signature="e#26634#27754#0" expanded="false" />
-            <element signature="e#27803#27974#0" expanded="false" />
+            <element signature="e#26650#27770#0" expanded="false" />
+            <element signature="e#27819#27990#0" expanded="false" />
           </folding>
         </state>
       </provider>
