@@ -596,7 +596,7 @@ class ImportStudentsV2(APIView):
 
 
     def get_class(self, school,clas):
-        cls = Stream.objects.filter(class_name=clas.upper(), school=school)
+        cls = Stream.objects.filter(class_name__icontains=clas.upper(), school=school)
         cl = Stream()
         if not (cls.exists()):
             cl.class_name = clas.upper()
