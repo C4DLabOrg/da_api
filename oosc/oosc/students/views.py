@@ -618,7 +618,7 @@ class ImportStudentsV2(APIView):
             if (valid_date(date_enrolled)):
                 std.date_enrolled = date_enrolled
                 lst = str(datetime.now().date() - timedelta(days=35))
-                if (std.date_enrolled < lst):
+                if (std.date_enrolled > lst):
                     std.is_oosc = True
                 else:
                     std.is_oosc = False
