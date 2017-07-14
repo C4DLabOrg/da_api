@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'oosc.partner.apps.PartnerConfig',
     'oosc.history.apps.HistoryConfig',
     'crispy_forms',
-    'debug_toolbar',
+ #   'debug_toolbar',
 
 
 ]
@@ -84,7 +84,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -97,7 +97,7 @@ OAUTH2_PROVIDER = {
     'AUTHORIZATION_CODE_EXPIRE_SECONDS': 60 * 60,
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365
 }
-INTERNAL_IPS=['127.0.0.1']
+#INTERNAL_IPS=['127.0.0.1']
 ##To generate the dropout list weekly
 DROPOUT_MIN_COUNT=1
 
