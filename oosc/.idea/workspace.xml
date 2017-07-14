@@ -178,7 +178,7 @@
             <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="244">
-                  <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+                  <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#33#0" expanded="true" />
                     <element signature="e#2353#2495#0" expanded="false" />
@@ -345,8 +345,8 @@
         <option value="$PROJECT_DIR$/oosc/students/views.py" />
         <option value="$PROJECT_DIR$/oosc/config/urls.py" />
         <option value="$PROJECT_DIR$/oosc/config/settings.py" />
-        <option value="$PROJECT_DIR$/oosc/schools/views.py" />
         <option value="$PROJECT_DIR$/oosc/schools/serializers.py" />
+        <option value="$PROJECT_DIR$/oosc/schools/views.py" />
       </list>
     </option>
   </component>
@@ -1108,7 +1108,7 @@
     <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="244">
-          <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+          <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
             <element signature="e#2353#2495#0" expanded="false" />
