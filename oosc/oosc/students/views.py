@@ -57,7 +57,7 @@ class StandardresultPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 class ListCreateStudent(generics.ListCreateAPIView):
-    queryset=Students.objects.all()#.select_related("class_id","class_id__school")
+    queryset=Students.objects.select_related("class_id","class_id__school")
     serializer_class=StudentsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=StudentFilter
