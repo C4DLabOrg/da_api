@@ -50,7 +50,7 @@ class StandardresultPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 class ListCreateSchool(generics.ListCreateAPIView):
-    queryset=Schools.objects.select_related("zone","zone__subcounty","zone__county");
+    queryset=Schools.objects.select_related("zone","zone__subcounty","zone__county")
     serializer_class=SchoolsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=SchoolsFilter

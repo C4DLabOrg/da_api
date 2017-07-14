@@ -14,7 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-
+import debug_toolbar
 from django.conf.urls import url, include
 from django.contrib import admin
 from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport,ListAbsentees
@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
     url(r'^api/ping$',PingServer.as_view(),name="ping_test_for_server"),
     url('^api/statistics',GetAllReport.as_view(),name="all_students_teacgers-schools_number"),
+    url(r'^__debug__/', include(debug_toolbar.urls)),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 
