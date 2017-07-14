@@ -2,7 +2,7 @@ from django.db import transaction
 from django.shortcuts import render
 from oosc.schools.models import Schools
 from rest_framework import generics
-from oosc.schools.serializers import SchoolsSerializer
+from oosc.schools.serializers import SchoolsSerializer, PostSchoolSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from oosc.counties.models import Counties
@@ -50,7 +50,7 @@ class StandardresultPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 class ListCreateSchool(generics.ListCreateAPIView):
-    queryset=Schools.objects.all();
+    queryset=Schools.objects.select_related("zone","zone__subcounty","zone__county");
     serializer_class=SchoolsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=SchoolsFilter

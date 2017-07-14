@@ -63,8 +63,8 @@ INSTALLED_APPS = [
     'oosc.reason.apps.ReasonConfig',
     'oosc.partner.apps.PartnerConfig',
     'oosc.history.apps.HistoryConfig',
+    'crispy_forms',
 
-    'crispy_forms'
 
 ]
 

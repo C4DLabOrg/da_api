@@ -57,7 +57,7 @@ class StandardresultPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 class ListCreateStudent(generics.ListCreateAPIView):
-    queryset=Students.objects.all()
+    queryset=Students.objects.select_related("class_id","class_id__school")
     serializer_class=StudentsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=StudentFilter
@@ -264,8 +264,6 @@ def next_class(s):
     if s=="ECD":
         return "Std 1"
     return "Std "+str(int(s)+1)
-
-
 
 def get_stream(s):
     d=list(s)
