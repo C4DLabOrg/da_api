@@ -53,7 +53,7 @@ class StudentFilter(FilterSet):
 
 class StandardresultPagination(PageNumberPagination):
     page_size = 100
-    max_page_size = 1000
+    max_page_size = 10000
     page_size_query_param = 'page_size'
 
 class ListCreateStudent(generics.ListCreateAPIView):
