@@ -215,30 +215,30 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="158">
-                  <caret line="55" column="25" lean-forward="false" selection-start-line="55" selection-start-column="25" selection-end-line="55" selection-end-column="25" />
+                <state relative-caret-position="214">
+                  <caret line="59" column="37" lean-forward="false" selection-start-line="59" selection-start-column="37" selection-end-line="59" selection-end-column="37" />
                   <folding>
                     <element signature="e#0#49#0" expanded="true" />
                     <element signature="e#1485#2399#0" expanded="false" />
-                    <element signature="e#3303#3360#0" expanded="false" />
-                    <element signature="e#3434#5173#0" expanded="false" />
-                    <element signature="e#5215#5645#0" expanded="false" />
-                    <element signature="e#5704#6223#0" expanded="false" />
-                    <element signature="e#6270#9725#0" expanded="false" />
-                    <element signature="e#9749#9880#0" expanded="false" />
-                    <element signature="e#9941#10884#0" expanded="false" />
-                    <element signature="e#10916#11005#0" expanded="false" />
-                    <element signature="e#11030#11116#0" expanded="false" />
-                    <element signature="e#11141#11271#0" expanded="false" />
-                    <element signature="e#11304#11420#0" expanded="false" />
-                    <element signature="e#11799#17824#0" expanded="false" />
-                    <element signature="e#16332#16646#0" expanded="false" />
-                    <element signature="e#16713#16794#0" expanded="false" />
-                    <element signature="e#17885#18423#0" expanded="false" />
-                    <element signature="e#18463#26646#0" expanded="false" />
-                    <element signature="e#19158#21223#0" expanded="false" />
-                    <element signature="e#26700#27820#0" expanded="false" />
-                    <element signature="e#27869#28040#0" expanded="false" />
+                    <element signature="e#3310#3367#0" expanded="false" />
+                    <element signature="e#3441#5180#0" expanded="false" />
+                    <element signature="e#5222#5652#0" expanded="false" />
+                    <element signature="e#5711#6230#0" expanded="false" />
+                    <element signature="e#6277#9732#0" expanded="false" />
+                    <element signature="e#9756#9887#0" expanded="false" />
+                    <element signature="e#9948#10891#0" expanded="false" />
+                    <element signature="e#10923#11012#0" expanded="false" />
+                    <element signature="e#11037#11123#0" expanded="false" />
+                    <element signature="e#11148#11278#0" expanded="false" />
+                    <element signature="e#11311#11427#0" expanded="false" />
+                    <element signature="e#11806#17831#0" expanded="false" />
+                    <element signature="e#16339#16653#0" expanded="false" />
+                    <element signature="e#16720#16801#0" expanded="false" />
+                    <element signature="e#17892#18430#0" expanded="false" />
+                    <element signature="e#18470#26653#0" expanded="false" />
+                    <element signature="e#19165#21230#0" expanded="false" />
+                    <element signature="e#26707#27827#0" expanded="false" />
+                    <element signature="e#27876#28047#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -634,7 +634,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32419354" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33548388" sideWeight="0.48175725" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5032258" sideWeight="0.47654504" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44032258" sideWeight="0.47654504" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1073,30 +1073,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="55" column="25" lean-forward="false" selection-start-line="55" selection-start-column="25" selection-end-line="55" selection-end-column="25" />
+        <state relative-caret-position="214">
+          <caret line="59" column="37" lean-forward="false" selection-start-line="59" selection-start-column="37" selection-end-line="59" selection-end-column="37" />
           <folding>
             <element signature="e#0#49#0" expanded="true" />
             <element signature="e#1485#2399#0" expanded="false" />
-            <element signature="e#3303#3360#0" expanded="false" />
-            <element signature="e#3434#5173#0" expanded="false" />
-            <element signature="e#5215#5645#0" expanded="false" />
-            <element signature="e#5704#6223#0" expanded="false" />
-            <element signature="e#6270#9725#0" expanded="false" />
-            <element signature="e#9749#9880#0" expanded="false" />
-            <element signature="e#9941#10884#0" expanded="false" />
-            <element signature="e#10916#11005#0" expanded="false" />
-            <element signature="e#11030#11116#0" expanded="false" />
-            <element signature="e#11141#11271#0" expanded="false" />
-            <element signature="e#11304#11420#0" expanded="false" />
-            <element signature="e#11799#17824#0" expanded="false" />
-            <element signature="e#16332#16646#0" expanded="false" />
-            <element signature="e#16713#16794#0" expanded="false" />
-            <element signature="e#17885#18423#0" expanded="false" />
-            <element signature="e#18463#26646#0" expanded="false" />
-            <element signature="e#19158#21223#0" expanded="false" />
-            <element signature="e#26700#27820#0" expanded="false" />
-            <element signature="e#27869#28040#0" expanded="false" />
+            <element signature="e#3310#3367#0" expanded="false" />
+            <element signature="e#3441#5180#0" expanded="false" />
+            <element signature="e#5222#5652#0" expanded="false" />
+            <element signature="e#5711#6230#0" expanded="false" />
+            <element signature="e#6277#9732#0" expanded="false" />
+            <element signature="e#9756#9887#0" expanded="false" />
+            <element signature="e#9948#10891#0" expanded="false" />
+            <element signature="e#10923#11012#0" expanded="false" />
+            <element signature="e#11037#11123#0" expanded="false" />
+            <element signature="e#11148#11278#0" expanded="false" />
+            <element signature="e#11311#11427#0" expanded="false" />
+            <element signature="e#11806#17831#0" expanded="false" />
+            <element signature="e#16339#16653#0" expanded="false" />
+            <element signature="e#16720#16801#0" expanded="false" />
+            <element signature="e#17892#18430#0" expanded="false" />
+            <element signature="e#18470#26653#0" expanded="false" />
+            <element signature="e#19165#21230#0" expanded="false" />
+            <element signature="e#26707#27827#0" expanded="false" />
+            <element signature="e#27876#28047#0" expanded="false" />
           </folding>
         </state>
       </provider>
