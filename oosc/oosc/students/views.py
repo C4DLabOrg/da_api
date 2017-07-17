@@ -481,6 +481,7 @@ class ImportStudentsV2(APIView):
                 if school.exists():
                     school=school[0]
                     #print ("No school")
+                else:
                     continue
                 cl = self.get_class(school, ser.validated_data.get("clas"))
                 if  cl is None:
