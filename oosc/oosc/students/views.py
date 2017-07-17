@@ -469,7 +469,10 @@ class ImportStudentsV2(APIView):
         total_fails = 0
         errors = []
         students=[]
+        print(len(data))
         for i ,dat in enumerate(data):
+            stdout.write("\rImporting  " % i)
+            stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
                   "clas": dat[13], "gender": dat[11]}
             ser = ImportStudentSerializer(data=dt)
