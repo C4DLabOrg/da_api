@@ -472,6 +472,7 @@ class ImportStudentsV2(APIView):
         print(len(data))
         for i ,dat in enumerate(data):
             stdout.write("\rImporting  %d" % i)
+            stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
                   "clas": dat[13], "gender": dat[11]}
             ser = ImportStudentSerializer(data=dt)
@@ -479,11 +480,11 @@ class ImportStudentsV2(APIView):
                 school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
                 if school.exists():
                     school=school[0]
-                    print ("No school")
+                    #print ("No school")
                     continue
                 cl = self.get_class(school, ser.validated_data.get("clas"))
                 if  cl is None:
-                    print ("No sclass")
+                    #print ("No sclass")
                     continue
                 std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
                                               midname=ser.data.get("midname"),
@@ -493,12 +494,12 @@ class ImportStudentsV2(APIView):
                     students.append(std.id)
                     total_success+=1
                 else:
-                    stdout.write("\r No student  ")
+                    #stdout.write("\r No student  ")
                     total_fails+=1
 
             else:
                 total_fails+=1
-            stdout.flush()
+
         print ""
         total_success=Students.objects.filter(id__in=students).update(is_oosc=True)
         res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails)
