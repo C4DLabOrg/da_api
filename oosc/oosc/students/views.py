@@ -476,22 +476,24 @@ class ImportStudentsV2(APIView):
                   "clas": dat[13], "gender": dat[11]}
             ser = ImportStudentSerializer(data=dt)
             if ser.is_valid():
-                school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))[0]
-                if not school:
+                school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
+                if school.exists():
+                    school=school[0]
                     print ("No school")
                     continue
                 cl = self.get_class(school, ser.validated_data.get("clas"))
-                if not cl:
+                if  cl is None:
                     print ("No sclass")
                     continue
                 std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
                                               midname=ser.data.get("midname"),
-                                              class_id=cl)[0]
-                if(std):
+                                              class_id=cl)
+                if(std.exists()):
+                    std=std[0]
                     students.append(std.id)
                     total_success+=1
                 else:
-                    stdout.write("\rNo student  ")
+                    stdout.write("\r No student  ")
                     total_fails+=1
 
             else:
