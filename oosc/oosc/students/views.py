@@ -454,12 +454,45 @@ class ImportStudentsV2(APIView):
         if file:
             data = [row for row in csv.reader(file.read().splitlines())][1:]
 
-        if(verify):
-            results=self.verify_data(data)
+        if (verify):
+            if verify=="update_oosc":
+                results=self.update_oosc_status(data)
+            else:
+                results=self.verify_data(data)
         else:
             results=self.import_data(data,request)
 
         return Response(results)
+
+    def update_oosc_status(self,data):
+        total_success = 0
+        total_fails = 0
+        errors = []
+        students=[]
+        for i ,dat in enumerate(data):
+            dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                  "clas": dat[13], "gender": dat[11]}
+            ser = ImportStudentSerializer(data=dt)
+            if ser.is_valid():
+                school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
+                cl = self.get_class(school, ser.validated_data.get("clas"))
+                std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
+                                              midname=ser.data.get("midname"),
+                                              class_id=cl)[0]
+                if(std):
+                    students.append(std.id)
+                    total_success+=1
+                else:
+                    total_fails+=1
+
+            else:
+                total_fails+=1
+        total_success=Students.objects.filter(id__in=students).update(is_oosc=True)
+        res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails)
+        return ImportResultsSerializer(res).data
+
+
+
 
 
     def verify_data(self,data):
@@ -505,7 +538,6 @@ class ImportStudentsV2(APIView):
         return ImportResultsSerializer(res).data
     def import_data(self,data,request):
         results="Imported results"
-
         errors = []
         school=""
         schools_not_created = []
