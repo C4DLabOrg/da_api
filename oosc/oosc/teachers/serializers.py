@@ -48,13 +48,9 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     def get_classes(self,obj):
         if obj.headteacher:
             queryset=Stream.objects.filter(school =obj.school).order_by("class_name", )
-            print("Headteacher")
         else:
-            print("Normal Teacher") 
             queryset = obj.class_teachers.all()
-            print (queryset)
         ser=StudentsStreamSerializer(queryset, many=True)
-        print(ser.data)
         return ser.data
     def get_profile(self,obj):
         return TeacherSerializer(obj).data

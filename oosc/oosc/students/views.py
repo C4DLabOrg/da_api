@@ -33,12 +33,12 @@ from sys import stdout
 
 
 class StudentFilter(FilterSet):
-    name = django_filters.CharFilter(name="student__name", method="filter_name")
-    Class=django_filters.NumberFilter(name="class_id")
-    school=django_filters.NumberFilter(name="class_id__school")
-    school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code")
-    partner=django_filters.NumberFilter(name="partner",method="filter_partner")
-    county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county")
+    name = django_filters.CharFilter(name="student__name", method="filter_name",label="First Name | Middle Name | Last Name")
+    Class=django_filters.NumberFilter(name="class_id",label="Stream Id")
+    school=django_filters.NumberFilter(name="class_id__school",label="School Id")
+    school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code", label="School emis code")
+    partner=django_filters.NumberFilter(name="partner",label="Partner Id",method="filter_partner")
+    county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county",label="County Id")
 
 
     class Meta:
@@ -135,14 +135,19 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EnrollmentFilter(FilterSet):
-    school = django_filters.NumberFilter(name="class_id__school", )
+    Class = django_filters.NumberFilter(name="class_id", label="Stream Id")
+    school = django_filters.NumberFilter(name="class_id__school", label="School Id")
+    school_emis_code = django_filters.NumberFilter(name="class_id__school__emis_code", label="School emis code")
     start_date = django_filters.DateFilter(name='date_enrolled', lookup_expr=('gte'))
     end_date = django_filters.DateFilter(name='date_enrolled', lookup_expr=('lte'))
     year=django_filters.NumberFilter(name="date_enrolled",lookup_expr=('year'))
-
+    partner = django_filters.NumberFilter(name="partner", label="Partner Id", method="filter_partner")
     class Meta:
         model=Students
         fields=['class_id','gender','school','start_date','end_date','year']
+
+    def filter_partner(self, queryset, name, value):
+        return queryset.filter(class_id__school__partners__id=value)
 
 
 class EnrollmentSerializer(serializers.Serializer):
@@ -710,7 +715,6 @@ class ListAbsentStudents(generics.ListAPIView):
 
     def get_serializer_class(self):
         return AbsentStudentSerializer
-
 
 class ListDropouts(generics.ListAPIView):
     queryset = Students.objects.filter(active=False)

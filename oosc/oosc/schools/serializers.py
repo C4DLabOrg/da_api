@@ -13,12 +13,14 @@ class SchoolsSerializer(serializers.ModelSerializer):
     geo_coordinates=serializers.SerializerMethodField()
     zone=serializers.SerializerMethodField()
     county=serializers.SerializerMethodField()
+    subcounty=serializers.SerializerMethodField()
     class Meta:
         model = Schools
         fields = ('id','school_code', 'school_name','partners','level'
                   ,'county'
                   ,'status', 'geo_coordinates', 'emis_code'
-                  , 'zone'
+                  , 'zone',
+                 'subcounty'
                   , 'source_of_water',
         'headteacher','phone_no')
 
