@@ -64,7 +64,7 @@ urlpatterns = [
     url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
     url(r'^api/ping$',PingServer.as_view(),name="ping_test_for_server"),
     url('^api/statistics',GetAllReport.as_view(),name="all_students_teacgers-schools_number"),
-    url(r'^__debug__/', include(debug_toolbar.urls)),
+    # url(r'^__debug__/', include(debug_toolbar.urls)),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 
