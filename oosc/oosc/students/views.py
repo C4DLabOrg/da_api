@@ -144,7 +144,7 @@ class EnrollmentFilter(FilterSet):
     partner = django_filters.NumberFilter(name="partner", label="Partner Id", method="filter_partner")
     class Meta:
         model=Students
-        fields=['class_id','gender','school','start_date','end_date','year']
+        fields=['class_id','gender','is_oosc','school','start_date','end_date','year']
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(class_id__school__partners__id=value)
