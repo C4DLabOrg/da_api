@@ -21,7 +21,7 @@ from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAtte
 from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
-from oosc.stream.views import ListCreateClass
+from oosc.stream.views import ListCreateClass, RetrieveUpdateClass
 from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword, \
     GetUserType, PingServer
 from oosc.students.views import ListCreateStudent,GetEnrolled,ImportStudents,RetrieveUpdateStudent, ListAbsentStudents, \
@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
     url(r'^api/counties',ListCreateCounty.as_view(),name="county-list-create"),
     url(r'^api/zones',ListCreateCounstituency.as_view(),name="zones-list-create"),
+    url(r'^api/streams/(?P<pk>[0-9]+)',RetrieveUpdateClass.as_view(),name="stream-retrieve-destory"),
     url(r'^api/streams',ListCreateClass.as_view(),name="class-list-create"),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/students/enrolls/(?P<type>.+)',GetEnrolled.as_view(),name="list-create-student"),

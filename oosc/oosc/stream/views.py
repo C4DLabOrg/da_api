@@ -16,3 +16,9 @@ class ListCreateClass(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
 
+class RetrieveUpdateClass(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Stream.objects.all()
+    serializer_class = StreamSerializer
+
+
+
