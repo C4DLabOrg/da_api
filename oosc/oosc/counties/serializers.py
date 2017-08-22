@@ -2,7 +2,7 @@ from rest_framework import serializers
 from oosc.counties.models import Counties
 from rest_framework import serializers
 
-from subcounty.serializers import  SimlpeSubCountySerializer
+from oosc.subcounty.serializers import SimpleSubCountySerializer
 
 
 class CountiesSerializer(serializers.ModelSerializer):
