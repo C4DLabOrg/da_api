@@ -57,7 +57,7 @@ class ListCreateTeachers(APIView):
         #Create a user for the teacher with a default password 'p@ssw0rd'
         usr=User()
         try:
-            usr=User.objects.create_user(username=details['username'],password='p@ssw0rd')
+            usr=User.objects.create_user(username=details['username'],password='admin')
         except Exception as inst:
             usr.delete()
             return Response(data=inst,status=status.HTTP_400_BAD_REQUEST)
