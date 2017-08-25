@@ -502,7 +502,6 @@ class ImportStudentsV2(APIView):
                 else:
                     #stdout.write("\r No student  ")
                     total_fails+=1
-
             else:
                 total_fails+=1
 
