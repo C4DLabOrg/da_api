@@ -17,7 +17,7 @@ class Teachers(models.Model):
     tsc_no = models.CharField(max_length=200,null=True,blank=True)
     bom_no = models.CharField(max_length=200,null=True,blank=True)
     qualifications = models.CharField(max_length=3,choices=QUALIFICATIONS,default='COL',null=True,blank=True)
-    subjects = models.ManyToManyField(Subjects,null=True,blank=True)
+    # subjects = models.ManyToManyField(Subjects,null=True,blank=True)
     school = models.ForeignKey(Schools, on_delete=models.CASCADE)
     date_started_teaching = models.DateField(null=True,blank=True)
     joined_current_school = models.DateField(null=True,blank=True)

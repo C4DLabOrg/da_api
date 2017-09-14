@@ -15,7 +15,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('id','user','name','lstname','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','subjects','school','date_started_teaching','joined_current_school','school_name')
+        fields = ('id','user','name','lstname','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','school','date_started_teaching','joined_current_school','school_name')
     def get_school_name(self,obj):
         if not obj.school:
             return None
@@ -30,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TeacherAllSerializer(serializers.ModelSerializer):
-    subjects=serializers.SerializerMethodField()
+    # subjects=serializers.SerializerMethodField()
     classes=serializers.SerializerMethodField()
     profile=serializers.SerializerMethodField()
     reasons=serializers.SerializerMethodField()
@@ -38,12 +38,12 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     schoolinfo=serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('id','profile','subjects','classes','reasons','teachers','schoolinfo')
+        fields = ('id','profile','classes','reasons','teachers','schoolinfo')
 
-    def get_subjects(self,obj):
-        queryset=Subjects.objects.filter(id__in=obj.subjects.all())
-        ser=SubjectSerializer(queryset,many=True)
-        return ser.data
+    # def get_subjects(self,obj):
+    #     queryset=Subjects.objects.filter(id__in=obj.subjects.all())
+    #     ser=SubjectSerializer(queryset,many=True)
+    #     return ser.data
 
     def get_classes(self,obj):
         if obj.headteacher:
