@@ -27,8 +27,8 @@ from django.utils.dateparse import parse_date
 
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
-    date=django_filters.DateFilter(name="date",lookup_expr="contains")
-    start_date = django_filters.DateFilter(name='date', lookup_expr=('gte'))
+    date=django_filters.DateFilter(name="date",lookup_expr="gte")
+    start_date = django_filters.DateFilter(name="date", )
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
     school=django_filters.NumberFilter(name="_class__school",)
     county=django_filters.NumberFilter(name="_class__school__zone__subcounty__county")
@@ -170,7 +170,9 @@ class ListCreateAttendance(generics.ListAPIView):
         at = data.annotate(month=self.get_format(format=format)).values("month")
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
+
         at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
+        print (at)
         return at.order_by(outp)
 
     def get_format(self,format):
