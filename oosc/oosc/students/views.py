@@ -466,7 +466,6 @@ class ImportStudentsV2(APIView):
                 results=self.verify_data(data)
         else:
             results=self.import_data(data,request)
-
         return Response(results)
 
     def update_oosc_status(self,data):
@@ -696,7 +695,7 @@ class ListAbsentStudents(generics.ListAPIView):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
 
-        atts=atts.order_by('student').values("student_id")\
+        atts=atts.filter(active=True).order_by('student').values("student_id")\
             .annotate(present_count=Count(Case(When(status=1,then=1),
             output_field=IntegerField())),
             name=Concat(F("student__fstname"),Value(' '),F("student__lstname")),
