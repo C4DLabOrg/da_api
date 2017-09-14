@@ -694,7 +694,6 @@ class ListAbsentStudents(generics.ListAPIView):
     def get_queryset(self):
         atts=Attendance.objects.all()
         atts=self.filter_queryset(atts)
-
         atts=atts.order_by('student').values("student_id")\
             .annotate(present_count=Count(Case(When(status=1,then=1),
             output_field=IntegerField())),
@@ -708,8 +707,7 @@ class ListAbsentStudents(generics.ListAPIView):
             absent_count=Count(Case(When(status=0,then=1),
             student_id='student',
             output_field=IntegerField())))
-        atts = atts.exclude(absent_count=0,student_id__active=True)
-
+        atts = atts.exclude(absent_count=0).exclude(student_id__active=False)
         return atts
 
     def get_serializer_class(self):
