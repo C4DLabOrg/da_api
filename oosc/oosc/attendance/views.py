@@ -27,7 +27,7 @@ from django.utils.dateparse import parse_date
 
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
-    date=django_filters.DateFilter(name="date",lookup_expr="gte")
+    date=django_filters.DateFilter(name="date__date",lookup_expr="gte")
     start_date = django_filters.DateFilter(name="date", )
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
     school=django_filters.NumberFilter(name="_class__school",)
