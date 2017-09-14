@@ -7,7 +7,7 @@ class Attendance(models.Model):
     ATTENDANCE=((1,'Present'),(0,'Absent'))
     id=models.CharField(primary_key=True,max_length=50)
     student  = models.ForeignKey(Students, on_delete = models.CASCADE)
-    date    = models.DateField()
+    date    = models.DateTimeField()
     created=models.DateTimeField(default=datetime.now)
     modified=models.DateTimeField(default=datetime.now)
     status  = models.IntegerField(choices=ATTENDANCE,default = 0) #assuming 1 is present 0 is absent
