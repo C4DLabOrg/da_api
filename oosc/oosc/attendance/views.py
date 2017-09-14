@@ -168,6 +168,7 @@ class ListCreateAttendance(generics.ListAPIView):
         at = data.annotate(month=self.get_format(format=format)).values("month")
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
+        at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
         return at.order_by(outp)
 
     def get_format(self,format):
