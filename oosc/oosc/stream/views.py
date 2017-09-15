@@ -48,6 +48,7 @@ class RetrieveUpdateClass(generics.RetrieveUpdateDestroyAPIView):
         if not Stream.objects.filter(id=filter_kwargs["pk"]).exists():
             raise StreamNotFound
         objs=list(Stream.objects.filter(id=filter_kwargs["pk"]).filter(students=None))
+        print(objs)
         if len(objs) != 1:
             raise ClassHasStudents
         obj = objs[0]
