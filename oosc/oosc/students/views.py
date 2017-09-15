@@ -115,14 +115,13 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
         if(ser.data["reason"].lower() == "error"):
             object.delete()
             return Response("",status=status.HTTP_204_NO_CONTENT);
-        object.active=False
+        object.deactivate()
         object.save()
         hist=History.objects.filter(student=object,_class=object.class_id)
         if(hist.exists()):
             hist=hist[0]
             hist.left=datetime.now()
             hist.left_description=ser.data["reason"]
-
         else:
             stud=object
             hist=History()

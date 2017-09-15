@@ -14,7 +14,7 @@ class Students(models.Model):
     date_of_birth = models.DateField(null=True,blank=True)
     date_enrolled=models.DateField(auto_created=True)
     admission_no  = models.BigIntegerField(default=0,null=True,blank=True)
-    class_id      = models.ForeignKey(Stream, on_delete = models.CASCADE,related_name="students") #shows the current class
+    class_id      = models.ForeignKey(Stream, on_delete = models.CASCADE,related_name="students",null=True,blank=True) #shows the current class
     gender        = models.CharField(max_length=2,choices=GENDERS, default='ML')
     previous_class    = models.IntegerField(default=0,null=True,blank=True)
     mode_of_transport = models.CharField(max_length=200,null=True,blank=True)
@@ -40,6 +40,13 @@ class Students(models.Model):
 
     class Meta:
         ordering=['-gender']
+
+    def deactivate(self):
+        self.active=False
+        self.class_id=None
+
+    def activate(self):
+        self.active=True
 
 
 class ImportError:
