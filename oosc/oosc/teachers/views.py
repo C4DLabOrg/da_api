@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status,generics
 # Create your views here.
+from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from oosc.teachers.models import Teachers
@@ -14,6 +15,10 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
 from django.db.models import Q
+
+from oosc.stream.models import Stream
+
+
 class TeacherFilter(FilterSet):
     name=django_filters.CharFilter(name="name",label="name",method="filter_name")
     class Meta:
@@ -37,7 +42,30 @@ class ListTeachers(generics.ListAPIView):
     def get_queryset(self):
         return Teachers.objects.filter(active=True)
 
+def str2bool(v):
+  if type(v) is bool:return v
+  return v.lower() in ("yes", "true", "t", "1")
 
+class StreamSerializer(serializers.Serializer):
+    headteacher=serializers.BooleanField()
+    classes=serializers.ListField( allow_null=True, child=serializers.IntegerField(),error_messages={'required':"The techear should be assigned atlest one class"})
+    def validate_classes(self,value):
+       hd=str2bool(self.initial_data.get("headteacher"))
+       print(hd,value)
+       if hd:
+           return value
+       if value is None:
+           raise serializers.ValidationError("Classes required")
+       sts=list(Stream.objects.filter(id__in=value).values_list("id",flat=True))
+       print (sts)
+       if(len(sts) <1):raise serializers.ValidationError("Enter Valid stream ids for your school")
+       return sts
+
+
+    # def validate_headteacher(self, value):
+    #     if value == False:
+    #         raise serializers.ValidationError("Must be a headteacher")
+    #     return value
 
 
 class ListCreateTeachers(APIView):
@@ -54,27 +82,45 @@ class ListCreateTeachers(APIView):
         #data=request.data['user']
         details=request.data
         details["details"]["cleanings"]=0
+        cls = StreamSerializer(data=details["details"])
+        cls.is_valid(raise_exception=True)
+        # print(cls.validated_data)
+        ##Update the details array
+        teacher_classes=cls.validated_data.get("classes")
+        details["details"]["classes"]=teacher_classes
+        # print(details["details"])
+        # details["details"]["user"] = 272
+        # details["details"]["school"] = 62956
+        # serializer = TeacherSerializer(data=details['details'])
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save(class_teachers=teacher_classes)
+        # return Response("OK")
         #Create a user for the teacher with a default password 'p@ssw0rd'
         usr=User()
         try:
+            # us=list(User.objects.filter(username=details['username']))
+            # if len(us)>0:
+            #     usr=us[0]
+            # else:
             usr=User.objects.create_user(username=details['username'],password='admin')
         except Exception as inst:
             usr.delete()
             return Response(data=inst,status=status.HTTP_400_BAD_REQUEST)
 
         #add the user to teachers group
+
         g=Group.objects.get(name="teachers")
         g.user_set.add(usr)
 
         #set the created user to link to teacher profile with the created id
         details["details"]["user"]=usr.id
-        details["details"]["headteacher"]=False
+        # details["details"]["headteacher"]=False
 
         #serialieze the teacher details
         serializer=TeacherSerializer(data=details['details'])
         if(serializer.is_valid()):
             #Create the teacher
-            dev = serializer.save()
+            dev = serializer.save(class_teachers=teacher_classes)
             ser = TeacherSerializer(dev)
             return Response(ser.data,status=status.HTTP_201_CREATED)
         else:
@@ -93,6 +139,7 @@ class ListCreateTeachers(APIView):
                                     "headteacher":"True or False",
                                     "qualifications":"either COL for (college) or UNI for (university)",
                                     "subjects":["ids","of","subjects","required","integers"],
+                                    "classes":["ids","of","streams"],
                                     "school":"school id",
                                     "date_started_teaching":"yyyy-mm-dd",
                                     "joined_current_school":"yyyy-mm-dd"
@@ -105,10 +152,8 @@ class RetrieveUpdateTeacher(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         object=self.get_object()
-        object.active=False
-        object.class_teachers.clear()
-        object.headteacher=False
-        object.save()
+        usr=User.objects.get(id=object.user_id)
+        usr.delete()
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
 

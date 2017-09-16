@@ -21,6 +21,24 @@ class ListCreateClass(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ##Confirm it does not exist
+        sch=serializer.validated_data.get("school")
+        cl=serializer.validated_data.get("class_name")
+        _cl=serializer.validated_data.get("class_name")
+        d=list(Stream.objects.filter(class_name=cl.upper(),school_id=sch))
+        if len(d) > 0:
+            ser=StreamSerializer(d[0])
+            return Response(ser.data, status=status.HTTP_200_OK)
+        else:
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+
 class ClassHasStudents (APIException):
     status_code = 400
     default_detail = 'The class should have no students.'

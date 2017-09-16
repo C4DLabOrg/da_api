@@ -13,15 +13,21 @@ from oosc.students.models import Students
 class TeacherSerializer(serializers.ModelSerializer):
     school_name=serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    # classes=serializers.SerializerMethodField(read_only=True)
+    classes = serializers.PrimaryKeyRelatedField( source="class_teachers", many=True,queryset=Stream.objects.all())
     class Meta:
         model = Teachers
-        fields = ('id','user','name','lstname','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','school','date_started_teaching','joined_current_school','school_name')
+        fields = ('id','user','name','lstname','classes','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','school','date_started_teaching','joined_current_school','school_name')
     def get_school_name(self,obj):
         if not obj.school:
             return None
         return obj.school.school_name
+
     def get_name(self,obj):
         return obj.fstname+" "+obj.lstname
+
+    # def get_classes(self,obj):
+    #     return obj.class_teachers.all()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,9 +71,10 @@ class TeacherAllSerializer(serializers.ModelSerializer):
 
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
+
     def get_teachers(self,obj):
         if not obj.headteacher:
-            return None
+            return []
         return TeacherSerializer(Teachers.objects.filter(school=obj.school,active=True),many=True).data
 
 class Passwordserializer(serializers.Serializer):

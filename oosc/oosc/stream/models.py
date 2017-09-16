@@ -14,6 +14,11 @@ class Stream(models.Model):
     def __str__(self):
         return self.class_name+" ("+self.school.school_name+")"
 
+
+    def save(self, force_insert=False, force_update=False,using=None):
+        self.class_name = self.class_name.upper()
+        super(Stream, self).save(force_insert, force_update)
+
     def get_the_class(self):
         m = list(self.class_name)
         for n in m:
