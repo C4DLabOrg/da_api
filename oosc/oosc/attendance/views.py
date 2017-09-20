@@ -97,6 +97,11 @@ class SerializerAllPercentages(serializers.Serializer):
     def males_present(self,obj):
         return self.get_total(obj)
 
+    def get_percentage(self,obj,field):
+        total=obj[field+"_females"]+obj[field+"_males"]
+        if total ==0:return 0
+        return round((total/self.get_total(obj))*100,2)
+
     def get_pm(self,obj,field):
         if self.get_gender_total(obj,field=field) ==0:
             return 0
@@ -111,6 +116,7 @@ class SerializerAllPercentages(serializers.Serializer):
             return {"present":instance["present_males"]+instance["present_females"],"absent":instance["absent_males"]+instance["absent_females"],"total":int(self.get_total(instance)),"value":instance["value"]}
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
+                "present":self.get_percentage(instance,"present"),"absent":self.get_percentage(instance,"absent"),
                 "total":100,"value":instance["value"]}
 
 class ListAbsentees(generics.ListAPIView):
