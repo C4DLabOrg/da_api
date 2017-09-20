@@ -401,16 +401,16 @@ class ImportStudents(APIView):
                             else:
                                 std.date_enrolled=datetime.now()
                                 std.is_oosc=True
-                            print(std.class_id)
+                            #print(std.class_id)
                             std.save()
                             s += 1
 
-                    else:
-                        print("Done Kcpe")
+                    # else:
+                    #     #print("Done Kcpe")
                 else:
 
                     err=ser.errors
-                    print(err)
+                    #print(err)
                 # schl=dat[5]
                 # clas=dat[6]
                 # if  clas and schl:
@@ -472,7 +472,7 @@ class ImportStudentsV2(APIView):
         total_fails = 0
         errors = []
         students=[]
-        print(len(data))
+        #print(len(data))
         for i ,dat in enumerate(data):
             stdout.write("\rImporting  %d" % i)
             stdout.flush()
@@ -550,7 +550,7 @@ class ImportStudentsV2(APIView):
                     error=ImportError(i+2,ser.errors,json.dumps(dt))
                     errors.append(error)
             #Print a new line
-            print("")
+            #print("")
         res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails)
         return ImportResultsSerializer(res).data
     def import_data(self,data,request):

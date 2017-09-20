@@ -51,7 +51,7 @@ class StreamSerializer(serializers.Serializer):
     classes=serializers.ListField( allow_null=True, child=serializers.IntegerField(),error_messages={'required':"The techear should be assigned atlest one class"})
     def validate_classes(self,value):
        hd=str2bool(self.initial_data.get("headteacher"))
-       print(hd,value)
+       ##print(hd,value)
        if hd:
            return value
        if value is None:
@@ -84,11 +84,11 @@ class ListCreateTeachers(APIView):
         details["details"]["cleanings"]=0
         cls = StreamSerializer(data=details["details"])
         cls.is_valid(raise_exception=True)
-        # print(cls.validated_data)
+        # ##print(cls.validated_data)
         ##Update the details array
         teacher_classes=cls.validated_data.get("classes")
         details["details"]["classes"]=teacher_classes
-        # print(details["details"])
+        # ##print(details["details"])
         # details["details"]["user"] = 272
         # details["details"]["school"] = 62956
         # serializer = TeacherSerializer(data=details['details'])
