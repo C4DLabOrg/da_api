@@ -98,9 +98,10 @@ class SerializerAllPercentages(serializers.Serializer):
         return self.get_total(obj)
 
     def get_pm(self,obj,field):
-        if self.get_gender_total(obj,field=field) ==0:
-            return 0
-        return round((obj[field]/self.get_gender_total(obj,field=field))*100,2)
+        # if self.get_gender_total(obj,field=field) ==0:
+        #     return 0
+        # return round((obj[field]/self.get_gender_total(obj,field=field))*100,2)
+        return round((obj[field]/self.get_total(obj))*100,2)
 
     def to_representation(self, instance):
         #print instance,self.get_total(instance)
