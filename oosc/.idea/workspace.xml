@@ -19,7 +19,7 @@
     <favorites_list name="oosc" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.77040356">
+    <splitter split-orientation="horizontal" split-proportion="0.12298025">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
@@ -35,8 +35,8 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/oosc/stream/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="345">
-                  <caret line="34" column="13" lean-forward="true" selection-start-line="34" selection-start-column="13" selection-end-line="37" selection-end-column="25" />
+                <state relative-caret-position="188">
+                  <caret line="61" column="0" lean-forward="false" selection-start-line="61" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#47#0" expanded="true" />
                   </folding>
@@ -57,8 +57,8 @@
           <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/stream/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="147">
-                  <caret line="18" column="49" lean-forward="true" selection-start-line="18" selection-start-column="49" selection-end-line="18" selection-end-column="49" />
+                <state relative-caret-position="196">
+                  <caret line="18" column="49" lean-forward="false" selection-start-line="18" selection-start-column="49" selection-end-line="18" selection-end-column="49" />
                   <folding />
                 </state>
               </provider>
@@ -77,7 +77,7 @@
           <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/students/serializers.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="14">
+                <state relative-caret-position="476">
                   <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
                   <folding />
                 </state>
@@ -87,7 +87,7 @@
           <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/schools/serializers.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="278">
+                <state relative-caret-position="294">
                   <caret line="22" column="28" lean-forward="false" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="28" />
                   <folding />
                 </state>
@@ -119,8 +119,8 @@
           <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/teachers/serializers.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="345">
-                  <caret line="46" column="37" lean-forward="true" selection-start-line="46" selection-start-column="37" selection-end-line="46" selection-end-column="37" />
+                <state relative-caret-position="518">
+                  <caret line="46" column="37" lean-forward="false" selection-start-line="46" selection-start-column="37" selection-end-line="46" selection-end-column="37" />
                   <folding />
                 </state>
               </provider>
@@ -133,14 +133,16 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-112">
-                  <caret line="121" column="24" lean-forward="false" selection-start-line="121" selection-start-column="24" selection-end-line="121" selection-end-column="24" />
+                <state relative-caret-position="483">
+                  <caret line="505" column="16" lean-forward="false" selection-start-line="505" selection-start-column="16" selection-end-line="505" selection-end-column="16" />
                   <folding>
                     <element signature="e#0#49#0" expanded="true" />
                     <element signature="e#2604#2684#0" expanded="false" />
                     <element signature="e#3446#3503#0" expanded="false" />
+                    <element signature="e#3577#5315#0" expanded="false" />
                     <element signature="e#5357#6228#0" expanded="false" />
                     <element signature="e#6287#6806#0" expanded="false" />
+                    <element signature="e#6853#10308#0" expanded="false" />
                     <element signature="e#10332#10463#0" expanded="false" />
                     <element signature="e#10524#11467#0" expanded="false" />
                     <element signature="e#11499#11588#0" expanded="false" />
@@ -152,10 +154,22 @@
                     <element signature="e#16915#17229#0" expanded="false" />
                     <element signature="e#17296#17377#0" expanded="false" />
                     <element signature="e#18468#19006#0" expanded="false" />
-                    <element signature="e#21600#23665#0" expanded="false" />
                     <element signature="e#26625#27514#0" expanded="false" />
                     <element signature="e#27949#29087#0" expanded="false" />
+                    <element signature="e#29141#30294#0" expanded="false" />
                     <element signature="e#30342#30513#0" expanded="false" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/oosc/attendance/views.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="149">
+                  <caret line="100" column="30" lean-forward="true" selection-start-line="100" selection-start-column="30" selection-end-line="100" selection-end-column="30" />
+                  <folding>
+                    <element signature="e#6284#9430#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -171,10 +185,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/teachers/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="574">
+                <state relative-caret-position="1918">
                   <caret line="155" column="0" lean-forward="false" selection-start-line="155" selection-start-column="0" selection-end-line="155" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#35#0" expanded="true" />
@@ -249,7 +263,6 @@
       <find>_class_id</find>
       <find>teacher</find>
       <find>len</find>
-      <find>new</find>
       <find>newly_enrolled</find>
       <find>use</find>
       <find>StudentsSerializer</find>
@@ -264,6 +277,7 @@
       <find>seria</find>
       <find>post</find>
       <find>delete</find>
+      <find>new</find>
     </findStrings>
     <replaceStrings>
       <replace>#print</replace>
@@ -317,7 +331,6 @@
         <option value="$PROJECT_DIR$/oosc/counties/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/students/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/attendance/models.py" />
-        <option value="$PROJECT_DIR$/oosc/attendance/views.py" />
         <option value="$PROJECT_DIR$/oosc/students/models.py" />
         <option value="$PROJECT_DIR$/oosc/students/views.py" />
         <option value="$PROJECT_DIR$/oosc/teachers/admin.py" />
@@ -326,6 +339,7 @@
         <option value="$PROJECT_DIR$/oosc/teachers/views.py" />
         <option value="$PROJECT_DIR$/oosc/stream/models.py" />
         <option value="$PROJECT_DIR$/oosc/stream/views.py" />
+        <option value="$PROJECT_DIR$/oosc/attendance/views.py" />
       </list>
     </option>
   </component>
@@ -349,6 +363,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -521,8 +537,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -732,14 +746,14 @@
     <frame x="0" y="30" width="1366" height="738" extended-state="1" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16976917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.039463885" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.4973939" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19193548" sideWeight="0.52345496" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32419354" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31451613" sideWeight="0.48175725" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32419354" sideWeight="0.47654504" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22580644" sideWeight="0.47654504" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -932,7 +946,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
           <caret line="28" column="29" lean-forward="false" selection-start-line="28" selection-start-column="29" selection-end-line="28" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -968,9 +981,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="84">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -978,9 +988,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="98">
           <caret line="11" column="31" lean-forward="false" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1020,72 +1027,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/config/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="532">
-          <caret line="55" column="41" lean-forward="false" selection-start-line="55" selection-start-column="32" selection-end-line="55" selection-end-column="50" />
-          <folding>
-            <element signature="e#639#659#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/students/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
-          <caret line="44" column="25" lean-forward="false" selection-start-line="44" selection-start-column="25" selection-end-line="44" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-112">
-          <caret line="121" column="24" lean-forward="false" selection-start-line="121" selection-start-column="24" selection-end-line="121" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#49#0" expanded="true" />
-            <element signature="e#2604#2684#0" expanded="false" />
-            <element signature="e#3446#3503#0" expanded="false" />
-            <element signature="e#5357#6228#0" expanded="false" />
-            <element signature="e#6287#6806#0" expanded="false" />
-            <element signature="e#10332#10463#0" expanded="false" />
-            <element signature="e#10524#11467#0" expanded="false" />
-            <element signature="e#11499#11588#0" expanded="false" />
-            <element signature="e#11613#11699#0" expanded="false" />
-            <element signature="e#11724#11854#0" expanded="false" />
-            <element signature="e#11887#12003#0" expanded="false" />
-            <element signature="e#12036#12345#0" expanded="false" />
-            <element signature="e#12382#18407#0" expanded="false" />
-            <element signature="e#16915#17229#0" expanded="false" />
-            <element signature="e#17296#17377#0" expanded="false" />
-            <element signature="e#18468#19006#0" expanded="false" />
-            <element signature="e#21600#23665#0" expanded="false" />
-            <element signature="e#26625#27514#0" expanded="false" />
-            <element signature="e#27949#29087#0" expanded="false" />
-            <element signature="e#30342#30513#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/oosc/attendance/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/attendance/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="338" column="14" lean-forward="false" selection-start-line="338" selection-start-column="10" selection-end-line="338" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#44#0" expanded="false" />
-            <element signature="e#2489#3437#0" expanded="false" />
-            <element signature="e#3499#4861#0" expanded="false" />
-            <element signature="e#4910#5711#0" expanded="false" />
-            <element signature="e#12281#15495#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1093,81 +1038,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="98">
           <caret line="11" column="42" lean-forward="false" selection-start-line="11" selection-start-column="42" selection-end-line="11" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/teachers/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/attendance/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="9" column="29" lean-forward="false" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/teachers/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="9" column="60" lean-forward="false" selection-start-line="9" selection-start-column="60" selection-end-line="9" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="44" column="35" lean-forward="false" selection-start-line="44" selection-start-column="35" selection-end-line="44" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/students/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14">
-          <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/schools/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="22" column="28" lean-forward="false" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/subcounty/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/teachers/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="574">
-          <caret line="155" column="0" lean-forward="false" selection-start-line="155" selection-start-column="0" selection-end-line="155" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/teachers/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="46" column="37" lean-forward="true" selection-start-line="46" selection-start-column="37" selection-end-line="46" selection-end-column="37" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1181,8 +1051,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/stream/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="18" column="49" lean-forward="true" selection-start-line="18" selection-start-column="49" selection-end-line="18" selection-end-column="49" />
+        <state relative-caret-position="196">
+          <caret line="18" column="49" lean-forward="false" selection-start-line="18" selection-start-column="49" selection-end-line="18" selection-end-column="49" />
           <folding />
         </state>
       </provider>
@@ -1195,12 +1065,145 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/students/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/schools/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="22" column="28" lean-forward="false" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/subcounty/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/config/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="55" column="41" lean-forward="false" selection-start-line="55" selection-start-column="32" selection-end-line="55" selection-end-column="50" />
+          <folding>
+            <element signature="e#639#659#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/teachers/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="518">
+          <caret line="46" column="37" lean-forward="false" selection-start-line="46" selection-start-column="37" selection-end-line="46" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/students/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="588">
+          <caret line="44" column="25" lean-forward="false" selection-start-line="44" selection-start-column="25" selection-end-line="44" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/teachers/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="44" column="35" lean-forward="false" selection-start-line="44" selection-start-column="35" selection-end-line="44" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/teachers/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="9" column="60" lean-forward="false" selection-start-line="9" selection-start-column="60" selection-end-line="9" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/attendance/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="9" column="29" lean-forward="false" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/teachers/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1918">
+          <caret line="155" column="0" lean-forward="false" selection-start-line="155" selection-start-column="0" selection-end-line="155" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="483">
+          <caret line="505" column="16" lean-forward="false" selection-start-line="505" selection-start-column="16" selection-end-line="505" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#49#0" expanded="true" />
+            <element signature="e#2604#2684#0" expanded="false" />
+            <element signature="e#3446#3503#0" expanded="false" />
+            <element signature="e#3577#5315#0" expanded="false" />
+            <element signature="e#5357#6228#0" expanded="false" />
+            <element signature="e#6287#6806#0" expanded="false" />
+            <element signature="e#6853#10308#0" expanded="false" />
+            <element signature="e#10332#10463#0" expanded="false" />
+            <element signature="e#10524#11467#0" expanded="false" />
+            <element signature="e#11499#11588#0" expanded="false" />
+            <element signature="e#11613#11699#0" expanded="false" />
+            <element signature="e#11724#11854#0" expanded="false" />
+            <element signature="e#11887#12003#0" expanded="false" />
+            <element signature="e#12036#12345#0" expanded="false" />
+            <element signature="e#12382#18407#0" expanded="false" />
+            <element signature="e#16915#17229#0" expanded="false" />
+            <element signature="e#17296#17377#0" expanded="false" />
+            <element signature="e#18468#19006#0" expanded="false" />
+            <element signature="e#26625#27514#0" expanded="false" />
+            <element signature="e#27949#29087#0" expanded="false" />
+            <element signature="e#29141#30294#0" expanded="false" />
+            <element signature="e#30342#30513#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/oosc/stream/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="34" column="13" lean-forward="true" selection-start-line="34" selection-start-column="13" selection-end-line="37" selection-end-column="25" />
+        <state relative-caret-position="188">
+          <caret line="61" column="0" lean-forward="false" selection-start-line="61" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
           <folding>
             <element signature="e#0#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/attendance/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="100" column="30" lean-forward="true" selection-start-line="100" selection-start-column="30" selection-end-line="100" selection-end-column="30" />
+          <folding>
+            <element signature="e#6284#9430#0" expanded="false" />
           </folding>
         </state>
       </provider>

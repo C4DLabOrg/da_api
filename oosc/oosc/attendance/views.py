@@ -81,13 +81,27 @@ class SerializerAllPercentages(serializers.Serializer):
     absent_males=serializers.IntegerField(write_only=True)
     absent_females=serializers.IntegerField(write_only=True)
     total=serializers.SerializerMethodField()
+
+    def get_males_total(self,obj):
+        return float(obj["present_males"]+obj["absent_males"])
+
+    def get_gender_total(self,obj,field):
+        #Get the gender from
+        gender=field.split("_")[-1]
+        return float(obj["present_"+gender] + obj["absent_"+gender])
+
     def get_total(self,obj):
         total=float(obj["present_males"]+obj["present_females"]+obj["absent_males"]+obj["absent_females"])
         return total
+
     def males_present(self,obj):
         return self.get_total(obj)
+
     def get_pm(self,obj,field):
-        return round((obj[field]/self.get_total(obj))*100,2)
+        if self.get_gender_total(obj,field=field) ==0:
+            return 0
+        return round((obj[field]/self.get_gender_total(obj,field=field))*100,2)
+
     def to_representation(self, instance):
         #print instance,self.get_total(instance)
         stud=self.context.get("student")
