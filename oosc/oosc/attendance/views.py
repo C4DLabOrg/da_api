@@ -98,10 +98,10 @@ class SerializerAllPercentages(serializers.Serializer):
         return self.get_total(obj)
 
     def get_pm(self,obj,field):
-        # if self.get_gender_total(obj,field=field) ==0:
-        #     return 0
-        # return round((obj[field]/self.get_gender_total(obj,field=field))*100,2)
-        return round((obj[field]/self.get_total(obj))*100,2)
+        if self.get_gender_total(obj,field=field) ==0:
+            return 0
+        return round((obj[field]/self.get_gender_total(obj,field=field))*100,2)
+        # return round((obj[field]/self.get_total(obj))*100,2)
 
     def to_representation(self, instance):
         #print instance,self.get_total(instance)
@@ -159,7 +159,7 @@ class ListCreateAttendance(generics.ListAPIView):
         return at
 
     def get_serializer_context(self):
-        print("setting the context")
+        ###print("setting the context")
         student = self.request.query_params.get('student', None)
         return {'type': self.kwargs['type'], "student": student}
 
@@ -272,7 +272,7 @@ class ListCreateAttendance(generics.ListAPIView):
 #                 batchatts.append(attendance)
 #             #tt=Attendance.objects.bulk_create(batchatts)
 #             bulk_update(batchatts)
-#             print("Done replying ")
+#             ###print("Done replying ")
 #             absnts = Absence.objects.filter(student__in=absents)
 #             # ser=DetailedAbsenceserializer(absnts,many=True)
 #             return Response(data=[], status=status.HTTP_201_CREATED)
@@ -341,7 +341,7 @@ class TakeAttendance(APIView):
                     attendance._class = student.class_id
                     attendance.student = student
                     attendance.save()
-            print("Done replying")
+            ###print("Done replying")
             ##Get the students with an open absence record
             absnts=DetailedAbsenceserializer(Absence.objects.filter(student_id__in=request.data["absent"],status=True),many=True)
             return Response(data=absnts.data,status=status.HTTP_201_CREATED)
@@ -409,7 +409,7 @@ class TakeAttendance(APIView):
 #                 attendance._class = student.class_id
 #                 attendance.student = student
 #                 attendance.save()
-#             print("Done replying")
+#             ###print("Done replying")
 #             absnts=Absence.objects.filter(student__in=absents)
 #             #ser=DetailedAbsenceserializer(absnts,many=True)
 #             return Response(data=[],status=status.HTTP_201_CREATED)
@@ -437,7 +437,7 @@ class WeeklyAttendanceReport(APIView):
         atotal=float(amales+afemales)
         if(total==0):
             total=1
-        print(pfemales,pmales,afemales,amales,total)
+        ###print(pfemales,pmales,afemales,amales,total)
 
         return Response(data={"present":{"total":int((ptotal/total)*100),"males":int((pmales/total)*100),"females":int((pfemales/total)*100)},
                               "absent":{"total":int((atotal/total)*100),"males":int((amales/total)*100),"females":int((afemales/total)*100)}})
