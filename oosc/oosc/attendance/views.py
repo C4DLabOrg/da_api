@@ -65,7 +65,7 @@ class SerializerAll(serializers.Serializer):
         return total
 
     def to_representation(self, instance):
-        # print instance,self.get_total(instance)
+        # #print instance,self.get_total(instance)
         stud = self.context.get("student")
         type = self.context.get("type")
         if stud:
@@ -109,7 +109,7 @@ class SerializerAllPercentages(serializers.Serializer):
         # return round((obj[field]/self.get_total(obj))*100,2)
 
     def to_representation(self, instance):
-        #print instance,self.get_total(instance)
+        ##print instance,self.get_total(instance)
         stud=self.context.get("student")
         type=self.context.get("type")
         if stud:
@@ -157,7 +157,8 @@ class ListCreateAttendance(generics.ListAPIView):
     pagination_class = StandardresultPagination
 
     def get_queryset(self):
-        atts=Attendance.objects.all()
+        # atts=Attendance.objects.all()
+        atts=Attendance.objects.select_related("student","_class")
         atts=self.filter_queryset(atts)
         format = self.kwargs['type']
         at=self.get_formated_data(atts,format=format)
@@ -165,7 +166,7 @@ class ListCreateAttendance(generics.ListAPIView):
         return at
 
     def get_serializer_context(self):
-        ###print("setting the context")
+        ####print("setting the context")
         student = self.request.query_params.get('student', None)
         return {'type': self.kwargs['type'], "student": student}
 
@@ -191,9 +192,9 @@ class ListCreateAttendance(generics.ListAPIView):
         at = data.annotate(month=self.get_format(format=format)).values("month")
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
-        print (at)
+        # #print (at)
         at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
-        print (at)
+        # #print (at)
         return at.order_by(outp)
 
     def get_format(self,format):
@@ -214,7 +215,7 @@ class ListCreateAttendance(generics.ListAPIView):
         elif format=="class":
             return Concat("_class___class",Value(''),output_field=CharField())
         else:
-            # print daily
+            # #print daily
             return daily
 
 # class TakeAttendance(APIView):
@@ -222,21 +223,21 @@ class ListCreateAttendance(generics.ListAPIView):
 #         now = self.request.data["date"].replace('-', '')
 #         absents = []
 #         thedate = self.request.data["date"]
-#         print (request.data)
+#         #print (request.data)
 #         batchatts=[]
 #         try:
 #             for i in request.data["present"]:
-#                 print ("present")
+#                 #print ("present")
 #                 student = Students()
 #                 student = Students.objects.filter(id=i)[0]
 #                 student.total_absents = 0
 #                 student.last_attendance = datetime.now().date()
 #                 abs = Absence.objects.filter(student=student, status=False)
 #                 # if(len(abs)>0):
-#                 #     print "reason for absence needed"
+#                 #     #print "reason for absence needed"
 #                 #     absents.append(student)
-#                 #     print "added to absents"
-#                 # print student
+#                 #     #print "added to absents"
+#                 # #print student
 #                 # student.save()
 #                 attendance = Attendance()
 #                 attendance.date = thedate
@@ -245,29 +246,29 @@ class ListCreateAttendance(generics.ListAPIView):
 #                 attendance._class = student.class_id
 #                 attendance.student = student
 #                 batchatts.append(attendance)
-#                 print (attendance.id)
+#                 #print (attendance.id)
 #             for i in request.data["absent"]:
-#                 print ("Absemt")
+#                 #print ("Absemt")
 #                 student = Students()
 #                 student = Students.objects.filter(id=i)[0]
 #                 # student.total_absents = student.total_absents + 1
 #                 # if(student.total_absents>4):
 #                 #     abs=Absence.objects.filter(student=student,status=False)
 #                 #     if(len(abs)>0):
-#                 #         print ("found")
+#                 #         #print ("found")
 #                 #         abs[0].date_to=datetime.now().date()
 #                 #         abs[0].save()
 #                 #     else:
-#                 #         print ("saving ...")
+#                 #         #print ("saving ...")
 #                 #         ab=Absence()
 #                 #         ab.student=student
 #                 #         ab.date_to=datetime.now().date()
 #                 #         ab.date_from=student.last_attendance
 #                 #         ab.status=False
 #                 #         ab.save()
-#                 #         print ("Saved ...")
+#                 #         #print ("Saved ...")
 #                 # else:
-#                 #     print ("within ")
+#                 #     #print ("within ")
 #                 #     student.save()
 #                 attendance = Attendance()
 #                 attendance.date = thedate
@@ -278,7 +279,7 @@ class ListCreateAttendance(generics.ListAPIView):
 #                 batchatts.append(attendance)
 #             #tt=Attendance.objects.bulk_create(batchatts)
 #             bulk_update(batchatts)
-#             ###print("Done replying ")
+#             ####print("Done replying ")
 #             absnts = Absence.objects.filter(student__in=absents)
 #             # ser=DetailedAbsenceserializer(absnts,many=True)
 #             return Response(data=[], status=status.HTTP_201_CREATED)
@@ -292,21 +293,21 @@ class TakeAttendance(APIView):
         now=self.request.data["date"].replace('-','')
         absents=[]
         thedate=self.request.data["date"]
-        print (request.data)
+        #print (request.data)
         try:
             with transaction.atomic():
                 for i in request.data["present"]:
-                    print ("present")
+                    #print ("present")
                     student=Students()
                     student=Students.objects.filter(id=i)[0]
                     student.total_absents=0
                     student.last_attendance=datetime.now().date()
                     abs = Absence.objects.filter(student=student, status=False)
                     # if(len(abs)>0):
-                    #     print "reason for absence needed"
+                    #     #print "reason for absence needed"
                     #     absents.append(student)
-                    #     print "added to absents"
-                    # print student
+                    #     #print "added to absents"
+                    # #print student
                     # student.save()
                     attendance=Attendance()
                     attendance.date=thedate
@@ -316,29 +317,29 @@ class TakeAttendance(APIView):
                     attendance.student=student
                     attendance.save()
 
-                    print (attendance.id)
+                    #print (attendance.id)
                 for i in request.data["absent"]:
-                    print ("Absemt")
+                    #print ("Absemt")
                     student = Students()
                     student = Students.objects.filter(id=i)[0]
                     # student.total_absents = student.total_absents + 1
                     # if(student.total_absents>4):
                     #     abs=Absence.objects.filter(student=student,status=False)
                     #     if(len(abs)>0):
-                    #         print ("found")
+                    #         #print ("found")
                     #         abs[0].date_to=datetime.now().date()
                     #         abs[0].save()
                     #     else:
-                    #         print ("saving ...")
+                    #         #print ("saving ...")
                     #         ab=Absence()
                     #         ab.student=student
                     #         ab.date_to=datetime.now().date()
                     #         ab.date_from=student.last_attendance
                     #         ab.status=False
                     #         ab.save()
-                    #         print ("Saved ...")
+                    #         #print ("Saved ...")
                     # else:
-                    #     print ("within ")
+                    #     #print ("within ")
                     #     student.save()
                     attendance = Attendance()
                     attendance.date = thedate
@@ -347,7 +348,7 @@ class TakeAttendance(APIView):
                     attendance._class = student.class_id
                     attendance.student = student
                     attendance.save()
-            ###print("Done replying")
+            ####print("Done replying")
             ##Get the students with an open absence record
             absnts=DetailedAbsenceserializer(Absence.objects.filter(student_id__in=request.data["absent"],status=True),many=True)
             return Response(data=absnts.data,status=status.HTTP_201_CREATED)
@@ -361,20 +362,20 @@ class TakeAttendance(APIView):
 #         now=self.request.data["date"].replace('-','')
 #         absents=[]
 #         thedate=self.request.data["date"]
-#         print (request.data)
+#         #print (request.data)
 #         try:
 #             for i in request.data["present"]:
-#                 print ("present")
+#                 #print ("present")
 #                 student=Students()
 #                 student=Students.objects.filter(id=i)[0]
 #                 student.total_absents=0
 #                 student.last_attendance=datetime.now().date()
 #                 abs = Absence.objects.filter(student=student, status=False)
 #                 # if(len(abs)>0):
-#                 #     print "reason for absence needed"
+#                 #     #print "reason for absence needed"
 #                 #     absents.append(student)
-#                 #     print "added to absents"
-#                 # print student
+#                 #     #print "added to absents"
+#                 # #print student
 #                 # student.save()
 #                 attendance=Attendance()
 #                 attendance.date=thedate
@@ -384,29 +385,29 @@ class TakeAttendance(APIView):
 #                 attendance.student=student
 #                 attendance.save()
 #
-#                 print (attendance.id)
+#                 #print (attendance.id)
 #             for i in request.data["absent"]:
-#                 print ("Absemt")
+#                 #print ("Absemt")
 #                 student = Students()
 #                 student = Students.objects.filter(id=i)[0]
 #                 # student.total_absents = student.total_absents + 1
 #                 # if(student.total_absents>4):
 #                 #     abs=Absence.objects.filter(student=student,status=False)
 #                 #     if(len(abs)>0):
-#                 #         print ("found")
+#                 #         #print ("found")
 #                 #         abs[0].date_to=datetime.now().date()
 #                 #         abs[0].save()
 #                 #     else:
-#                 #         print ("saving ...")
+#                 #         #print ("saving ...")
 #                 #         ab=Absence()
 #                 #         ab.student=student
 #                 #         ab.date_to=datetime.now().date()
 #                 #         ab.date_from=student.last_attendance
 #                 #         ab.status=False
 #                 #         ab.save()
-#                 #         print ("Saved ...")
+#                 #         #print ("Saved ...")
 #                 # else:
-#                 #     print ("within ")
+#                 #     #print ("within ")
 #                 #     student.save()
 #                 attendance = Attendance()
 #                 attendance.date = thedate
@@ -415,7 +416,7 @@ class TakeAttendance(APIView):
 #                 attendance._class = student.class_id
 #                 attendance.student = student
 #                 attendance.save()
-#             ###print("Done replying")
+#             ####print("Done replying")
 #             absnts=Absence.objects.filter(student__in=absents)
 #             #ser=DetailedAbsenceserializer(absnts,many=True)
 #             return Response(data=[],status=status.HTTP_201_CREATED)
@@ -443,7 +444,7 @@ class WeeklyAttendanceReport(APIView):
         atotal=float(amales+afemales)
         if(total==0):
             total=1
-        ###print(pfemales,pmales,afemales,amales,total)
+        ####print(pfemales,pmales,afemales,amales,total)
 
         return Response(data={"present":{"total":int((ptotal/total)*100),"males":int((pmales/total)*100),"females":int((pfemales/total)*100)},
                               "absent":{"total":int((atotal/total)*100),"males":int((amales/total)*100),"females":int((afemales/total)*100)}})
