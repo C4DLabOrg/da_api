@@ -38,7 +38,6 @@ class ListCreateClass(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-
 class ClassHasStudents (APIException):
     status_code = 400
     default_detail = 'The class should have no students.'
