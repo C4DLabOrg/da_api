@@ -10,9 +10,9 @@ from oosc.students.models import Students
 class PartnerSerializer(serializers.ModelSerializer):
     email=serializers.SerializerMethodField()
     # students=serializers.SerializerMethodField()
-    males=serializers.IntegerField(read_only=True,default=0)
-    total=serializers.IntegerField(read_only=True,default=0)
-    females=serializers.IntegerField(read_only=True,default=0)
+    males=serializers.IntegerField(read_only=True,default=0,required=False)
+    total=serializers.IntegerField(read_only=True,default=0,required=False)
+    females=serializers.IntegerField(read_only=True,default=0,required=False)
     class Meta:
         model=Partner
         fields=('id','name','email','phone',
