@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import render
 from oosc.schools.models import Schools
 from rest_framework import generics
@@ -174,13 +175,17 @@ class GetAllReport(APIView):
             teachers=teachers.filter(school__partners__id=partner)
             schools=schools.filter(partners__id=partner)
             activeschools=activeschools.filter(partners__id=partner)
-        mstudents=students.filter(gender="M").count()
-        fstudents=students.filter(gender="F").count()
+        sts = list(students.order_by().values("gender").annotate(count=Count("gender")))
+        mstudents=self.get_count(sts,"M")#students.filter(gender="M").count()
+        fstudents=self.get_count(sts,"F")#students.filter(gender="F").count()
         activeschools=activeschools.count()
         teachers=teachers.count()
         schools=schools.count()
 
         return Response(data={"schools":schools,"active_schools":activeschools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
 
-
+    def get_count(self, list, item):
+        obs = [g["count"] for g in list if g["gender"] == item]
+        if len(obs) > 0: return obs[0]
+        return 0
 
