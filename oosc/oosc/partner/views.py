@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django_subquery.expressions import Subquery, OuterRef
 from rest_framework.pagination import PageNumberPagination
 
 from oosc.partner.models import Partner
@@ -12,6 +13,10 @@ from rest_framework.exceptions import APIException
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
 from django.db.models import Q
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg
+
+from oosc.students.models import Students
+
 
 class NameDuplicationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -40,6 +45,16 @@ class ListCreatePartner(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=PartnerFilter
     pagination_class = StandardresultPagination
+
+    def get_queryset(self):
+        f = Count(Case(When(Q(gender="F"), then=1), output_field=IntegerField(), ))
+        m = Count(Case(When(Q(gender="M"), then=1), output_field=IntegerField(), ))
+        pt=Students.objects.filter(is_oosc=True,active=True,class_id__school__partners__id=OuterRef('id')).order_by().values("is_oosc").annotate(males=m,females=f,total=Count("is_oosc"))
+        males = Subquery(pt.values("males")[:1], output_field=IntegerField())
+        total = Subquery(pt.values("total")[:1], output_field=IntegerField())
+        females = Subquery(pt.values("females")[:1], output_field=IntegerField())
+        return Partner.objects.annotate(total=total,females=females,males=males)
+
 
     def get_serializer_class(self):
         if self.request.method == "POST":

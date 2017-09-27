@@ -1,14 +1,30 @@
+from django.db.models import Case
+from django.db.models import IntegerField, Count
+from django.db.models import Q
+from django.db.models import When
 from rest_framework import serializers
 from oosc.partner.models import Partner
+from oosc.students.models import Students
 
 
 class PartnerSerializer(serializers.ModelSerializer):
     email=serializers.SerializerMethodField()
+    # students=serializers.SerializerMethodField()
+    males=serializers.IntegerField(read_only=True,default=0)
+    total=serializers.IntegerField(read_only=True,default=0)
+    females=serializers.IntegerField(read_only=True,default=0)
     class Meta:
         model=Partner
-        fields=('id','name','email','phone')
+        fields=('id','name','email','phone',
+                # 'students',
+                "males","females",
+                "total"
+                )
     def get_email(self,obj):
         return obj.user.username
+
+    def get_students(self,obj):
+        return Students.objects.filter(active=True,is_oosc=True,class_id__school__partners__id=obj.id).order_by().values("gender").annotate(count=Count("gender"))
 
 class SavePartnerSerializer(serializers.ModelSerializer):
     email=serializers.SerializerMethodField()

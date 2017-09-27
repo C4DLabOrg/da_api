@@ -13,7 +13,7 @@ class Teachers(models.Model):
     phone_no = models.CharField(max_length=20)
     teacher_type = models.CharField(max_length=3,choices=TEACHER_TYPE, default='TSC')
     birthday  = models.DateField(null=True,blank=True)
-    gender = models.CharField(max_length=2,choices=GENDERS,default='ML')
+    gender = models.CharField(max_length=2,choices=GENDERS,default='M')
     tsc_no = models.CharField(max_length=200,null=True,blank=True)
     bom_no = models.CharField(max_length=200,null=True,blank=True)
     qualifications = models.CharField(max_length=3,choices=QUALIFICATIONS,default='COL',null=True,blank=True)
