@@ -166,7 +166,7 @@ class GetAllReport(APIView):
     def get(self,request,format=None):
         students=Students.objects.all()
         schools = Schools.objects.all()
-        activeschools=schools.filter(stream__isnull=False).distinct()
+        activeschools=schools.filter(streams__isnull=False).distinct()
         teachers = Teachers.objects.all()
         partner=request.query_params.get("partner",None)
         if partner:
