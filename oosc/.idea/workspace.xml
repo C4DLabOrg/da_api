@@ -142,12 +142,42 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/teachers/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="242">
-                  <caret line="124" column="40" lean-forward="true" selection-start-line="124" selection-start-column="40" selection-end-line="124" selection-end-column="40" />
+                <state relative-caret-position="228">
+                  <caret line="123" column="64" lean-forward="false" selection-start-line="123" selection-start-column="64" selection-end-line="123" selection-end-column="64" />
                   <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="356">
+                  <caret line="630" column="35" lean-forward="false" selection-start-line="630" selection-start-column="35" selection-end-line="630" selection-end-column="35" />
+                  <folding>
+                    <element signature="e#2604#2684#0" expanded="false" />
+                    <element signature="e#3446#3503#0" expanded="false" />
+                    <element signature="e#3577#5315#0" expanded="false" />
+                    <element signature="e#5357#6228#0" expanded="false" />
+                    <element signature="e#6287#6806#0" expanded="false" />
+                    <element signature="e#6853#10308#0" expanded="false" />
+                    <element signature="e#10332#10463#0" expanded="false" />
+                    <element signature="e#10524#11467#0" expanded="false" />
+                    <element signature="e#11499#11588#0" expanded="false" />
+                    <element signature="e#11613#11699#0" expanded="false" />
+                    <element signature="e#11724#11854#0" expanded="false" />
+                    <element signature="e#11887#12003#0" expanded="false" />
+                    <element signature="e#12036#12345#0" expanded="false" />
+                    <element signature="e#12382#18414#0" expanded="false" />
+                    <element signature="e#16915#17229#0" expanded="false" />
+                    <element signature="e#17296#17377#0" expanded="false" />
+                    <element signature="e#18475#19013#0" expanded="false" />
+                    <element signature="e#29186#30339#0" expanded="false" />
+                    <element signature="e#30387#30558#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -246,7 +276,6 @@
         <option value="$PROJECT_DIR$/oosc/students/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/attendance/models.py" />
         <option value="$PROJECT_DIR$/oosc/students/models.py" />
-        <option value="$PROJECT_DIR$/oosc/students/views.py" />
         <option value="$PROJECT_DIR$/oosc/stream/views.py" />
         <option value="$PROJECT_DIR$/oosc/schools/models.py" />
         <option value="$PROJECT_DIR$/oosc/stream/models.py" />
@@ -258,6 +287,7 @@
         <option value="$PROJECT_DIR$/oosc/teachers/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/teachers/admin.py" />
         <option value="$PROJECT_DIR$/oosc/teachers/views.py" />
+        <option value="$PROJECT_DIR$/oosc/students/views.py" />
       </list>
     </option>
   </component>
@@ -733,7 +763,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="33" />
+      <option name="time" value="35" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -990,13 +1020,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2926">
-          <caret line="408" column="45" lean-forward="false" selection-start-line="408" selection-start-column="45" selection-end-line="408" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/oosc/schools/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -1107,9 +1130,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/teachers/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="124" column="40" lean-forward="true" selection-start-line="124" selection-start-column="40" selection-end-line="124" selection-end-column="40" />
+        <state relative-caret-position="228">
+          <caret line="123" column="64" lean-forward="false" selection-start-line="123" selection-start-column="64" selection-end-line="123" selection-end-column="64" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="630" column="35" lean-forward="false" selection-start-line="630" selection-start-column="35" selection-end-line="630" selection-end-column="35" />
+          <folding>
+            <element signature="e#2604#2684#0" expanded="false" />
+            <element signature="e#3446#3503#0" expanded="false" />
+            <element signature="e#3577#5315#0" expanded="false" />
+            <element signature="e#5357#6228#0" expanded="false" />
+            <element signature="e#6287#6806#0" expanded="false" />
+            <element signature="e#6853#10308#0" expanded="false" />
+            <element signature="e#10332#10463#0" expanded="false" />
+            <element signature="e#10524#11467#0" expanded="false" />
+            <element signature="e#11499#11588#0" expanded="false" />
+            <element signature="e#11613#11699#0" expanded="false" />
+            <element signature="e#11724#11854#0" expanded="false" />
+            <element signature="e#11887#12003#0" expanded="false" />
+            <element signature="e#12036#12345#0" expanded="false" />
+            <element signature="e#12382#18414#0" expanded="false" />
+            <element signature="e#16915#17229#0" expanded="false" />
+            <element signature="e#17296#17377#0" expanded="false" />
+            <element signature="e#18475#19013#0" expanded="false" />
+            <element signature="e#29186#30339#0" expanded="false" />
+            <element signature="e#30387#30558#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

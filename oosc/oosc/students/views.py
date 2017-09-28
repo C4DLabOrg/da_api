@@ -628,6 +628,7 @@ class ImportStudentsV2(APIView):
             teacher.lstname = sch.school_name.split(' ')[0]
             teacher.teacher_type = "TSC"
             teacher.gender = "M"
+            teacher.non_delete=True
             teacher.school = sch
             teacher.phone_no = "99999999999"
             teach = teacher.save()

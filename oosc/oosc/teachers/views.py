@@ -121,7 +121,7 @@ class ListCreateTeachers(APIView):
         serializer=TeacherSerializer(data=details['details'])
         if(serializer.is_valid()):
             #Create the teacher
-            dev = serializer.save(class_teachers=teacher_classes,non_delete=True)
+            dev = serializer.save(class_teachers=teacher_classes)
             ser = TeacherSerializer(dev)
             return Response(ser.data,status=status.HTTP_201_CREATED)
         else:
