@@ -21,6 +21,7 @@ class Teachers(models.Model):
     school = models.ForeignKey(Schools, on_delete=models.CASCADE)
     date_started_teaching = models.DateField(null=True,blank=True)
     joined_current_school = models.DateField(null=True,blank=True)
+    non_delete=models.BooleanField(default=False)
     headteacher=models.BooleanField(default=False)
     active=models.BooleanField(default=True)
 

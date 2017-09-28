@@ -17,7 +17,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     classes = serializers.PrimaryKeyRelatedField( source="class_teachers", many=True,queryset=Stream.objects.all())
     class Meta:
         model = Teachers
-        fields = ('id','user','name','lstname','classes','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','school','date_started_teaching','joined_current_school','school_name')
+        fields = ('id','user','name','lstname','classes','non_delete','active','fstname','phone_no','teacher_type','birthday','gender','tsc_no','bom_no','headteacher','qualifications','school','date_started_teaching','joined_current_school','school_name')
     def get_school_name(self,obj):
         if not obj.school:
             return None
@@ -44,7 +44,7 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     schoolinfo=serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('id','profile','classes','reasons','teachers','schoolinfo')
+        fields = ('id','profile','classes','reasons','non_delete','teachers','schoolinfo')
 
     # def get_subjects(self,obj):
     #     queryset=Subjects.objects.filter(id__in=obj.subjects.all())

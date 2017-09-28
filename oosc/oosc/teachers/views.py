@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import status,generics
 # Create your views here.
 from rest_framework import serializers
+from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from oosc.teachers.models import Teachers
@@ -120,7 +121,7 @@ class ListCreateTeachers(APIView):
         serializer=TeacherSerializer(data=details['details'])
         if(serializer.is_valid()):
             #Create the teacher
-            dev = serializer.save(class_teachers=teacher_classes)
+            dev = serializer.save(class_teachers=teacher_classes,non_delete=True)
             ser = TeacherSerializer(dev)
             return Response(ser.data,status=status.HTTP_201_CREATED)
         else:
@@ -146,12 +147,18 @@ class ListCreateTeachers(APIView):
                                     }
                          })
 
+class NonDeleteteacher (APIException):
+    status_code = 400
+    default_detail = 'You cannot delete this teacher'
+    default_code = 'service_unavailable'
+
 class RetrieveUpdateTeacher(generics.RetrieveUpdateDestroyAPIView):
     queryset = Teachers.objects.all()
     serializer_class = TeacherSerializer
 
     def delete(self, request, *args, **kwargs):
         object=self.get_object()
+        if object.non_delete:raise NonDeleteteacher
         usr=User.objects.get(id=object.user_id)
         usr.delete()
         return Response("", status=status.HTTP_204_NO_CONTENT)
