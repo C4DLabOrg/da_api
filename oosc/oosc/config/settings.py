@@ -61,9 +61,11 @@ INSTALLED_APPS = [
     'oosc.subcounty.apps.SubcountyConfig',
     'oosc.absence.apps.AbsenceConfig',
     'oosc.reason.apps.ReasonConfig',
+    'oosc.partner.apps.PartnerConfig',
     'oosc.history.apps.HistoryConfig',
+    'crispy_forms',
+   # 'debug_toolbar',
 
-    'crispy_forms'
 
 ]
 
@@ -71,6 +73,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 
 }
 
@@ -81,6 +85,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,7 +98,7 @@ OAUTH2_PROVIDER = {
     'AUTHORIZATION_CODE_EXPIRE_SECONDS': 60 * 60,
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365
 }
-
+INTERNAL_IPS=['127.0.0.1']
 ##To generate the dropout list weekly
 DROPOUT_MIN_COUNT=1
 
@@ -118,28 +124,34 @@ WSGI_APPLICATION = 'oosc.config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-#Development Only
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'OPTIONS': {
-            # ...
-            'timeout': 5,
-            # ...
-        }
-    }
-
-}
-#Production Only
+# #Development Only
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-#         'NAME': 'oosc',        # Or path to database file if using sqlite3.
-#         'USER': 'oosc',                   # Not used with sqlite3.
-#         'PASSWORD': 'p@ssw0rd',            # Not used with sqlite3.
-#         'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
-#         'PORT': '5432',                  # Set to empty string for default. Not used with sqlite3.
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'OPTIONS': {
+#             # ...
+#             'timeout': 5,
+#             # ...
+#         }
+#     }
+#
+# }
+#Production Only
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'oosc',        # Or path to database file if using sqlite3.
+        'USER': 'sisitech',                   # Not used with sqlite3.
+        'PASSWORD': '#sisitech',            # Not used with sqlite3.
+        'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',                  # Set to empty string for default. Not used with sqlite3.
+    }
+}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': '127.0.0.1:11211',
 #     }
 # }
 

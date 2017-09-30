@@ -5,3 +5,8 @@ class SubCountySerializer(serializers.ModelSerializer):
     class Meta:
         model=SubCounty
         fields=('id','name','county')
+
+class SimpleSubCountySerializer(serializers.ModelSerializer):
+    class Meta:
+        model=SubCounty
+        fields=('id','name')
