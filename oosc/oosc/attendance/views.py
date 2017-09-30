@@ -1,4 +1,5 @@
 from django.db.models.functions import Trunc
+from django.http.response import HttpResponseBase
 from django.shortcuts import render
 from oosc.attendance.models import Attendance
 from rest_framework import generics,status
@@ -18,7 +19,7 @@ from datetime import datetime,timedelta
 from django_subquery.expressions import Subquery,OuterRef
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg,BooleanField
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework import serializers
@@ -150,12 +151,83 @@ class StandardresultPagination(PageNumberPagination):
 
 
 
+
+def days_between(d1, d2):
+    try:
+        d1 = datetime.strptime(d1, "%Y-%m-%d")
+        d2 = datetime.strptime(d2, "%Y-%m-%d")
+        return abs((d2 - d1).days)
+    except ValueError:
+        ##Return a big number if either of the dates has an error
+        return 100000
+
+
+
 class ListCreateAttendance(generics.ListAPIView):
     queryset=Attendance.objects.all()
     serializer_class=AttendanceSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
     pagination_class = StandardresultPagination
+    nonefomats = ["yearly", "class","monthly","gender","county","oosc"]
+    fakepaginate=False
+
+    def paginate_queryset(self, queryset):
+        if self.paginator is None:
+            return None
+        theformat = self.kwargs['type']
+        startdate=self.request.query_params.get('start_date', "2017-04-01")
+        enddate=self.request.query_params.get('end_date', datetime.now().strftime("%Y-%m-%d"))
+        pagesize=int(self.request.query_params.get('page_size', 200))
+        if theformat in self.nonefomats:
+            self.fakepaginate=True
+            return None
+        elif startdate !=None and days_between(startdate,enddate) <= pagesize:
+            # print (days_between(startdate,enddate),days_between(startdate,enddate) <= pagesize)
+            self.fakepaginate = True
+            return None
+        elif theformat=="weekly" and startdate !=None and days_between(startdate,enddate)/5 <=pagesize:
+            # print ("weekly",days_between(startdate, enddate)/5, days_between(startdate, enddate)/5 <= pagesize)
+            self.fakepaginate = True
+            return None
+        return  self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        assert isinstance(response, HttpResponseBase), (
+            'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+            'to be returned from the view, but received a `%s`'
+            % type(response)
+        )
+
+        #If it does not use pagination and require fake pagination for response
+        if self.fakepaginate:
+            data=response.data
+            resp={}
+            resp["count"]=len(data)
+            resp["next"]=None
+            resp["prev"]=None
+            resp["results"]=data
+            response.data=resp
+        # print (response.data)
+        if isinstance(response, Response):
+            if not getattr(request, 'accepted_renderer', None):
+                neg = self.perform_content_negotiation(request, force=True)
+                request.accepted_renderer, request.accepted_media_type = neg
+            response.accepted_renderer = request.accepted_renderer
+            response.accepted_media_type = request.accepted_media_type
+            response.renderer_context = self.get_renderer_context()
+
+        for key, value in self.headers.items():
+            response[key] = value
+        return response
+    # def get_pagination_class(self):
+    #     print("Getting the format")
+    #     theformat = self.kwargs['type']
+    #     nonefomats=["yearly","class"]
+    #     if theformat in nonefomats:
+    #         return None
+    #     return StandardresultPagination
+
 
     def get_queryset(self):
         # atts=Attendance.objects.all()
@@ -164,6 +236,7 @@ class ListCreateAttendance(generics.ListAPIView):
         format = self.kwargs['type']
         at=self.get_formated_data(atts,format=format)
         #at["present_males"]=float(at["present_males"])/total
+
         return at
 
     def get_serializer_context(self):
@@ -215,6 +288,11 @@ class ListCreateAttendance(generics.ListAPIView):
             return Concat("_class__school__zone__subcounty__county__county_name",Value(''),output_field=CharField())
         elif format=="class":
             return Concat("_class___class",Value(''),output_field=CharField())
+        elif format=="oosc":
+            return Concat("student__is_oosc",Value(''),output_field=BooleanField())
+        elif format=="gender":
+            return Value("gender",output_field=CharField())
+            # return Concat("student__gender",Value(""),output_field=CharField())
         else:
             # #print daily
             return daily

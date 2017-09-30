@@ -36,7 +36,9 @@ class Students(models.Model):
     ## Is it an out of school children
     ##
     def __str__(self):
-        return self.lstname+" "+self.fstname+"("+self.class_id.class_name+")"
+        if self.class_id:
+            return self.lstname+" "+self.fstname+"("+self.class_id.class_name+")"
+        return self.lstname+" "+self.fstname
 
     class Meta:
         ordering=['-gender']

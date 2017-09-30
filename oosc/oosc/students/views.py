@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User,Group
 from django.db import transaction
+from django.http.response import HttpResponseBase
 from django.shortcuts import render
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
@@ -167,6 +168,8 @@ class GetEnrolled(generics.ListAPIView):
     queryset = Students.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
+    nonefomats = [ "class","gender", "county"]
+    fakepaginate = False
 
     def get_queryset(self):
         studs=self.filter_queryset(Students.objects.filter(active=True))
@@ -200,6 +203,44 @@ class GetEnrolled(generics.ListAPIView):
                                                                                           old_females=oldf, value=outp).order_by('value')
         return at
 
+    def paginate_queryset(self, queryset):
+        if self.paginator is None:
+            return None
+        theformat = self.kwargs['type']
+        if theformat in self.nonefomats:
+            self.fakepaginate = True
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        assert isinstance(response, HttpResponseBase), (
+            'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+            'to be returned from the view, but received a `%s`'
+            % type(response)
+        )
+
+        #If it does not use pagination and require fake pagination for response
+        if self.fakepaginate:
+            data=response.data
+            resp={}
+            resp["count"]=len(data)
+            resp["next"]=None
+            resp["prev"]=None
+            resp["results"]=data
+            response.data=resp
+        # print (response.data)
+        if isinstance(response, Response):
+            if not getattr(request, 'accepted_renderer', None):
+                neg = self.perform_content_negotiation(request, force=True)
+                request.accepted_renderer, request.accepted_media_type = neg
+            response.accepted_renderer = request.accepted_renderer
+            response.accepted_media_type = request.accepted_media_type
+            response.renderer_context = self.get_renderer_context()
+
+        for key, value in self.headers.items():
+            response[key] = value
+        return response
+
     def get_format(self,format):
         daily=Concat(TruncDate("date_enrolled"),Value(''),output_field=CharField(),)
         monthly= Concat(Value('1/'), ExtractMonth('date_enrolled'), Value('/'), ExtractYear("date_enrolled"),
@@ -212,7 +253,7 @@ class GetEnrolled(generics.ListAPIView):
         elif format== "yearly":
             return ExtractYear('date_enrolled')
         elif format=="gender":
-            return Concat(Value("gender"),Value(""),output_field=CharField())
+            return Value("gender",output_field=CharField())
         elif format=="school":
             id=Cast("class_id__school_id",output_field=TextField())
             return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
@@ -225,6 +266,7 @@ class GetEnrolled(generics.ListAPIView):
             return Concat("class_id___class",Value(''),output_field=CharField())
         else:
             return monthly
+
 
 def get_class(s):
     s=list(s)
