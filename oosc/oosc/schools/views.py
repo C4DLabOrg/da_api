@@ -167,7 +167,7 @@ class GetAllReport(APIView):
     def get(self,request,format=None):
         students=Students.objects.all()
         schools = Schools.objects.all()
-        activeschools=schools.filter(streams__isnull=False).distinct()
+        activeschools=schools.filter(streams__isnull=False)
         teachers = Teachers.objects.all()
         partner=request.query_params.get("partner",None)
         if partner:
@@ -178,7 +178,7 @@ class GetAllReport(APIView):
         sts = list(students.order_by().values("gender").annotate(count=Count("gender")))
         mstudents=self.get_count(sts,"M")#students.filter(gender="M").count()
         fstudents=self.get_count(sts,"F")#students.filter(gender="F").count()
-        activeschools=activeschools.count()
+        activeschools=activeschools.distinct().count()
         teachers=teachers.count()
         schools=schools.count()
 
