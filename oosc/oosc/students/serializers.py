@@ -25,6 +25,8 @@ class StudentsSerializer(serializers.ModelSerializer):
         return None
 
     def get_school_name(self,obj):
+        if not obj.class_id:
+            return None
         return obj.class_id.school.school_name
 
     def get_student_name(self, obj):
