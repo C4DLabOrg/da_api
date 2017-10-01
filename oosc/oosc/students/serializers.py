@@ -20,7 +20,9 @@ class StudentsSerializer(serializers.ModelSerializer):
         return obj.fstname + " " + obj.midname
 
     def get_class_name(self,obj):
-        return obj.class_id.class_name
+        if self.class_id:
+            return obj.class_id.class_name
+        return None
 
     def get_school_name(self,obj):
         return obj.class_id.school.school_name
