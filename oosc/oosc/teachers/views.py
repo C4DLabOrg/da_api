@@ -70,7 +70,7 @@ class StreamSerializer(serializers.Serializer):
 
 
 class ListCreateTeachers(APIView):
-    permission_classes = (IsHeadteacherOrAdmin,)
+    permission_classes = ( IsAuthenticated, IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
         teach=Teachers.objects.filter(user=self.request.user.id)
         if(len(teach) > 0):
