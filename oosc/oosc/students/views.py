@@ -2,7 +2,7 @@ from django.contrib.auth.models import User,Group
 from django.db import transaction
 from django.http.response import HttpResponseBase
 from django.shortcuts import render
-
+import json
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
@@ -153,38 +153,80 @@ class EnrollmentFilter(FilterSet):
 class EnrollmentSerializer(serializers.Serializer):
     enrolled_males=serializers.IntegerField()
     enrolled_females=serializers.IntegerField()
+    dropout_enrolled_males=serializers.IntegerField()
+    dropout_enrolled_females=serializers.IntegerField()
     old_males=serializers.IntegerField()
     old_females=serializers.IntegerField()
+    dropout_old_males = serializers.IntegerField()
+    dropout_old_females = serializers.IntegerField()
     value=serializers.CharField()
     total=serializers.SerializerMethodField()
+    active_total=serializers.SerializerMethodField()
+    dropout_total=serializers.SerializerMethodField()
+
     def get_total(self,obj):
+        return obj["enrolled_males"]+obj["enrolled_females"]+obj["old_males"]+obj["old_females"] + obj["dropout_enrolled_males"]+obj["dropout_enrolled_females"]+obj["dropout_old_males"]+obj["dropout_old_females"]
+
+    def get_active_total(self,obj):
         return obj["enrolled_males"]+obj["enrolled_females"]+obj["old_males"]+obj["old_females"]
+
+    def get_dropout_total(self,obj):
+        return  obj["dropout_enrolled_males"]+obj["dropout_enrolled_females"]+obj["dropout_old_males"]+obj["dropout_old_females"]
+
     def to_representation(self, instance):
-        data = super(EnrollmentSerializer, self).to_representation(instance)
-        return data
+        # data = super(EnrollmentSerializer, self).to_representation(instance)
+        return instance
 
 class GetEnrolled(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     queryset = Students.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
+    pagination_class = None
     nonefomats = [ "class","gender", "county"]
     fakepaginate = False
 
     def get_queryset(self):
-        studs=self.filter_queryset(Students.objects.filter(active=True))
+        studs=self.filter_queryset(Students.objects.all())
         format = self.kwargs['type']
         at=self.get_formated_data(studs,format=format)
+        # print(at)
         return at
 
     def resp_fields(self):
         #lst = str(datetime.now().date() - timedelta(days=365))
         #enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
-        enrolledm = Count(Case(When(Q(is_oosc=True) & Q(gender="M"), then=1), output_field=IntegerField(), ))
-        oldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False), then=1), output_field=IntegerField(), ))
-        enrolledf = Count(Case(When(Q(gender="F") & Q(is_oosc=True), then=1), output_field=IntegerField(), ))
-        oldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False), then=1), output_field=IntegerField(), ))
-        return enrolledm,oldf,enrolledf,oldm
+        enrolledm = Case(
+            When(Q(is_oosc=False) & Q(gender="F") & Q(active=False), then=Value("dropout_old_females")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When((Q(is_oosc=True) & Q(gender="M") & Q(active=False)), then=Value("dropout_enrolled_males")),
+            When(Q(is_oosc=True) & Q(active=False) & Q(gender="F"), then=Value("dropout_enrolled_females")),
+            When(Q(is_oosc=True) & Q(gender="M" ) & Q(active=True), then=Value("enrolled_males")),
+            When(Q(is_oosc=True) & Q(gender="F" ) & Q(active=True), then=Value("enrolled_females")),
+            When(Q(is_oosc=False) & Q(gender="F" ) & Q(active=True), then=Value("old_females")),
+            When(Q(is_oosc=False) & Q(gender="M" ) & Q(active=True), then=Value("old_males")),
+
+            default=Value("others")
+            ,output_field=CharField()
+        )
+
+        return enrolledm
+
+    # def resp_fields(self):
+    #     #lst = str(datetime.now().date() - timedelta(days=365))
+    #     #enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
+    #     enrolledm = Count(Case(When(Q(is_oosc=True) & Q(gender="M" ) & Q(active=True), then=1), output_field=IntegerField(), ))
+    #     oldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False)& Q(active=True) , then=1), output_field=IntegerField(), ))
+    #     enrolledf = Count(Case(When(Q(gender="F") & Q(is_oosc=True) & Q(active=True), then=1), output_field=IntegerField(), ))
+    #     oldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False) & Q(active=True) , then=1), output_field=IntegerField(), ))
+    #     dropoldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False) &  Q(active=False), then=1), output_field=IntegerField(), ))
+    #     dropoldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False)& Q(active=False), then=1), output_field=IntegerField(), ))
+    #     dropnewm = Count(Case(When((Q(gender="M") & Q(is_oosc=True)& Q(active=False)), then=1), output_field=IntegerField(), ))
+    #     dropnewf = Count(Case(When(Q(gender="F") & Q(is_oosc=True)& Q(active=False), then=1), output_field=IntegerField(), ))
+    #
+    #     return enrolledm,oldf,enrolledf,oldm,dropoldm,dropoldf,dropnewm,dropnewf
+
     # def get(self,request,format=None):
     #     now=str(datetime.now().date()+timedelta(days=1))
     #     lst=str(datetime.now().date()-timedelta(days=365))
@@ -195,22 +237,56 @@ class GetEnrolled(generics.ListAPIView):
     #     return Response({"total":len(studs),"males":len(males),
     #                      "females":len(females)},status=status.HTTP_200_OK)
     def get_formated_data(self, data, format):
-        enrolledm, oldf, enrolledf, oldm = self.resp_fields()
+        enrolledm= self.resp_fields()
+        # enrolledm, oldf, enrolledf, oldm,dropoldm,dropoldf,dropnewm,dropnewf = self.resp_fields()
         outp = Concat("month", Value(''), output_field=CharField())
-        at = data.annotate(month=self.get_format(format=format)).values("month").annotate(enrolled_males=enrolledm,
-                                                                                          enrolled_females=enrolledf,
-                                                                                          old_males=oldm,
-                                                                                          old_females=oldf, value=outp).order_by('value')
+
+        at = data.annotate(month=self.get_format(format=format)).values("month") \
+            .order_by('month','type').annotate(type=enrolledm).annotate(count=Count("type"))
+
+        # at = data.annotate(month=self.get_format(format=format)).values("month") \
+        #     .annotate(
+        #       enrolled_males=enrolledm,
+        #       enrolled_females=enrolledf,
+        #       old_males=oldm,
+        #       old_females=oldf,
+        #       dropout_enrolled_males=dropnewm,
+        #       dropout_enrolled_females=dropnewf,
+        #       dropout_old_males=dropoldm,
+        #       dropout_old_females=dropoldf,
+        #        value=outp).order_by('value')
         return at
 
+    def group(self,data):
+        data_dict=json.loads(json.dumps(data))
+        values=[d["month"] for d in data_dict]
+        values=list(set(values))
+        output=[]
+        for a in values:
+            if a =="":continue
+            value_obj = {}
+            value_obj["value"] = a
+            #Try getting the value object
+            value_objs=[p for p in data_dict if p["month"] == a]
+            for b in value_objs:
+                value_obj[b["type"]]=b["count"]
+            output.append(value_obj)
+        return output
+
+
+
+
+
     def paginate_queryset(self, queryset):
-        if self.paginator is None:
-            return None
-        theformat = self.kwargs['type']
-        if theformat in self.nonefomats:
-            self.fakepaginate = True
-            return None
-        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+        # self.fakepaginate=True
+        return None
+        # if self.paginator is None:
+        #     return None
+        # theformat = self.kwargs['type']
+        # if theformat in self.nonefomats:
+        #     self.fakepaginate = True
+        #     return None
+        # return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
     def finalize_response(self, request, response, *args, **kwargs):
         assert isinstance(response, HttpResponseBase), (
@@ -218,7 +294,7 @@ class GetEnrolled(generics.ListAPIView):
             'to be returned from the view, but received a `%s`'
             % type(response)
         )
-
+        response.data=self.group(response.data)
         #If it does not use pagination and require fake pagination for response
         if self.fakepaginate:
             data=response.data
@@ -259,6 +335,7 @@ class GetEnrolled(generics.ListAPIView):
             return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
         elif format=="stream":
             return Concat("class_id__class_name",Value(''),output_field=CharField())
+
         elif format=="county":
             return Concat("class_id__school__zone__subcounty__county__county_name",Value(''),output_field=CharField())
         elif format=="class":
