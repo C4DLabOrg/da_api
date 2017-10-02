@@ -13,6 +13,7 @@ class PartnerSerializer(serializers.ModelSerializer):
     # males=serializers.IntegerField(read_only=True,default=0,required=False)
     # total=serializers.IntegerField(read_only=True,default=0,required=False)
     # females=serializers.IntegerField(read_only=True,default=0,required=False)
+
     class Meta:
         model=Partner
         fields=('id','name','email','phone',

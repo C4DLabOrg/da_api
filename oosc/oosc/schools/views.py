@@ -1,5 +1,9 @@
 from django.db import transaction
+from django.db.models import Case, CharField
 from django.db.models import Count
+from django.db.models import Q
+from django.db.models import Value
+from django.db.models import When
 from django.shortcuts import render
 from oosc.schools.models import Schools
 from rest_framework import generics
@@ -175,17 +179,48 @@ class GetAllReport(APIView):
             teachers=teachers.filter(school__partners__id=partner)
             schools=schools.filter(partners__id=partner)
             activeschools=activeschools.filter(partners__id=partner)
-        sts = list(students.order_by().values("gender").annotate(count=Count("gender")))
-        mstudents=self.get_count(sts,"M")#students.filter(gender="M").count()
-        fstudents=self.get_count(sts,"F")#students.filter(gender="F").count()
+        sts = list(students.order_by().annotate(type=Case(
+            When(Q(is_oosc=False) & Q(gender="F") & Q(active=False), then=Value("dropout_old_females")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When((Q(is_oosc=True) & Q(gender="M") & Q(active=False)), then=Value("dropout_enrolled_males")),
+            When(Q(is_oosc=True) & Q(active=False) & Q(gender="F"), then=Value("dropout_enrolled_females")),
+            When(Q(is_oosc=True) & Q(gender="M") & Q(active=True), then=Value("enrolled_males")),
+            When(Q(is_oosc=True) & Q(gender="F") & Q(active=True), then=Value("enrolled_females")),
+            When(Q(is_oosc=False) & Q(gender="F") & Q(active=True), then=Value("old_females")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=True), then=Value("old_males")),
+            default=Value("others"),
+            output_field=CharField()
+        )).values("type").annotate(count=Count("type")))
+        mstudents=self.get_count(sts,"old_males") + self.get_count(sts,"enrolled_males") #students.filter(gender="M").count()
+        fstudents=self.get_count(sts,"old_females") + self.get_count(sts,"enrolled_females")#students.filter(gender="F").count()
+        mdropouts=self.get_count(sts,"dropout_old_males") + self.get_count(sts,"dropout_enrolled_males") #students.filter(gender="M").count()
+        fdropouts=self.get_count(sts,"dropout_old_females") + self.get_count(sts,"dropout_enrolled_females")#students.filter(gender="F").count()
+
+        # oldmstudents=students.filter(gender="M",is_oosc=False,active=True).count()
+        # newmstudents=students.filter(gender="M",is_oosc=True,active=True).count()
+        # dropoldmstudents=students.filter(gender="M",is_oosc=False,active=False).count()
+        # dropnewmstudents=students.filter(gender="M",is_oosc=True,active=False).count()
+        # newfstudents=students.filter(gender="F",is_oosc=True,active=True).count()
+        # oldfstudents=students.filter(gender="F",is_oosc=False,active=True).count()
+        # dropoldfstudents=students.filter(gender="F",is_oosc=False,active=False).count()
+        # dropnewftudents=students.filter(gender="F",is_oosc=True,active=False).count()
+
+
         activeschools=activeschools.distinct().count()
         teachers=teachers.count()
         schools=schools.count()
 
-        return Response(data={"schools":schools,"active_schools":activeschools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
+        return Response(data={"schools":schools,"active_schools":activeschools,
+                              "teachers":teachers,
+                              "students":{"males":mstudents,
+                                          "females":fstudents,
+                                          "dropout_males":mdropouts,
+                                          "dropout_females":fdropouts
+                                          }})
 
     def get_count(self, list, item):
-        obs = [g["count"] for g in list if g["gender"] == item]
+        obs = [g["count"] for g in list if g["type"] == item]
         if len(obs) > 0: return obs[0]
         return 0
 
