@@ -58,7 +58,7 @@ class StreamSerializer(serializers.Serializer):
        if value is None:
            raise serializers.ValidationError("Classes required")
        sts=list(Stream.objects.filter(id__in=value).values_list("id",flat=True))
-       print (sts)
+       #print (sts)
        if(len(sts) <1):raise serializers.ValidationError("Enter Valid stream ids for your school")
        return sts
 

@@ -3,6 +3,9 @@ from django.db import transaction
 from django.http.response import HttpResponseBase
 from django.shortcuts import render
 import json
+
+from rest_framework.exceptions import APIException
+
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
@@ -256,7 +259,6 @@ class GetEnrolled(generics.ListAPIView):
         #       dropout_old_females=dropoldf,
         #        value=outp).order_by('value')
         return at
-
     def group(self,data):
         data_dict=json.loads(json.dumps(data))
         values=[d["month"] for d in data_dict]
@@ -293,11 +295,6 @@ class GetEnrolled(generics.ListAPIView):
                 obj[at]=0
 
         return obj
-
-
-
-
-
 
     def paginate_queryset(self, queryset):
         self.fakepaginate=True
@@ -399,9 +396,47 @@ class ImportStudentSerializer(serializers.Serializer):
             raise serializers.ValidationError("Only students between class 1 and 8")
         return value
 
+class NoStudentsList(APIException):
+    status_code = 400
+    default_detail = 'Provide a list of students to move.'
+    default_code = 'bad_request'
 
+class BulkMoveStudentSerializer(serializers.Serializer):
+    students=serializers.ListField(child=serializers.IntegerField(required=True))
+    class_id=serializers.IntegerField()
 
+    def validate_students(self,value):
+        if value is None:
+            raise serializers.ValidationError("This field is required.")
+        elif type(value) is not list:
+            raise serializers.ValidationError("Provive a list of students.")
+        return value
 
+    def validate_class_id(self,value):
+        if Stream.objects.filter(id=value).exists():
+            return value
+        raise serializers.ValidationError("Class does not exist")
+
+class BulkMoveStudents(APIView):
+    def post(self,request,format=None):
+        ser=BulkMoveStudentSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        lis=ser.validated_data.get("students")
+        if len(lis) == 0: raise NoStudentsList
+        classid=ser.validated_data.get("class_id")
+        print (lis,classid)
+        lis=Students.objects.filter(id__in=lis).values_list("id",flat=True)
+        f=Students.objects.filter(id__in=lis).update(class_id=classid)
+        # hist = History()
+        # hist.student = stud
+        # hist._class = serializer.validated_data.get("class_id")
+        # hist.joined = stud.date_enrolled
+        # hist.joined_description = "Class Change"
+        # hist.save()
+        hist=[History(student_id=d,_class_id=classid,joined_description="Class Change") for d in lis]
+        History.objects.bulk_create(hist)
+
+        return Response({"updated":f},status=status.HTTP_202_ACCEPTED)
 
 
 
