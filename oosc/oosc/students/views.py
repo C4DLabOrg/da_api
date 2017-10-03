@@ -268,8 +268,12 @@ class GetEnrolled(generics.ListAPIView):
             value_obj["value"] = a
             #Try getting the value object
             value_objs=[p for p in data_dict if p["month"] == a]
+            total=0
             for b in value_objs:
+                if b["month"] != "value":
+                    total+=b["count"]
                 value_obj[b["type"]]=b["count"]
+            value_obj["total"]=total
             output.append(self.confirm_obj(value_obj))
         return output
 
