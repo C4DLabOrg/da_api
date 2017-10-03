@@ -273,9 +273,9 @@ class GetEnrolled(generics.ListAPIView):
             dropout_total=0
             total=0
             for b in value_objs:
-                if b["month"] in total_attrs :
+                if b["type"] in total_attrs :
                     total+=b["count"]
-                elif ["month"] in dropout_total_attrs:
+                elif b["type"] in dropout_total_attrs:
                   dropout_total+=b["count"]
                 value_obj[b["type"]]=b["count"]
             value_obj["total"]=total
