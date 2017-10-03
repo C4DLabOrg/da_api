@@ -268,12 +268,18 @@ class GetEnrolled(generics.ListAPIView):
             value_obj["value"] = a
             #Try getting the value object
             value_objs=[p for p in data_dict if p["month"] == a]
+            total_attrs=["old_males","old_females","enrolled_males","enrolled_females"]
+            dropout_total_attrs=["dropout_old_males","dropout_old_females","dropout_enrolled_males","dropout_enrolled_females"]
+            dropout_total=0
             total=0
             for b in value_objs:
-                if b["month"] != "value":
+                if b["month"] in total_attrs :
                     total+=b["count"]
+                elif ["month"] in dropout_total_attrs:
+                  dropout_total+=b["count"]
                 value_obj[b["type"]]=b["count"]
             value_obj["total"]=total
+            value_obj["dropout_total"]=dropout_total
             output.append(self.confirm_obj(value_obj))
         return output
 
