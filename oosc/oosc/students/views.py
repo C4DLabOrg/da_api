@@ -270,8 +270,20 @@ class GetEnrolled(generics.ListAPIView):
             value_objs=[p for p in data_dict if p["month"] == a]
             for b in value_objs:
                 value_obj[b["type"]]=b["count"]
-            output.append(value_obj)
+            output.append(self.confirm_obj(value_obj))
         return output
+
+    def confirm_obj(self,obj):
+        attrs=["dropout_old_females","dropout_old_males","dropout_enrolled_females"
+            ,"dropout_enrolled_males","old_males","old_females","enrolled_males","enrolled_females"]
+        for at in attrs:
+            try:
+                obj[at]
+            except:
+                obj[at]=0
+
+        return obj
+
 
 
 
@@ -287,6 +299,8 @@ class GetEnrolled(generics.ListAPIView):
         #     self.fakepaginate = True
         #     return None
         # return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+
 
     def finalize_response(self, request, response, *args, **kwargs):
         assert isinstance(response, HttpResponseBase), (
