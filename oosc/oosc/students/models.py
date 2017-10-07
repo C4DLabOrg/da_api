@@ -45,7 +45,7 @@ class Students(models.Model):
 
     def deactivate(self):
         self.active=False
-        self.class_id=None
+        self.class_id_id=11094
 
     def activate(self):
         self.active=True
