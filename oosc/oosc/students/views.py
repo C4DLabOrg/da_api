@@ -623,10 +623,13 @@ class AbsentStudentSerializer(serializers.Serializer):
 class ImportStudentsV2(APIView):
     total_success = 0
     total_fails = 0
+    total_dublicates=0
+    is_oosc=False
     def post(self,request,format=None):
         file=""
         results=""
         verify=request.query_params.get('verify',None)
+        self.is_oosc=request.query_params.get('is_oosc',False)
         try:
             file = request.FILES["file"]
         except:
@@ -841,13 +844,14 @@ class ImportStudentsV2(APIView):
         if (std.exists()):
             # print "Found"
             std=None
-            self.total_fails += 1
+            self.total_dublicates += 1
         else:
             std = Students()
             std.fstname = ser.data.get("fstname")
             std.midname = ser.data.get("midname")
             std.lstname = ser.data.get("lstname")
             std.gender = get_gender(ser.data.get("gender"))
+            std.is_oosc=self.is_oosc
             std.class_id = cl
             if (valid_date(date_enrolled)):
                 std.date_enrolled = date_enrolled
