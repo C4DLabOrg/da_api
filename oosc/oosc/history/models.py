@@ -9,7 +9,7 @@ from datetime import datetime
 class History(models.Model):
     LEFT_CHOICES=(('DROP','Dropout'),('TRANS','Transfer'))
     student=models.ForeignKey(Students)
-    _class=models.ForeignKey(Stream)
+    _class=models.ForeignKey(Stream,null=True,blank=True)
     joined=models.DateField(null=True,blank=True)
     joined_description=models.CharField(max_length=400,null=True,blank=True)
     left=models.DateField(null=True,blank=True)

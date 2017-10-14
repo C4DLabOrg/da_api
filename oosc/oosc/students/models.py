@@ -14,13 +14,13 @@ class Students(models.Model):
     date_of_birth = models.DateField(null=True,blank=True)
     date_enrolled=models.DateField(auto_created=True)
     admission_no  = models.BigIntegerField(default=0,null=True,blank=True)
-    class_id      = models.ForeignKey(Stream, on_delete = models.CASCADE,related_name="students",null=True,blank=True) #shows the current class
+    class_id      = models.ForeignKey(Stream,null=True,blank=True, on_delete = models.CASCADE,related_name="students") #shows the current class
     gender        = models.CharField(max_length=2,choices=GENDERS, default='ML')
     previous_class    = models.IntegerField(default=0,null=True,blank=True)
     mode_of_transport = models.CharField(max_length=200,null=True,blank=True)
     time_to_school = models.CharField(max_length=50,default=0,null=True,blank=True)
     stay_with  = models.CharField(max_length=200,null=True,blank=True)
-    household  = models.IntegerField(default=0,null=True,blank=True)             #people in the same house
+    household  = models.IntegerField(default=0,null=True)             #people in the same house
     meals_per_day   = models.IntegerField(default=0,null=True,blank=True)
     not_in_school_before = models.BooleanField(default=False)   #reason for not being in school before
     emis_code_histories = models.CharField(max_length=200,null=True,blank=True)
@@ -45,9 +45,9 @@ class Students(models.Model):
 
     def deactivate(self):
         self.active=False
-
+        self.class_id=None
         # self.class_id_id=11094
-        self.class_id_id=11078
+        # self.class_id_id=11078
 
     def activate(self):
         self.active=True
