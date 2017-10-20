@@ -732,7 +732,7 @@ class ImportStudentsV2(APIView):
                     errors.append(error)
             #Print a new line
             #print("")
-        res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails)
+        res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails,self.total_dublicates)
         return ImportResultsSerializer(res).data
     def import_data(self,data,request):
         results="Imported results"
@@ -793,7 +793,7 @@ class ImportStudentsV2(APIView):
             self.total_success=len(resa)
         except Exception as e:
             print (e.message)
-        res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails)
+        res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails,self.total_dublicates)
         return ImportResultsSerializer(res).data
 
     def get_school_teacher(self,sch):

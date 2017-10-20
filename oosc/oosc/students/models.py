@@ -60,8 +60,9 @@ class ImportError:
         self.row_details=row_details
 
 class ImportResults:
-    def __init__(self,errors,total_success,total_fails):
+    def __init__(self,errors,total_success,total_fails,total_dublicates):
         self.errors=errors
+        self.total_dublicates=total_dublicates
         self.total_success=total_success
         self.total_fails=total_fails
 
