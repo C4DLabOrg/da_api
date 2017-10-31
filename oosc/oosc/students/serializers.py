@@ -70,10 +70,10 @@ class ImportResultsSerializer(serializers.Serializer):
     errors=serializers.ListField(child=ImportErrorSerializer())
     total_success=serializers.IntegerField()
     total_fails=serializers.IntegerField()
-    total_dublicates=serializers.IntegerField()
+    total_duplicates=serializers.IntegerField()
     success_percentage=serializers.SerializerMethodField()
     def get_success_percentage(self,obj):
-        total=obj.total_fails+obj.total_success+obj.total_dublicates
+        total=obj.total_fails+obj.total_success+obj.total_duplicates
         if total ==0:
             return "0%"
         return str(int(obj.total_success/float(total)*100))+"%"
