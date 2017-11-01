@@ -1,3 +1,4 @@
+import operator
 from django.contrib.auth.models import User,Group
 from django.db import transaction
 from django.http.response import HttpResponseBase
@@ -209,7 +210,6 @@ class GetEnrolled(generics.ListAPIView):
             When(Q(is_oosc=True) & Q(gender="F" ) & Q(active=True), then=Value("enrolled_females")),
             When(Q(is_oosc=False) & Q(gender="F" ) & Q(active=True), then=Value("old_females")),
             When(Q(is_oosc=False) & Q(gender="M" ) & Q(active=True), then=Value("old_males")),
-
             default=Value("others")
             ,output_field=CharField()
         )
@@ -259,6 +259,7 @@ class GetEnrolled(generics.ListAPIView):
         #       dropout_old_females=dropoldf,
         #        value=outp).order_by('value')
         return at
+
     def group(self,data):
         data_dict=json.loads(json.dumps(data))
         values=[d["month"] for d in data_dict]
@@ -283,7 +284,8 @@ class GetEnrolled(generics.ListAPIView):
             value_obj["total"]=total
             value_obj["dropout_total"]=dropout_total
             output.append(self.confirm_obj(value_obj))
-        return output
+
+        return sorted(output,key= lambda k:k.get('value',0),reverse=False)
 
     def confirm_obj(self,obj):
         attrs=["dropout_old_females","dropout_old_males","dropout_enrolled_females"
