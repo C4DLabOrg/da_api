@@ -1,5 +1,5 @@
 from django.db import models
-from oosc.stream.models import Stream
+from oosc.stream.models import Stream, GraduatesStream
 from oosc.schools.models import Schools
 
 # Create your models here.
@@ -33,6 +33,8 @@ class Students(models.Model):
     created=models.DateTimeField(auto_now_add=True)
     modified=models.DateTimeField(auto_now=True)
     is_oosc=models.BooleanField(default=False)
+    graduated=models.BooleanField(default=False)
+    graduates_class=models.ForeignKey(GraduatesStream,null=True,blank=True)
     ## Is it an out of school children
     ##
     def __str__(self):

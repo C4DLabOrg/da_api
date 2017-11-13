@@ -190,6 +190,7 @@ class GetEnrolled(generics.ListAPIView):
     nonefomats = [ "class","gender", "county"]
     fakepaginate = False
 
+
     def get_queryset(self):
         studs=self.filter_queryset(Students.objects.all())
         format = self.kwargs['type']
@@ -855,16 +856,16 @@ class ImportStudentsV2(APIView):
             std.gender = get_gender(ser.data.get("gender"))
             std.is_oosc=self.is_oosc
             std.class_id = cl
-            if (valid_date(date_enrolled)):
-                std.date_enrolled = date_enrolled
-                lst = str(datetime.now().date() - timedelta(days=35))
-                if (std.date_enrolled > lst):
-                    std.is_oosc = True
-                else:
-                    std.is_oosc = False
-            else:
-                std.date_enrolled = datetime.now()
-                std.is_oosc = True
+            # if (valid_date(date_enrolled)):
+            #     std.date_enrolled = date_enrolled
+            #     lst = str(datetime.now().date() - timedelta(days=35))
+            #     if (std.date_enrolled > lst):
+            #         std.is_oosc = True
+            #     else:
+            #         std.is_oosc = False
+            # else:
+            #     std.date_enrolled = datetime.now()
+            #     std.is_oosc = True
             #std.save()
             self.total_success += 1
         return std
