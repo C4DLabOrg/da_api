@@ -26,5 +26,16 @@ class Stream(models.Model):
                 print n
                 return n
 
+class GraduatesStream(models.Model):
+    school = models.ForeignKey(Schools, on_delete=models.CASCADE, related_name="graduate_streams")
+    year=models.PositiveSmallIntegerField(max_length=4)
+    class_name = models.CharField(max_length=200,null=True,blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together=('school','year')
+
+
 
 
