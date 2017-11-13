@@ -628,11 +628,16 @@ class ImportStudentsV2(APIView):
     total_fails = 0
     total_duplicates=0
     is_oosc=False
+
+    def str2bool(self,v):
+        return v.lower() in ("yes", "true", "t", "1")
     def post(self,request,format=None):
         file=""
         results=""
         verify=request.query_params.get('verify',None)
-        self.is_oosc=request.query_params.get('is_oosc',False)
+        isoosc=request.query_params.get('is_oosc',"no")
+        self.is_oosc= self.str2bool(isoosc)
+        print("the is_ooc",self.is_oosc)
         try:
             file = request.FILES["file"]
         except:
