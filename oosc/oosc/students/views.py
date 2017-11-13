@@ -693,7 +693,7 @@ class ImportStudentsV2(APIView):
                 total_fails+=1
 
         print ""
-        total_success=Students.objects.filter(id__in=students).update(is_oosc=True)
+        total_success=Students.objects.filter(id__in=students).update(is_oosc=self.is_oosc)
         res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails)
         return ImportResultsSerializer(res).data
 

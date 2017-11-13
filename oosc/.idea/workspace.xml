@@ -87,8 +87,8 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="162">
-                  <caret line="631" column="23" lean-forward="false" selection-start-line="631" selection-start-column="23" selection-end-line="631" selection-end-column="23" />
+                <state relative-caret-position="332">
+                  <caret line="637" column="50" lean-forward="true" selection-start-line="637" selection-start-column="50" selection-end-line="637" selection-end-column="50" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                     <element signature="e#1615#2673#0" expanded="false" />
@@ -117,14 +117,13 @@
                     <element signature="e#24984#25298#0" expanded="false" />
                     <element signature="e#25365#25446#0" expanded="false" />
                     <element signature="e#26544#27082#0" expanded="false" />
-                    <element signature="e#28200#29894#0" expanded="false" />
-                    <element signature="e#29940#32028#0" expanded="false" />
-                    <element signature="e#35010#35935#0" expanded="false" />
-                    <element signature="e#35984#36307#0" expanded="false" />
-                    <element signature="e#37624#38777#0" expanded="false" />
-                    <element signature="e#38825#38996#0" expanded="false" />
-                    <marker date="1510574333862" expanded="false" signature="7725:12229" ph="..." />
-                    <marker date="1510574333862" expanded="true" signature="11328:11712" ph="..." />
+                    <element signature="e#29948#32036#0" expanded="false" />
+                    <element signature="e#35018#35943#0" expanded="false" />
+                    <element signature="e#35992#36315#0" expanded="false" />
+                    <element signature="e#37632#38785#0" expanded="false" />
+                    <element signature="e#38833#39004#0" expanded="false" />
+                    <marker date="1510574398879" expanded="false" signature="7725:12229" ph="..." />
+                    <marker date="1510574398879" expanded="true" signature="11328:11712" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -567,7 +566,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="30" width="1366" height="738" extended-state="1" />
+    <frame x="0" y="30" width="1366" height="738" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18838422" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -576,9 +575,9 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32419354" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4032258" sideWeight="0.47356665" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4032258" sideWeight="0.47356665" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.09354839" sideWeight="0.47356665" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23709677" sideWeight="0.47356665" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1017,8 +1016,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="631" column="23" lean-forward="false" selection-start-line="631" selection-start-column="23" selection-end-line="631" selection-end-column="23" />
+        <state relative-caret-position="332">
+          <caret line="637" column="50" lean-forward="true" selection-start-line="637" selection-start-column="50" selection-end-line="637" selection-end-column="50" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
             <element signature="e#1615#2673#0" expanded="false" />
@@ -1047,14 +1046,13 @@
             <element signature="e#24984#25298#0" expanded="false" />
             <element signature="e#25365#25446#0" expanded="false" />
             <element signature="e#26544#27082#0" expanded="false" />
-            <element signature="e#28200#29894#0" expanded="false" />
-            <element signature="e#29940#32028#0" expanded="false" />
-            <element signature="e#35010#35935#0" expanded="false" />
-            <element signature="e#35984#36307#0" expanded="false" />
-            <element signature="e#37624#38777#0" expanded="false" />
-            <element signature="e#38825#38996#0" expanded="false" />
-            <marker date="1510574333862" expanded="false" signature="7725:12229" ph="..." />
-            <marker date="1510574333862" expanded="true" signature="11328:11712" ph="..." />
+            <element signature="e#29948#32036#0" expanded="false" />
+            <element signature="e#35018#35943#0" expanded="false" />
+            <element signature="e#35992#36315#0" expanded="false" />
+            <element signature="e#37632#38785#0" expanded="false" />
+            <element signature="e#38833#39004#0" expanded="false" />
+            <marker date="1510574398879" expanded="false" signature="7725:12229" ph="..." />
+            <marker date="1510574398879" expanded="true" signature="11328:11712" ph="..." />
           </folding>
         </state>
       </provider>
