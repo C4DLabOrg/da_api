@@ -385,6 +385,7 @@ class ImportStudentSerializer(serializers.Serializer):
     school=serializers.IntegerField()
     clas=serializers.CharField(max_length=50)
     gender=serializers.CharField(max_length=20)
+    date_enrolled=serializers.DateField()
     #date_enrolled=serializers.DateField(required=False,allow_null=True)
     # emis_code=serializers.IntegerField(required=False,allow_null=True)
     def validate_gender(self,value):
@@ -666,7 +667,7 @@ class ImportStudentsV2(APIView):
             stdout.write("\rImporting  %d" % i)
             stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
-                  "clas": dat[13], "gender": dat[11]}
+                  "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
             ser = ImportStudentSerializer(data=dt)
             if ser.is_valid():
                 school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
@@ -760,7 +761,7 @@ class ImportStudentsV2(APIView):
                 stdout.write("\rImporting %s " % percentage)
                 stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
-                  "clas": dat[13], "gender": dat[11]}
+                  "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
             ser = ImportStudentSerializer(data=dt)
             if (ser.is_valid()):
                 ##Confirm the school in the db
@@ -858,6 +859,7 @@ class ImportStudentsV2(APIView):
             std.fstname = ser.data.get("fstname")
             std.midname = ser.data.get("midname")
             std.lstname = ser.data.get("lstname")
+            std.date_enrolled=ser.data.get("date_enrolled")
             std.gender = get_gender(ser.data.get("gender"))
             std.graduated=False
             std.is_oosc=self.is_oosc
