@@ -37,5 +37,9 @@ class GraduatesStream(models.Model):
         unique_together=('school','year')
 
 
+    def __str__(self):
+        return self.school.school_name+"-"+str(self.year)+"-Graduates"
+
+
 
 

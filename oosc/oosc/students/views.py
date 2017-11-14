@@ -859,6 +859,7 @@ class ImportStudentsV2(APIView):
             std.midname = ser.data.get("midname")
             std.lstname = ser.data.get("lstname")
             std.gender = get_gender(ser.data.get("gender"))
+            std.graduated=False
             std.is_oosc=self.is_oosc
             std.class_id = cl
             # if (valid_date(date_enrolled)):

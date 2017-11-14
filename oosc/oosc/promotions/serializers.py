@@ -21,4 +21,4 @@ class PromoteStreamSerializer(serializers.ModelSerializer):
 class PromoteSchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model=PromoteSchool
-        fields=('id','created','modified','school','promotions','completed','year','graduates_class')
+        fields=('id','created','modified','stream_promotions','school','completed','year','graduates_class')
