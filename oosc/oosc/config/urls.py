@@ -18,7 +18,7 @@ import debug_toolbar
 from django.conf.urls import url, include
 from django.contrib import admin
 from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport,ListAbsentees
-from oosc.promotions.views import  CreateListPromoteSchool, RetrievePromoteSschool
+from oosc.promotions.views import  CreateListPromoteSchool, RetrievePromoteSschool, RetrieveCompletePromoteSschool
 from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
@@ -44,7 +44,8 @@ urlpatterns = [
     url(r'^api/reasons',ListCreatereason.as_view(),name="list_create_reason"),
     url(r'^api/change-password',ChangePassword.as_view(),name="change_password"),
     url(r'^api/forgot-password',ForgotPasssword.as_view(),name="Forgot-password"),
-    url(r'^api/schools/promote/(?P<emiscode>.+)',RetrievePromoteSschool.as_view(),name="import_schools"),
+    url(r'^api/schools/promote/(?P<pk>.+)/complete',RetrieveCompletePromoteSschool.as_view(),name="import_schools"),
+    url(r'^api/schools/promote/(?P<pk>.+)',RetrievePromoteSschool.as_view(),name="import_schools"),
     url(r'^api/schools/promote',CreateListPromoteSchool.as_view(),name="import_schools"),
     url(r'^api/schools/import',ImportSchools.as_view(),name="import_schools"),
     url(r'^api/schools/(?P<emiscode>.+)',SearchEmiscode.as_view(),name="import_schools"),
