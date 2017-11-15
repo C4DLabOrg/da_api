@@ -18,7 +18,7 @@ class CreateListPromoteSchool(generics.ListCreateAPIView):
     serializer_class =PromoteSchoolSerializer
 
     def get_serializer_class(self):
-        GraduatesStream.objects.all().delete()
+        # GraduatesStream.objects.all().delete()
         return PromoteSchoolSerializer
 
 

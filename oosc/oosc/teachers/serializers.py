@@ -1,4 +1,7 @@
 from rest_framework import serializers
+
+from oosc.promotions.models import PromoteSchool
+from oosc.promotions.serializers import PromoteSchoolSerializer
 from oosc.teachers.models import Teachers
 from django.contrib.auth.models import User
 from oosc.subjects.models import Subjects
@@ -42,9 +45,10 @@ class TeacherAllSerializer(serializers.ModelSerializer):
     reasons=serializers.SerializerMethodField()
     teachers=serializers.SerializerMethodField()
     schoolinfo=serializers.SerializerMethodField()
+    promotion=serializers.SerializerMethodField()
     class Meta:
         model = Teachers
-        fields = ('id','profile','classes','reasons','non_delete','teachers','schoolinfo')
+        fields = ('id','profile','classes','reasons','non_delete','promotion','teachers','schoolinfo')
 
     # def get_subjects(self,obj):
     #     queryset=Subjects.objects.filter(id__in=obj.subjects.all())
@@ -71,6 +75,9 @@ class TeacherAllSerializer(serializers.ModelSerializer):
 
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
+
+    def get_promotion(self,obj):
+        return PromoteSchoolSerializer(PromoteSchool.objects.last()).data
 
     def get_teachers(self,obj):
         if not obj.headteacher:
