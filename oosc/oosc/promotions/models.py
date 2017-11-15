@@ -43,9 +43,11 @@ class PromoteSchool(models.Model):
 
     def complete(self):
         #Get all the promotions and order them from class 8
-        proms=list(PromoteStream.objects.filter(promote_school_id=self.id).order_by("prev_class"))
+        proms=list(PromoteStream.objects.filter(promote_school_id=self.id).order_by("-prev_class___class"))
 
-        ##Graduate class 8 and make the inactive
+        # for p in proms:print(p.next_class.class_name)
+
+        #Graduate class 8 and make the inactive
         Students.objects.filter(class_id__school_id=self.school,class_id___class='8').update(active=False,class_id=None,graduated=True,graduates_class_id=self.graduates_class_id)
         # For the rest starting with class & change the prev class id to next_class id
         for p in proms:
@@ -53,17 +55,17 @@ class PromoteSchool(models.Model):
             p.completed = True
             p.save()
             # print (d)
+            # print (p.next_class.class_name, d)
         self.completed=True
         self.save()
 
     def undo(self):
-        proms = list(PromoteStream.objects.filter(promote_school_id=self.id).order_by("-prev_class"))
+        proms = list(PromoteStream.objects.filter(promote_school_id=self.id).order_by("prev_class___class"))
         for p in proms:
-            print (p.next_class.class_name,p.next_class_id)
-            Students.objects.filter(class_id_id=p.next_class_id).update(class_id_id=p.prev_class_id)
+            d=Students.objects.filter(class_id_id=p.next_class_id).update(class_id_id=p.prev_class_id)
             p.completed=False
             p.save()
-
+            # print (p.next_class.class_name, d)
         ##revert Class 8
         cl8_id=proms[-1].next_class.id
         # print (cl8_id)

@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
+from oosc.mylib.common import MyCustomException
 from oosc.promotions.models import PromoteSchool
 from oosc.promotions.serializers import PromoteSchoolSerializer
 from oosc.stream.models import GraduatesStream
@@ -35,16 +36,6 @@ class RetrievePromoteSschool(generics.RetrieveUpdateAPIView):
     serializer_class =PromoteSchoolSerializer
 
 
-class MyCustomException(APIException):
-    status_code = 503
-    detail="Service temporarily unavailable, try again later."
-    default_detail = 'Service temporarily unavailable, try again later.'
-    default_code = 'service_unavailable'
-
-    def __init__(self,message,code):
-        self.status_code=code
-        self.default_detail=message
-        self.detail=message
 
 
 class CompletePromotionSerializer(serializers.Serializer):
@@ -68,7 +59,7 @@ class RetrieveCompletePromoteSschool(generics.CreateAPIView):
         id = {self.lookup_field: self.kwargs[lookup_url_kwarg]}["pk"]
         self.validate_promotion_id(id)
         promotion=PromoteSchool.objects.get(id=id)
-        action=serializer.validated_data.get("action")
+        action=serializer.validated_data.get("action").lower()
         if action=="complete":
             if promotion.completed:
                 raise MyCustomException("Already completed promotions", 400)

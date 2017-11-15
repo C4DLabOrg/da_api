@@ -1,15 +1,13 @@
 from django_subquery.expressions import Subquery
 from rest_framework import serializers
 
-
+from oosc.mylib.common import MyCustomException
 from oosc.promotions.models import PromoteStream, PromoteSchool
 #
 # class PromotionsSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Promotions
 #         fields = ('promotion_id', 'student_id', 'promotions')
-
-
 
 
 
@@ -51,6 +49,8 @@ class PromoteSchoolSerializer(serializers.ModelSerializer):
         # return promote_school
 
     def update(self, instance, validated_data):
+
+        if instance.completed:raise MyCustomException("Promotion already completed. Undo to update.",404)
         stream_promotions = validated_data.pop("stream_promotions")
         stream_proms=PromoteStream.objects.filter(promote_school_id=instance.id)
         PromoteSchool.objects.filter(id=instance.id).update(**validated_data)
