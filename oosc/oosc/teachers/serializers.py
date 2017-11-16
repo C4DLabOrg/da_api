@@ -77,7 +77,7 @@ class TeacherAllSerializer(serializers.ModelSerializer):
         return ReasonSerializer(Reason.objects.all(),many=True).data
 
     def get_promotion(self,obj):
-        return PromoteSchoolSerializer(PromoteSchool.objects.last()).data
+        return PromoteSchoolSerializer(PromoteSchool.objects.filter(school=obj.school).last()).data
 
     def get_teachers(self,obj):
         if not obj.headteacher:
