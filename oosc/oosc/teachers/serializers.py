@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import serializers
 
 from oosc.promotions.models import PromoteSchool
@@ -67,11 +68,31 @@ class TeacherAllSerializer(serializers.ModelSerializer):
 
     def get_schoolinfo(self,obj):
         if obj.headteacher:
-            students=Students.objects.filter(active=True,class_id__school=obj.school).count()
-            streams=len(self.get_classes(obj))
-            teachers=len(self.get_teachers(obj))
-            return {"teachers":teachers,"classes":streams,"students":students}
-        else:return {"teachers":[],"classes":[],"students":[]}
+            students=Students.objects.filter(active=True,class_id__school=obj.school).values("is_oosc","gender").annotate(count=Count("gender"))
+            studs=self.format_students_number(students)
+
+            streams=Stream.objects.filter(school=obj.school).count()
+            teachers=Teachers.objects.filter(school=obj.school).count()
+            return {"teachers":teachers,"classes":streams,"students":studs["total"],"studs":studs}
+        else:return {"teachers":[],"classes":[],"students":[],"studs":[]}
+
+    def format_students_number(self,students):
+        re={}
+        re["total"]=0
+        re["total_males"]=0
+        re["total_females"]=0
+        for d in students:
+            re[self.return_name(d["gender"],d["is_oosc"])]=d["count"]
+            re["total"]+=d["count"]
+            if d["gender"]=="M":re["total_males"]+=d["count"]
+            else:re["total_females"]+=d["count"]
+        return re
+
+    def return_name(self,gender,is_oosc):
+        g="males" if gender=="M" else "females"
+        oosc="old" if is_oosc==False else "enrolled"
+        return "%s_%s"%(oosc,g)
+
 
     def get_reasons(self,obj):
         return ReasonSerializer(Reason.objects.all(),many=True).data
