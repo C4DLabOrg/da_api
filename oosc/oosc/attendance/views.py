@@ -26,6 +26,17 @@ from rest_framework import serializers
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
 from django.utils.dateparse import parse_date
+"""
+from oosc.students.models import Students as St
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg,BooleanField
+from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
+from django.db.models.functions import Concat,Cast
+
+ot=list(St.objects.filter(class_id__school__emis_code__in=emis).values("class_id__school__emis_code").annotate(count=Count("class_id__school__emis_code")))
+
+
+"""
+
 
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")

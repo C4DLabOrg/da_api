@@ -49,6 +49,7 @@ class StudentFilter(FilterSet):
     class Meta:
         model=Students
         fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
+
     def filter_name(self,queryset,name,value):
         return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
 

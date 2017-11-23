@@ -7,7 +7,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
 from oosc.stream.models import Stream
-from oosc.stream.serializers import StreamSerializer
+from oosc.stream.serializers import StreamSerializer, GetStreamSerializer
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 
 class StreamFilter(FilterSet):
@@ -21,6 +21,12 @@ class ListCreateClass(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
 
+
+    def get_serializer_class(self):
+        if self.request.method is "GET":
+            return GetStreamSerializer
+        return StreamSerializer
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -28,6 +34,7 @@ class ListCreateClass(generics.ListCreateAPIView):
         sch=serializer.validated_data.get("school")
         cl=serializer.validated_data.get("class_name")
         _cl=serializer.validated_data.get("class_name")
+        # print (cl.upper())
         d=list(Stream.objects.filter(class_name=cl.upper(),school_id=sch))
         if len(d) > 0:
             ser=StreamSerializer(d[0])
@@ -51,6 +58,11 @@ class StreamNotFound(APIException):
 class RetrieveUpdateClass(generics.RetrieveUpdateDestroyAPIView):
     queryset = Stream.objects.all()
     serializer_class = StreamSerializer
+
+    def get_serializer_class(self):
+        if self.request.method is "GET":
+            return GetStreamSerializer
+        return StreamSerializer
 
     def get_delete_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
