@@ -25,13 +25,19 @@ class PartnerSerializer(serializers.ModelSerializer):
         return obj.user.username
 
     def get_students(self,obj):
-        sts= list(Students.objects.filter(active=True,is_oosc=True,class_id__school__partners__id=obj.id).order_by().values("gender").annotate(count=Count("gender")))
-        females=self.get_count(sts,"F")
-        males=self.get_count(sts,"M")
-        return {"males":males,"females":females,"total":males+females}
+        sts= list(Students.objects.filter(active=True,class_id__school__partners__id=obj.id).order_by().values("gender","is_oosc").annotate(count=Count("gender")))
+        females=self.get_count(sts,"F",is_oosc=True)
+        males=self.get_count(sts,"M",is_oosc=True)
+        old_females = self.get_count(sts, "F", is_oosc=False)
+        old_males = self.get_count(sts, "M", is_oosc=False)
+        return {"males":males,"females":females,
+                "enrolled_males": males, "enrolled_females": females,
+                "old_females":old_females,
+                "old_males":old_males,
+                "total":males+females+old_females+old_males,"total_enrolled":males+females}
 
-    def get_count(self,list,item):
-        obs=[g["count"] for g in list if g["gender"]==item ]
+    def get_count(self,list,item,is_oosc):
+        obs=[g["count"] for g in list if g["gender"]==item and g["is_oosc"]==is_oosc ]
         if len(obs)>0:return obs[0]
         return 0
 
