@@ -23,7 +23,8 @@ class ListCreateClass(generics.ListCreateAPIView):
 
 
     def get_serializer_class(self):
-        if self.request.method is "GET":
+        print(self.request.method)
+        if self.request.method == "GET":
             return GetStreamSerializer
         return StreamSerializer
 
@@ -60,7 +61,7 @@ class RetrieveUpdateClass(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StreamSerializer
 
     def get_serializer_class(self):
-        if self.request.method is "GET":
+        if self.request.method == "GET":
             return GetStreamSerializer
         return StreamSerializer
 
