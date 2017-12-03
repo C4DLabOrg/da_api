@@ -16,6 +16,7 @@ from django.db.models import Q
 from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg
 
 from oosc.students.models import Students
+from oosc.teachers.views import str2bool
 
 
 class NameDuplicationError(APIException):
@@ -62,6 +63,15 @@ class ListCreatePartner(generics.ListCreateAPIView):
             return PostPartnerSerializer
         else:
             return PartnerSerializer
+
+    def get_queryset(self):
+        all = str2bool(self.request.query_params.get('all', False))
+        # print (all)
+        if  all:
+            return Partner.objects.all()
+        return  Partner.objects.filter(test=False)
+
+
     def perform_create(self, serializer):
         username=serializer.validated_data.get("email")
         password="#partner"

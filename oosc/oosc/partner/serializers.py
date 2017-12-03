@@ -16,7 +16,7 @@ class PartnerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Partner
-        fields=('id','name','email','phone',
+        fields=('id','name','email','phone','test','last_data_upload',
                 'students',
                 # "males","females",
                 # "total"

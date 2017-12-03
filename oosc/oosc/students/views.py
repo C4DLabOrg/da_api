@@ -757,6 +757,7 @@ class ImportStudentsV2(APIView):
         partner = None
         if is_partner:
             partner = Partner.objects.filter(user=request.user)[0]
+
         print ("%d" %total)
         for i, dat in enumerate(data):
             if (total is not 0):
@@ -805,6 +806,11 @@ class ImportStudentsV2(APIView):
             self.total_success=len(resa)
         except Exception as e:
             print (e.message)
+
+        ##Updating the last upload data for partner
+        if self.total_success >0:
+            if partner:
+                Partner.objects.filter(id=partner.id).update(last_data_upload=datetime.now())
         res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails,self.total_duplicates)
         return ImportResultsSerializer(res).data
 
