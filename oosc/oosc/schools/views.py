@@ -156,7 +156,7 @@ class ImportSchools(APIView):
         print(time.time()-start,len(sc))
         return Response(data=data[1])
 
-class SearchEmiscode(generics.RetrieveAPIView):
+class SearchEmiscode(generics.RetrieveUpdateAPIView):
     queryset = Schools.objects.all()
     serializer_class = SchoolsSerializer
     def get_object(self):

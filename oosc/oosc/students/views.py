@@ -8,6 +8,7 @@ import json
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
+from oosc.mylib.common import filter_students_by_names
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
@@ -51,17 +52,8 @@ class StudentFilter(FilterSet):
         fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
 
     def filter_name(self,queryset,name,value):
-        names=value.split(" ")
-        if len(names)>2:
-            return queryset.filter(
-                Q(fstname__icontains=names[0]) , Q(midname__icontains=names[1]), Q(lstname__icontains=names[2]))
-        elif len(names)==2:
-            return queryset.filter(
-                Q(fstname__icontains=names[0]) , (Q(lstname__icontains=names[1]) | Q(midname__icontains=names[1])))
+        return filter_students_by_names(queryset,value)
 
-        return queryset.filter(
-            Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value)
-        )
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(class_id__school__partners__id=value)

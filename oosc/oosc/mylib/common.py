@@ -1,5 +1,5 @@
 from rest_framework.exceptions import APIException
-
+from django.db.models import Q
 
 class MyCustomException(APIException):
     status_code = 503
@@ -21,6 +21,19 @@ def get_bs_number(cl_name):
         if a.isdigit():
             return a
     return None
+
+def filter_students_by_names(queryset,value):
+    names = value.split(" ")
+    if len(names) > 2:
+        return queryset.filter(
+            Q(fstname__icontains=names[0]), Q(midname__icontains=names[1]), Q(lstname__icontains=names[2]))
+    elif len(names) == 2:
+        return queryset.filter(
+            Q(fstname__icontains=names[0]), (Q(lstname__icontains=names[1]) | Q(midname__icontains=names[1])))
+
+    return queryset.filter(
+        Q(fstname__icontains=value) | Q(lstname__icontains=value) | Q(midname__icontains=value)
+    )
 
 
 
