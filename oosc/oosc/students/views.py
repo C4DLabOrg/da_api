@@ -51,7 +51,17 @@ class StudentFilter(FilterSet):
         fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
 
     def filter_name(self,queryset,name,value):
-        return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
+        names=value.split(" ")
+        if len(names)>2:
+            return queryset.filter(
+                Q(fstname__icontains=names[0]) , Q(midname__icontains=names[1]), Q(lstname__icontains=names[2]))
+        elif len(names)==2:
+            return queryset.filter(
+                Q(fstname__icontains=names[0]) , (Q(lstname__icontains=names[1]) | Q(midname__icontains=names[1])))
+
+        return queryset.filter(
+            Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value)
+        )
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(class_id__school__partners__id=value)
