@@ -56,9 +56,6 @@ class AttendanceFilter(FilterSet):
     def filter_partner(self, queryset, name, value):
         return queryset.filter(_class__school__partners__id=value)
 
-
-
-
 class AbsenteesFilter(FilterSet):
     school = django_filters.NumberFilter(name="_class__school", )
 
@@ -273,7 +270,9 @@ class ListCreateAttendance(generics.ListAPIView):
 
     def get_formated_data(self,data,format):
         pm, pf, af, am=self.resp_fields()
+
         outp=Concat("month",Value(''),output_field=CharField())
+
         at = data.annotate(month=self.get_format(format=format)).values("month")
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))

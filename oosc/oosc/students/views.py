@@ -812,7 +812,9 @@ class ImportStudentsV2(APIView):
             if partner:
                 Partner.objects.filter(id=partner.id).update(last_data_upload=datetime.now())
         res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails,self.total_duplicates)
-        return ImportResultsSerializer(res).data
+        dt= ImportResultsSerializer(res).data
+        print(dt)
+        return dt
 
     def get_school_teacher(self,sch):
         teach=Teachers.objects.filter(school=sch)
