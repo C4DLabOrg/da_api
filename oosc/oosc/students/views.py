@@ -43,7 +43,8 @@ class StudentFilter(FilterSet):
     Class=django_filters.NumberFilter(name="class_id",label="Stream Id")
     school=django_filters.NumberFilter(name="class_id__school",label="School Id")
     school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code", label="School emis code")
-    partner=django_filters.NumberFilter(name="partner",label="Partner Id",method="filter_partner")
+    partner=django_filters.NumberFilter(name="",label="Partner  Id",method="filter_partner")
+    partner_admin=django_filters.NumberFilter(name="",label="Partner Admin Id",method="filter_partner_admin")
     county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county",label="County Id")
 
 
@@ -54,6 +55,8 @@ class StudentFilter(FilterSet):
     def filter_name(self,queryset,name,value):
         return filter_students_by_names(queryset,value)
 
+    def filter_partner_admin(self,queryset,name,value):
+        return  queryset.filter(class_id__school__partners__partner_admins__id=value)
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(class_id__school__partners__id=value)

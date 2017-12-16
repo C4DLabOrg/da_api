@@ -49,6 +49,55 @@ class SavePartnerSerializer(serializers.ModelSerializer):
     def get_email(self,obj):
         return obj.user.username
 
+
+class PartnerAdminSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
+    students = serializers.SerializerMethodField()
+
+    # males=serializers.IntegerField(read_only=True,default=0,required=False)
+    # total=serializers.IntegerField(read_only=True,default=0,required=False)
+    # females=serializers.IntegerField(read_only=True,default=0,required=False)
+
+    class Meta:
+        model = Partner
+        fields = ('id', 'name', 'email', 'phone', 'test', 'last_data_upload',
+                  'students',
+                  # "males","females",
+                  # "total"
+                  )
+
+    def get_email(self, obj):
+        return obj.user.username
+
+    def get_students(self, obj):
+        sts = list(
+            Students.objects.filter(active=True, class_id__school__partners__id__in=obj.partner.all()).order_by().values("gender",
+                                                                                                          "is_oosc").annotate(
+                count=Count("gender")))
+        females = self.get_count(sts, "F", is_oosc=True)
+        males = self.get_count(sts, "M", is_oosc=True)
+        old_females = self.get_count(sts, "F", is_oosc=False)
+        old_males = self.get_count(sts, "M", is_oosc=False)
+        return {"males": males, "females": females,
+                "enrolled_males": males, "enrolled_females": females,
+                "old_females": old_females,
+                "old_males": old_males,
+                "total": males + females + old_females + old_males, "total_enrolled": males + females}
+
+    def get_count(self, list, item, is_oosc):
+        obs = [g["count"] for g in list if g["gender"] == item and g["is_oosc"] == is_oosc]
+        if len(obs) > 0: return obs[0]
+        return 0
+
+
+class SavePartnerAdminSerializer(serializers.ModelSerializer):
+    email=serializers.SerializerMethodField()
+    class Meta:
+        model=Partner
+        fields=('id','name','user','email','phone')
+    def get_email(self,obj):
+        return obj.user.username
+
 class PostPartnerSerializer(serializers.Serializer):
     name=serializers.CharField(max_length=50)
     email=serializers.CharField(max_length=50)
@@ -60,3 +109,19 @@ class PostPartnerSerializer(serializers.Serializer):
         if(partners.exists()):
             raise serializers.ValidationError("Partner name already taken")
         return value
+
+class PostPartnerAdminSerializer(serializers.Serializer):
+    name=serializers.CharField(max_length=50)
+    email=serializers.CharField(max_length=50)
+    phone=serializers.CharField(max_length=50)
+    user=serializers.IntegerField(required=False)
+    partners=serializers.ListField(required=False,child=serializers.IntegerField())
+
+    def validate_name(self, value):
+        partners=Partner.objects.filter(name=value)
+        if(partners.exists()):
+            raise serializers.ValidationError("Partner Admin name already taken")
+        return value
+
+    def validate_partners(self,value):
+        return Partner.objects.filter(id__in=value).values_list("id",flat=True)

@@ -32,7 +32,7 @@ from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from oosc.absence.views import GetEditAbsence
 from oosc.reason.views import ListCreatereason
-from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner
+from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner, ListCreatePartnerAdmin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^api/teachers/(?P<pk>[0-9]+)',RetrieveUpdateTeacher.as_view(),name="Retrieve_update_delete_Teachers"),
     url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
     url(r'^api/partners/(?P<pk>[0-9]+)', RetrieveUpdateDestroyPartner.as_view(),name="Retrieve_update_delete_partner"),
+    url(r'^api/partners-admin',ListCreatePartnerAdmin.as_view(),name="List_create_partner"),
     url(r'^api/partners',ListCreatePartner.as_view(),name="List_create_partner"),
     url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
     url(r'^api/ping$',PingServer.as_view(),name="ping_test_for_server"),

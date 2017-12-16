@@ -1,3 +1,4 @@
+import django_filters
 from django.shortcuts import  get_object_or_404
 from django.http import Http404
 from rest_framework import generics
@@ -11,9 +12,13 @@ from oosc.stream.serializers import StreamSerializer, GetStreamSerializer
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 
 class StreamFilter(FilterSet):
+    partner_admin=django_filters.NumberFilter(name="active" ,label="Partner Admin" ,method="filter_partner_admin")
     class Meta:
         model=Stream
         fields=('school','class_name')
+
+    def filter_partner_admin(self, queryset, name, value):
+        return queryset.filter(school__partners__partner_admins__id=value)
 
 class ListCreateClass(generics.ListCreateAPIView):
     queryset = Stream.objects.all()

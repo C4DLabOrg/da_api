@@ -39,12 +39,16 @@ class SchoolsFilter(FilterSet):
     school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
     partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
     active=django_filters.BooleanFilter(name="active" ,label="Active (1=True,2=False)" ,method="filter_active")
+    partner_admin=django_filters.NumberFilter(name="active" ,label="Partner Admin" ,method="filter_partner_admin")
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner')
 
     def filter_partner(self,queryset,name,value):
         return queryset.filter(partners__id=value)
+
+    def filter_partner_admin(self,queryset,name,value):
+        return  queryset.filter(partners__partner_admins__id=value)
 
     def filter_active(self, queryset, name, value):
         return queryset.filter(stream__isnull=False).distinct()
