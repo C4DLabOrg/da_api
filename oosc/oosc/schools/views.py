@@ -178,11 +178,19 @@ class GetAllReport(APIView):
         activeschools=schools.filter(streams__isnull=False)
         teachers = Teachers.objects.all()
         partner=request.query_params.get("partner",None)
+        partner_admin=request.query_params.get("partner_admin",None)
+
         if partner:
             students=students.filter(class_id__school__partners__id=partner)
             teachers=teachers.filter(school__partners__id=partner)
             schools=schools.filter(partners__id=partner)
             activeschools=activeschools.filter(partners__id=partner)
+        if partner_admin:
+            students = students.filter(class_id__school__partners__partner_admins__id=partner_admin)
+            teachers = teachers.filter(school__partners__partner_admins__id=partner_admin)
+            schools = schools.filter(partners__partner_admins__id=partner_admin)
+            activeschools = activeschools.filter(partners__partner_admins__id=partner_admin)
+
         sts = list(students.order_by().annotate(type=Case(
             When(Q(is_oosc=False) & Q(gender="F") & Q(active=False), then=Value("dropout_old_females")),
             When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
