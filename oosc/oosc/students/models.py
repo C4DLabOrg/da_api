@@ -34,6 +34,7 @@ class Students(models.Model):
     modified=models.DateTimeField(auto_now=True)
     is_oosc=models.BooleanField(default=False)
     graduated=models.BooleanField(default=False)
+    offline_id=models.CharField(max_length=20,null=True,blank=True)
     graduates_class=models.ForeignKey(GraduatesStream,null=True,blank=True,on_delete=models.SET_NULL)
     ## Is it an out of school children
     ##
