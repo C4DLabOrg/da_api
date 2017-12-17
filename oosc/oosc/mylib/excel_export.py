@@ -74,11 +74,6 @@ def excel_generate(queryset):
 
 
         ### sheet {i} writing the data
-        else:
-            print("Copy pasting sheets")
-            # sheet=wb.create_sheet(index=i, title=month["name"])
-            sheet=wb.copy_worksheet(wb.active)
-            sheet.title=month["name"]
             #setting the headers for the sheet
             # for k,col in enumerate(mycollumns):
             #     cell=sheet.cell(row=1, column=k+1)
@@ -96,6 +91,14 @@ def excel_generate(queryset):
             #     sheet.cell(row=i + 2, column=4).value = stud["name"]
             #     sheet.cell(row=i + 2, column=5).value = stud["class_id"]
             #     sheet.cell(row=i + 2, column=6).value = stud["class_name"]
+    print("Copy pasting sheets")
+    # sheet=wb.create_sheet(index=i, title=month["name"])
+    sheet_nov = wb.copy_worksheet(wb.active)
+    sheet_nov.title = month[1]["name"]
+
+    sheet_oct = wb.copy_worksheet(wb.active)
+    sheet_oct.title = month[2]["name"]
+
     school_name=queryset[0]["school_name"].replace(" ","_")+"_"+datetime.now().strftime("%d_%b_%Y") if len(queryset) >0 else "oosc_d"
     print("Done creating the sheets")
     wb.save("oosc.xlsx")
