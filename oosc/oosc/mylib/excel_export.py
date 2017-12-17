@@ -32,45 +32,44 @@ def excel_generate(queryset):
     number=len(queryset)
     school_name=""
     print("Length ",number)
-    for m,month in enumerate(months):
 
-        maxcols=len(collumns)
-        mycollumns=copy.deepcopy(collumns)
-        ##append the days to the collumns depending on the number of days
-        for j in range(1, month["days"] + 1): mycollumns.append(str(j))
 
-        ##Sheet 1 setting the headers
-        if m==0:
-            sheet=wb.active
-            sheet.title=month["name"]
-            ## Append the collumn headers to the sheet
-            # sheet.column_dimensions[get_column_letter(i+1)].width = 20
+    maxcols=len(collumns)
+    mycollumns=copy.deepcopy(collumns)
+    ##append the days to the collumns depending on the number of days
+    for j in range(1, months[0]["days"] + 1): mycollumns.append(str(j))
 
-            #Setting the headers for the active sheet
-            for k,col in enumerate(mycollumns):
-                cell = sheet.cell(row=1, column=k + 1)
-                cell.value = col
-                # cell.style.alignment.wrap_text = True
-                # sheet.freeze_panes = 'D1'
-                # sheet.freeze_panes = 'E1'
-                # sheet.freeze_panes = 'F1'
-                # sheet.freeze_panes = 'H1'
-                if k+1 <= maxcols:
-                    sheet.column_dimensions[get_column_letter(k + 1)].width = 20
+    ##Sheet 1 setting the headers
+    sheet=wb.active
+    sheet.title=months[0]["name"]
+    ## Append the collumn headers to the sheet
+    # sheet.column_dimensions[get_column_letter(i+1)].width = 20
 
-            #writing data to the sheet
-            for i,stud in enumerate(queryset):
-                # print()
-                stdout.write( "\r%s of %s" %(str(i+1),str(number)))
-                stdout.flush()
-                sheet.cell(row=i+2, column=1).value=stud["school_name"]
-                sheet.cell(row=i+2, column=2).value=stud["school_emis_code"]
-                sheet.cell(row=i+2, column=3).value=stud["id"]
-                sheet.cell(row=i+2, column=4).value=stud["fstname"]
-                sheet.cell(row=i+2, column=5).value=stud["midname"]
-                sheet.cell(row=i+2, column=6).value=stud["lstname"]
-                sheet.cell(row=i+2, column=7).value=stud["class_id"]
-                sheet.cell(row=i+2, column=8).value=stud["class_name"]
+    #Setting the headers for the active sheet
+    for k,col in enumerate(mycollumns):
+        cell = sheet.cell(row=1, column=k + 1)
+        cell.value = col
+        # cell.style.alignment.wrap_text = True
+        # sheet.freeze_panes = 'D1'
+        # sheet.freeze_panes = 'E1'
+        # sheet.freeze_panes = 'F1'
+        # sheet.freeze_panes = 'H1'
+        if k+1 <= maxcols:
+            sheet.column_dimensions[get_column_letter(k + 1)].width = 20
+
+    #writing data to the sheet
+    for i,stud in enumerate(queryset):
+        # print()
+        # stdout.write( "\r%s of %s" %(str(i+1),str(number)))
+        # stdout.flush()
+        sheet.cell(row=i+2, column=1).value=stud["school_name"]
+        sheet.cell(row=i+2, column=2).value=stud["school_emis_code"]
+        sheet.cell(row=i+2, column=3).value=stud["id"]
+        sheet.cell(row=i+2, column=4).value=stud["fstname"]
+        sheet.cell(row=i+2, column=5).value=stud["midname"]
+        sheet.cell(row=i+2, column=6).value=stud["lstname"]
+        sheet.cell(row=i+2, column=7).value=stud["class_id"]
+        sheet.cell(row=i+2, column=8).value=stud["class_name"]
 
 
         ### sheet {i} writing the data
@@ -100,13 +99,13 @@ def excel_generate(queryset):
     sheet_oct.title = months[2]["name"]
 
     school_name=queryset[0]["school_name"].replace(" ","_")+"_"+datetime.now().strftime("%d_%b_%Y") if len(queryset) >0 else "oosc_d"
-    print("Done creating the sheets")
+    # print("Done creating the sheets")
     wb.save("oosc.xlsx")
-    print("Saving the file")
+    # print("Saving the file")
     with open("oosc.xlsx") as f:
         default_storage.delete('exports/'+school_name+'.xlsx')
         path = default_storage.save('exports/'+school_name+'.xlsx', f)
-    print (path)
+    # print (path)
     return path
 # wb.save("oosc.xlsx")
 
