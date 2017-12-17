@@ -45,7 +45,7 @@ class SimpleStudentSerializer(serializers.ModelSerializer):
     short_name = serializers.SerializerMethodField()
     class Meta:
         model=Students
-        fields=('id','student_id','guardian_name','offline_id','short_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
+        fields=('id','student_id','guardian_name','offline_id','date_of_birth','short_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
 
     def get_short_name(self, obj):
         if obj.lstname:
