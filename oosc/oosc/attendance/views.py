@@ -19,7 +19,7 @@ from datetime import datetime,timedelta
 from django_subquery.expressions import Subquery,OuterRef
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg,BooleanField
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg,BooleanField,DateField,F
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework import serializers
@@ -240,8 +240,21 @@ class ListCreateAttendance(generics.ListAPIView):
     #         return None
     #     return StandardresultPagination
 
+    # def list(self, request, *args, **kwargs):
 
-    def get_queryset(self):
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_my_queryset()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+    def get_my_queryset(self):
         # atts=Attendance.objects.all()
         atts=Attendance.objects.select_related("student","_class")
         atts=self.filter_queryset(atts)
@@ -278,18 +291,22 @@ class ListCreateAttendance(generics.ListAPIView):
         outp=Concat("month",Value(''),output_field=CharField())
 
         at = data.annotate(month=self.get_format(format=format)).values("month")
-        at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=outp)
+
+        at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=F("month"))
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
         # #print (at)
         at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
         # #print (at)
-        return at.order_by(outp)
+        if format=="monthly":
+            at=sorted(at,key=lambda x: int(x["value"].split("-")[1]))
+            return at
+        return at.order_by("value")
 
     def get_format(self,format):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
         weekly=Concat(Trunc("date","week"),Value(''),output_field=CharField(),)
         if(format=="monthly"):
-            return Concat(Value('1/'),ExtractMonth('date'),Value('/'),ExtractYear("date"),output_field=CharField(),)
+            return Concat(ExtractYear("date"),Value('-'),ExtractMonth('date'),Value('-01'),output_field=DateField(),)
         elif format=="daily":
             return daily
         elif format=="weekly":

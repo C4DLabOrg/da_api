@@ -1,14 +1,18 @@
 import operator
 from django.contrib.auth.models import User,Group
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.http.response import HttpResponseBase
 from django.shortcuts import render
 import json
 
+from django.templatetags.static import static
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
-from oosc.mylib.common import filter_students_by_names
+from oosc.mylib.common import filter_students_by_names, MyCustomException
+from oosc.mylib.excel_export import excel_generate
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
@@ -925,3 +929,34 @@ class ListDropouts(generics.ListAPIView):
     serializer_class = StudentsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
+
+class ExportStudents(generics.ListAPIView):
+    queryset = Students.objects.select_related("class_id", "class_id__school")
+    serializers_class=StudentsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = StudentFilter
+
+
+
+    def list(self, request, *args, **kwargs):
+        school = request.query_params.get("school", None)
+        if school == None:
+            raise MyCustomException("You can only generate for a certain school",400)
+        queryset=self.filter_queryset(self.queryset)
+        queryset=queryset.exclude(active=False,class_id=None)
+        queryset=queryset.annotate(class_name=F("class_id__class_name"),
+                         school_name= F("class_id__school__school_name"),
+                         school_emis_code=F("class_id__school__emis_code"),
+                         )
+        queryset=queryset.values("id","fstname","midname","lstname","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.order_by("school_emis_code","class_name")
+        print ("stuff")
+        print("have the queryset")
+        queryset=list(queryset)
+        path=excel_generate(queryset)
+        # path = default_storage.save('exports/file.xlsx',wb)
+        # print (default_storage(path).base_url)
+        url = request.build_absolute_uri(location="/media/"+path)
+        resp={"link":url}
+        print(resp)
+        return  Response(resp)
