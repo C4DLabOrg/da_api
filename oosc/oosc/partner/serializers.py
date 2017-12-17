@@ -3,7 +3,7 @@ from django.db.models import IntegerField, Count
 from django.db.models import Q
 from django.db.models import When
 from rest_framework import serializers
-from oosc.partner.models import Partner
+from oosc.partner.models import Partner, PartnerAdmin
 from oosc.students.models import Students
 
 
@@ -59,9 +59,9 @@ class PartnerAdminSerializer(serializers.ModelSerializer):
     # females=serializers.IntegerField(read_only=True,default=0,required=False)
 
     class Meta:
-        model = Partner
-        fields = ('id', 'name', 'email', 'phone', 'test', 'last_data_upload',
-                  'students',
+        model = PartnerAdmin
+        fields = ('id', 'name', 'email', 'phone', 'test',
+                  'students',"partners"
                   # "males","females",
                   # "total"
                   )
@@ -71,7 +71,7 @@ class PartnerAdminSerializer(serializers.ModelSerializer):
 
     def get_students(self, obj):
         sts = list(
-            Students.objects.filter(active=True, class_id__school__partners__id__in=obj.partner.all()).order_by().values("gender",
+            Students.objects.filter(active=True, class_id__school__partners__id__in=obj.partners.all()).order_by().values("gender",
                                                                                                           "is_oosc").annotate(
                 count=Count("gender")))
         females = self.get_count(sts, "F", is_oosc=True)
