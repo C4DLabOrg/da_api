@@ -19,7 +19,7 @@ import openpyxl
 from django.core.files.storage import default_storage
 from openpyxl.utils import get_column_letter
 
-months=[{"name":"Sept","days":31},{"name":"Oct","days":28},{"name":"Nov","days":30}]
+months=[{"name":"Sept","days":30},{"name":"Oct","days":31},{"name":"Nov","days":30}]
 collumns=["School Name","School Emis Code","Student Id","First Name","Middle name","Last Name","Class Id","Class Name"]
 
 wb = openpyxl.Workbook()
