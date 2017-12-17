@@ -9,8 +9,8 @@ from oosc.teachers.models import Teachers
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
 from oosc.teachers.serializers import TeacherSerializer,TeacherAllSerializer,Passwordserializer,ForgotPAsswordSerializer
-from oosc.partner.models import Partner
-from oosc.partner.serializers import PartnerSerializer
+from oosc.partner.models import Partner, PartnerAdmin
+from oosc.partner.serializers import PartnerSerializer, PartnerAdminSerializer
 from permission import IsHeadteacherOrAdmin
 from rest_framework.views import APIView
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
@@ -212,8 +212,9 @@ class GetUserType(APIView):
     def get(self,request,format=None):
         #return Response("hello")
         user=request.user
-        partner=Partner.objects.filter(user=user)
-        teacher=Teachers.objects.filter(user=user)
+        partner=Partner.objects.filter(user_id=user.id)
+        teacher=Teachers.objects.filter(user_id=user.id)
+        partner_admins=list(PartnerAdmin.objects.filter(user_id=user.id))
         if(user.is_superuser):
             return Response({"type":"admin"})
         elif(partner.exists()):
@@ -224,6 +225,9 @@ class GetUserType(APIView):
             if teacher.headteacher:
                 return Response({"type":"teacher","info":TeacherAllSerializer(teacher).data})
             return Response({"details":"You must be an admin of the school"},status=status.HTTP_401_UNAUTHORIZED)
+        elif len(partner_admins)>0:
+            ptadmin=partner_admins[0]
+            return Response({"type":"partner_admin","info":PartnerAdminSerializer(ptadmin).data})
         else:
             return Response({"type":"unknown"},status=status.HTTP_401_UNAUTHORIZED)
 
