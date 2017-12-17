@@ -94,10 +94,10 @@ def excel_generate(queryset):
     print("Copy pasting sheets")
     # sheet=wb.create_sheet(index=i, title=month["name"])
     sheet_nov = wb.copy_worksheet(wb.active)
-    sheet_nov.title = month[1]["name"]
+    sheet_nov.title = months[1]["name"]
 
     sheet_oct = wb.copy_worksheet(wb.active)
-    sheet_oct.title = month[2]["name"]
+    sheet_oct.title = months[2]["name"]
 
     school_name=queryset[0]["school_name"].replace(" ","_")+"_"+datetime.now().strftime("%d_%b_%Y") if len(queryset) >0 else "oosc_d"
     print("Done creating the sheets")
