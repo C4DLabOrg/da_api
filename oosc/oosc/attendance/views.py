@@ -306,7 +306,7 @@ class ListCreateAttendance(generics.ListAPIView):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
         weekly=Concat(Trunc("date","week"),Value(''),output_field=CharField(),)
         if(format=="monthly"):
-            return Concat(ExtractYear("date"),Value('-'),ExtractMonth('date'),Value('-01'),output_field=DateField(),)
+            return Concat(ExtractYear("date"),Value('-'),ExtractMonth('date'),Value('-1'),output_field=DateField(),)
         elif format=="daily":
             return daily
         elif format=="weekly":
