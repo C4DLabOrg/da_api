@@ -34,8 +34,14 @@ from oosc.absence.views import GetEditAbsence
 from oosc.reason.views import ListCreatereason
 from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner, ListCreatePartnerAdmin
 
+
+urlsv2=[
+   url(r'^admin/',include("oosc.admin.v2.urlsv2")),
+]
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/v2/', include(urlsv2)),
     url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
     url(r'^api/attendances/(?P<type>.+)',ListCreateAttendance.as_view(),name="attendance-list-create"),
     url(r'^api/attendance',TakeAttendance.as_view(),name="take_attendance"),
