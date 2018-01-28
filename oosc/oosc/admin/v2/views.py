@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import generics
+from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from oosc.admin.v2.serializers import ResetPasswordSerializer
+from oosc.admin.v2.serializers import ResetPasswordSerializer, SchoolEmiscodesSerializer
 from oosc.mylib.common import MyCustomException
+from oosc.stream.models import Stream
 
 
 class RestPassword(generics.UpdateAPIView):
@@ -34,3 +36,16 @@ class RestPassword(generics.UpdateAPIView):
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class DeleteStreams(generics.DestroyAPIView):
+
+    serializer_class =SchoolEmiscodesSerializer
+    queryset = Stream.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        emis_codes=serializer.validated_data.get("emis_codes")
+        dele=Stream.objects.filter(school__emis_code__in=emis_codes).delete()
+        return Response({"total":dele[0],"objects":dele[1]},status=status.HTTP_202_ACCEPTED)
