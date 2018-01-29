@@ -1,5 +1,6 @@
 from django.db import models
 #from oosc.teachers.models import Teachers
+from oosc.subcounty.models import SubCounty
 from oosc.zone.models import Zone
 from django.contrib.auth.models import User
 
@@ -20,6 +21,7 @@ class Schools(models.Model):
     source_of_water = models.CharField(max_length = 200,null=True,blank=True)
     headteacher = models.OneToOneField(User,related_name="headteacher",null=True,blank=True)
     phone_no    = models.IntegerField(default=0,)
+    subcounty=models.ForeignKey(SubCounty,null=True,blank=True)
     level=models.CharField(choices=LEVELS,max_length=50,default='PRIMARY')
     status=models.CharField(choices=STATUS,max_length=50,default='PUBLIC')
     partners=models.ManyToManyField(Partner,null=True,blank=True,related_name="schools")
