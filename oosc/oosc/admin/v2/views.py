@@ -12,7 +12,7 @@ from oosc.stream.models import Stream
 class RestPassword(generics.UpdateAPIView):
     serializer_class =ResetPasswordSerializer
     queryset = User.objects.all()
-    # permission_classes = []
+    # permisfsion_classes = []
 
     def update(self, serializer):
         serializer = self.get_serializer(data=self.request.data)
