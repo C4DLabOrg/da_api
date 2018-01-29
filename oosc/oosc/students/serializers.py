@@ -8,11 +8,23 @@ class StudentsSerializer(serializers.ModelSerializer):
     class_name=serializers.SerializerMethodField()
     school_name=serializers.SerializerMethodField()
     short_name=serializers.SerializerMethodField()
+    mode_of_transport_display=serializers.SerializerMethodField()
+    time_to_school_display=serializers.SerializerMethodField()
+    stay_with_display=serializers.SerializerMethodField()
     class Meta:
         model = Students
-        fields = ('id','student_id','guardian_name','offline_id','short_name','created','is_oosc','modified','guardian_phone','active','date_enrolled', 'emis_code','last_attendance','class_name','school_name','total_absents','student_name', 'fstname','midname','lstname','date_of_birth', 'admission_no', 'class_id',
+        fields = ('id','student_id','guardian_name','mode_of_transport_display','time_to_school_display','stay_with_display','offline_id','short_name','created','is_oosc','modified','guardian_phone','active','date_enrolled', 'emis_code','last_attendance','class_name','school_name','total_absents','student_name', 'fstname','midname','lstname','date_of_birth', 'admission_no', 'class_id',
         'gender', 'previous_class', 'mode_of_transport','time_to_school', 'stay_with', 'household',
         'meals_per_day', 'not_in_school_before', 'emis_code_histories')
+
+    def get_stay_with_display(self,obj):
+        return obj.get_stay_with_display()
+
+    def get_time_to_school_display(self,obj):
+        return obj.get_time_to_school_display()
+
+    def get_mode_of_transport_display(self, obj):
+        return obj.get_mode_of_transport_display()
 
     def get_short_name(self,obj):
         if obj.lstname:

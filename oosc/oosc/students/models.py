@@ -5,6 +5,10 @@ from oosc.schools.models import Schools
 # Create your models here.
 class Students(models.Model):
     GENDERS = (('M', 'MALE'), ('F', 'FEMALE'))
+    TRANSPORT=(('PERSONAL','Personal Vehicle'),('BUS','School Bus'),('FOOT','By Foot'),('NS','Not Set'))
+    TIME_TO_SCHOOL=(('1HR','One Hour'),('-0.5HR','Less than 1/2 Hour'),('+1HR','More than one hour.'),('NS','Not Set'))
+    LIVE_WITH=(('P','Parents'),('G','Gurdians'),('A','Alone'),('NS','Not Set'))
+
     student_id    = models.BigIntegerField(null=True,blank=True)
     #school_id     = models.ForeignKey(Schools,on_delete = models.CASCADE)
     emis_code     = models.BigIntegerField(null=True,blank=True)
@@ -17,9 +21,9 @@ class Students(models.Model):
     class_id      = models.ForeignKey(Stream,null=True,blank=True, on_delete = models.CASCADE,related_name="students") #shows the current class
     gender        = models.CharField(max_length=2,choices=GENDERS, default='ML')
     previous_class    = models.IntegerField(default=0,null=True,blank=True)
-    mode_of_transport = models.CharField(max_length=200,null=True,blank=True)
-    time_to_school = models.CharField(max_length=50,default=0,null=True,blank=True)
-    stay_with  = models.CharField(max_length=200,null=True,blank=True)
+    mode_of_transport = models.CharField(max_length=20,default='NS',choices=TRANSPORT)
+    time_to_school = models.CharField(max_length=50,default='NS',choices=TIME_TO_SCHOOL)
+    stay_with  = models.CharField(max_length=20,choices=LIVE_WITH,default='NS')
     household  = models.IntegerField(default=0,null=True)             #people in the same house
     meals_per_day   = models.IntegerField(default=0,null=True,blank=True)
     not_in_school_before = models.BooleanField(default=False)   #reason for not being in school before
