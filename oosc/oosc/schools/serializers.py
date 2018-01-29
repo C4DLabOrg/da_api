@@ -6,7 +6,7 @@ class PostSchoolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Schools
-        fields=('id','school_code', 'school_name','level','status','partners', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
+        fields=('id','school_code','subcounty', 'school_name','level','status','partners', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
         'headteacher','phone_no','partners')
 
 class SchoolsSerializer(serializers.ModelSerializer):

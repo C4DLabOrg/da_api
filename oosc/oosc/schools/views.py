@@ -35,7 +35,7 @@ from oosc.schools.permissions import IsPartner
 
 
 class SchoolsFilter(FilterSet):
-    county=django_filters.NumberFilter(name="zone__subcounty__county",label="County Id")
+    county=django_filters.NumberFilter(name="county_filter",method="filter_county",label="County Id")
     school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
     partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
     active=django_filters.BooleanFilter(name="active" ,label="Active (1=True,2=False)" ,method="filter_active")
@@ -43,6 +43,10 @@ class SchoolsFilter(FilterSet):
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner')
+
+    def filter_county(self,queryset,name,value):
+        return queryset.exclude(Q(zone=None) | Q(subcounty=None)).filter(Q(zone__subcounty__county=value) | Q(subcounty__county=value))
+
 
     def filter_partner(self,queryset,name,value):
         return queryset.filter(partners__id=value)

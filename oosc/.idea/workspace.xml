@@ -19,7 +19,7 @@
     <favorites_list name="oosc" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.2447102">
+    <splitter split-orientation="horizontal" split-proportion="0.10395584">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
@@ -54,41 +54,41 @@
             <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="4200">
-                  <caret line="956" column="26" lean-forward="false" selection-start-line="956" selection-start-column="26" selection-end-line="956" selection-end-column="26" />
+                  <caret line="960" column="26" lean-forward="false" selection-start-line="960" selection-start-column="26" selection-end-line="960" selection-end-column="26" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
-                    <element signature="e#4033#4090#0" expanded="false" />
-                    <element signature="e#4164#5902#0" expanded="false" />
-                    <element signature="e#5944#6815#0" expanded="false" />
-                    <element signature="e#6874#8140#0" expanded="false" />
-                    <element signature="e#12722#13832#0" expanded="false" />
-                    <element signature="e#13873#14181#0" expanded="false" />
-                    <element signature="e#14234#14574#0" expanded="false" />
-                    <element signature="e#14655#15860#0" expanded="false" />
-                    <element signature="e#15903#17098#0" expanded="false" />
-                    <element signature="e#17123#17254#0" expanded="false" />
-                    <element signature="e#17315#18300#0" expanded="false" />
-                    <element signature="e#18342#18451#0" expanded="false" />
-                    <element signature="e#18514#19090#0" expanded="false" />
-                    <element signature="e#19129#20039#0" expanded="false" />
-                    <element signature="e#20067#20156#0" expanded="false" />
-                    <element signature="e#20181#20267#0" expanded="false" />
-                    <element signature="e#20292#20422#0" expanded="false" />
-                    <element signature="e#20455#20571#0" expanded="false" />
-                    <element signature="e#20604#20913#0" expanded="false" />
-                    <element signature="e#20950#26982#0" expanded="false" />
-                    <element signature="e#25483#25797#0" expanded="false" />
-                    <element signature="e#25864#25945#0" expanded="false" />
-                    <element signature="e#27043#27581#0" expanded="false" />
-                    <element signature="e#27829#28650#0" expanded="false" />
-                    <element signature="e#28699#30424#0" expanded="false" />
-                    <element signature="e#30470#32558#0" expanded="false" />
-                    <element signature="e#35885#36810#0" expanded="false" />
-                    <element signature="e#36859#37182#0" expanded="false" />
-                    <element signature="e#38591#39744#0" expanded="false" />
-                    <element signature="e#39792#39963#0" expanded="false" />
-                    <marker date="1513517946802" expanded="false" signature="8182:12686" ph="..." />
-                    <marker date="1513517946802" expanded="true" signature="11785:12169" ph="..." />
+                    <element signature="e#4315#4372#0" expanded="false" />
+                    <element signature="e#4446#6184#0" expanded="false" />
+                    <element signature="e#6226#7097#0" expanded="false" />
+                    <element signature="e#7156#8422#0" expanded="false" />
+                    <element signature="e#13004#14114#0" expanded="false" />
+                    <element signature="e#14155#14463#0" expanded="false" />
+                    <element signature="e#14516#14856#0" expanded="false" />
+                    <element signature="e#14937#16142#0" expanded="false" />
+                    <element signature="e#16185#17380#0" expanded="false" />
+                    <element signature="e#17405#17536#0" expanded="false" />
+                    <element signature="e#17597#18582#0" expanded="false" />
+                    <element signature="e#18624#18733#0" expanded="false" />
+                    <element signature="e#18796#19372#0" expanded="false" />
+                    <element signature="e#19411#20321#0" expanded="false" />
+                    <element signature="e#20349#20438#0" expanded="false" />
+                    <element signature="e#20463#20549#0" expanded="false" />
+                    <element signature="e#20574#20704#0" expanded="false" />
+                    <element signature="e#20737#20853#0" expanded="false" />
+                    <element signature="e#20886#21195#0" expanded="false" />
+                    <element signature="e#21232#27264#0" expanded="false" />
+                    <element signature="e#25765#26079#0" expanded="false" />
+                    <element signature="e#26146#26227#0" expanded="false" />
+                    <element signature="e#27325#27863#0" expanded="false" />
+                    <element signature="e#28111#28932#0" expanded="false" />
+                    <element signature="e#28981#30706#0" expanded="false" />
+                    <element signature="e#30752#32840#0" expanded="false" />
+                    <element signature="e#36167#37092#0" expanded="false" />
+                    <element signature="e#37141#37464#0" expanded="false" />
+                    <element signature="e#38873#40026#0" expanded="false" />
+                    <element signature="e#40074#40245#0" expanded="false" />
+                    <marker date="1517252270688" expanded="false" signature="8464:12968" ph="..." />
+                    <marker date="1517252270688" expanded="true" signature="12067:12451" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -114,12 +114,36 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="serializers.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/schools/serializers.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="286">
-                  <caret line="48" column="21" lean-forward="false" selection-start-line="48" selection-start-column="21" selection-end-line="48" selection-end-column="21" />
+                <state relative-caret-position="98">
+                  <caret line="8" column="45" lean-forward="false" selection-start-line="8" selection-start-column="45" selection-end-line="8" selection-end-column="45" />
                   <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/oosc/partner/views.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2198">
+                  <caret line="176" column="35" lean-forward="false" selection-start-line="176" selection-start-column="35" selection-end-line="176" selection-end-column="35" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/oosc/partner/serializers.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="112">
+                  <caret line="52" column="58" lean-forward="false" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
+                  <folding>
+                    <element signature="e#343#1850#0" expanded="false" />
+                    <element signature="e#1914#2107#0" expanded="false" />
+                    <element signature="e#2173#3890#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -127,8 +151,18 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2044">
-                  <caret line="179" column="56" lean-forward="false" selection-start-line="179" selection-start-column="7" selection-end-line="179" selection-end-column="56" />
+                <state relative-caret-position="98">
+                  <caret line="40" column="45" lean-forward="false" selection-start-line="40" selection-start-column="45" selection-end-line="40" selection-end-column="45" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/oosc/attendance/views.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="235">
+                  <caret line="56" column="39" lean-forward="false" selection-start-line="56" selection-start-column="39" selection-end-line="56" selection-end-column="39" />
                   <folding />
                 </state>
               </provider>
@@ -147,7 +181,7 @@
           <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/admin/v2/serializers.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="336">
+                <state relative-caret-position="294">
                   <caret line="24" column="34" lean-forward="false" selection-start-line="24" selection-start-column="34" selection-end-line="24" selection-end-column="34" />
                   <folding>
                     <element signature="e#0#43#0" expanded="true" />
@@ -169,7 +203,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>StudentsSerializer</find>
       <find>county_na</find>
       <find>TeacherSerializer</find>
       <find>weekl</find>
@@ -199,6 +232,7 @@
       <find>fil</find>
       <find>studen</find>
       <find>date_of_birt</find>
+      <find>county</find>
     </findStrings>
     <replaceStrings>
       <replace>#print(</replace>
@@ -249,10 +283,8 @@
         <option value="$PROJECT_DIR$/oosc/partner/models.py" />
         <option value="$PROJECT_DIR$/oosc/partner/views.py" />
         <option value="$PROJECT_DIR$/oosc/stream/views.py" />
-        <option value="$PROJECT_DIR$/oosc/schools/views.py" />
         <option value="$PROJECT_DIR$/oosc/config/settings.py" />
         <option value="$PROJECT_DIR$/oosc/students/views.py" />
-        <option value="$PROJECT_DIR$/oosc/attendance/views.py" />
         <option value="$PROJECT_DIR$/oosc/teachers/views.py" />
         <option value="$PROJECT_DIR$/oosc/partner/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/students/serializers.py" />
@@ -264,6 +296,8 @@
         <option value="$PROJECT_DIR$/oosc/admin/v2/views.py" />
         <option value="$PROJECT_DIR$/oosc/schools/models.py" />
         <option value="$PROJECT_DIR$/oosc/schools/serializers.py" />
+        <option value="$PROJECT_DIR$/oosc/schools/views.py" />
+        <option value="$PROJECT_DIR$/oosc/attendance/views.py" />
       </list>
     </option>
   </component>
@@ -287,6 +321,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -331,9 +366,26 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="oosc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="oosc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="oosc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="partner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -552,20 +604,20 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19061802" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.4973939" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5323902" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32419354" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16612904" sideWeight="0.47058824" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.65806454" sideWeight="0.46760982" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29193547" sideWeight="0.46760982" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16612904" sideWeight="0.47058824" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -843,20 +895,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/partner/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="784">
-          <caret line="62" column="57" lean-forward="false" selection-start-line="62" selection-start-column="57" selection-end-line="62" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/attendance/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2352">
-          <caret line="308" column="86" lean-forward="false" selection-start-line="308" selection-start-column="86" selection-end-line="308" selection-end-column="86" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/oosc/config/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="350">
@@ -885,13 +923,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/partner/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2198">
-          <caret line="176" column="35" lean-forward="false" selection-start-line="176" selection-start-column="35" selection-end-line="176" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/oosc/mylib/excel_export.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="630">
@@ -902,41 +933,41 @@
     <entry file="file://$PROJECT_DIR$/oosc/students/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4200">
-          <caret line="956" column="26" lean-forward="false" selection-start-line="956" selection-start-column="26" selection-end-line="956" selection-end-column="26" />
+          <caret line="960" column="26" lean-forward="false" selection-start-line="960" selection-start-column="26" selection-end-line="960" selection-end-column="26" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#4033#4090#0" expanded="false" />
-            <element signature="e#4164#5902#0" expanded="false" />
-            <element signature="e#5944#6815#0" expanded="false" />
-            <element signature="e#6874#8140#0" expanded="false" />
-            <element signature="e#12722#13832#0" expanded="false" />
-            <element signature="e#13873#14181#0" expanded="false" />
-            <element signature="e#14234#14574#0" expanded="false" />
-            <element signature="e#14655#15860#0" expanded="false" />
-            <element signature="e#15903#17098#0" expanded="false" />
-            <element signature="e#17123#17254#0" expanded="false" />
-            <element signature="e#17315#18300#0" expanded="false" />
-            <element signature="e#18342#18451#0" expanded="false" />
-            <element signature="e#18514#19090#0" expanded="false" />
-            <element signature="e#19129#20039#0" expanded="false" />
-            <element signature="e#20067#20156#0" expanded="false" />
-            <element signature="e#20181#20267#0" expanded="false" />
-            <element signature="e#20292#20422#0" expanded="false" />
-            <element signature="e#20455#20571#0" expanded="false" />
-            <element signature="e#20604#20913#0" expanded="false" />
-            <element signature="e#20950#26982#0" expanded="false" />
-            <element signature="e#25483#25797#0" expanded="false" />
-            <element signature="e#25864#25945#0" expanded="false" />
-            <element signature="e#27043#27581#0" expanded="false" />
-            <element signature="e#27829#28650#0" expanded="false" />
-            <element signature="e#28699#30424#0" expanded="false" />
-            <element signature="e#30470#32558#0" expanded="false" />
-            <element signature="e#35885#36810#0" expanded="false" />
-            <element signature="e#36859#37182#0" expanded="false" />
-            <element signature="e#38591#39744#0" expanded="false" />
-            <element signature="e#39792#39963#0" expanded="false" />
-            <marker date="1513517946802" expanded="false" signature="8182:12686" ph="..." />
-            <marker date="1513517946802" expanded="true" signature="11785:12169" ph="..." />
+            <element signature="e#4315#4372#0" expanded="false" />
+            <element signature="e#4446#6184#0" expanded="false" />
+            <element signature="e#6226#7097#0" expanded="false" />
+            <element signature="e#7156#8422#0" expanded="false" />
+            <element signature="e#13004#14114#0" expanded="false" />
+            <element signature="e#14155#14463#0" expanded="false" />
+            <element signature="e#14516#14856#0" expanded="false" />
+            <element signature="e#14937#16142#0" expanded="false" />
+            <element signature="e#16185#17380#0" expanded="false" />
+            <element signature="e#17405#17536#0" expanded="false" />
+            <element signature="e#17597#18582#0" expanded="false" />
+            <element signature="e#18624#18733#0" expanded="false" />
+            <element signature="e#18796#19372#0" expanded="false" />
+            <element signature="e#19411#20321#0" expanded="false" />
+            <element signature="e#20349#20438#0" expanded="false" />
+            <element signature="e#20463#20549#0" expanded="false" />
+            <element signature="e#20574#20704#0" expanded="false" />
+            <element signature="e#20737#20853#0" expanded="false" />
+            <element signature="e#20886#21195#0" expanded="false" />
+            <element signature="e#21232#27264#0" expanded="false" />
+            <element signature="e#25765#26079#0" expanded="false" />
+            <element signature="e#26146#26227#0" expanded="false" />
+            <element signature="e#27325#27863#0" expanded="false" />
+            <element signature="e#28111#28932#0" expanded="false" />
+            <element signature="e#28981#30706#0" expanded="false" />
+            <element signature="e#30752#32840#0" expanded="false" />
+            <element signature="e#36167#37092#0" expanded="false" />
+            <element signature="e#37141#37464#0" expanded="false" />
+            <element signature="e#38873#40026#0" expanded="false" />
+            <element signature="e#40074#40245#0" expanded="false" />
+            <marker date="1517252270688" expanded="false" signature="8464:12968" ph="..." />
+            <marker date="1517252270688" expanded="true" signature="12067:12451" ph="..." />
           </folding>
         </state>
       </provider>
@@ -945,14 +976,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2044">
-          <caret line="179" column="56" lean-forward="false" selection-start-line="179" selection-start-column="7" selection-end-line="179" selection-end-column="56" />
           <folding />
         </state>
       </provider>
@@ -977,7 +1000,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/admin/v2/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
+        <state relative-caret-position="294">
           <caret line="24" column="34" lean-forward="false" selection-start-line="24" selection-start-column="34" selection-end-line="24" selection-end-column="34" />
           <folding>
             <element signature="e#0#43#0" expanded="true" />
@@ -1005,8 +1028,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/oosc/schools/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="48" column="21" lean-forward="false" selection-start-line="48" selection-start-column="21" selection-end-line="48" selection-end-column="21" />
+        <state relative-caret-position="98">
+          <caret line="8" column="45" lean-forward="false" selection-start-line="8" selection-start-column="45" selection-end-line="8" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/partner/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2198">
+          <caret line="176" column="35" lean-forward="false" selection-start-line="176" selection-start-column="35" selection-end-line="176" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/partner/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="52" column="58" lean-forward="false" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
+          <folding>
+            <element signature="e#343#1850#0" expanded="false" />
+            <element signature="e#1914#2107#0" expanded="false" />
+            <element signature="e#2173#3890#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/schools/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="40" column="45" lean-forward="false" selection-start-line="40" selection-start-column="45" selection-end-line="40" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/attendance/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="56" column="39" lean-forward="false" selection-start-line="56" selection-start-column="39" selection-end-line="56" selection-end-column="39" />
           <folding />
         </state>
       </provider>

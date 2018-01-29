@@ -44,7 +44,7 @@ class AttendanceFilter(FilterSet):
     start_date = django_filters.DateFilter(name="date",lookup_expr="gte"  )
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
     school=django_filters.NumberFilter(name="_class__school",)
-    county=django_filters.NumberFilter(name="_class__school__zone__subcounty__county")
+    county=django_filters.NumberFilter(name="_class__school__zone__subcounty__county",method="filter_county")
     partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="partner",method="filter_partner_admin",label="Partner Admin Id")
     county_name=django_filters.CharFilter(name="_class__school__zone__subcounty__county__county_name",lookup_expr="icontains")
@@ -56,6 +56,11 @@ class AttendanceFilter(FilterSet):
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(_class__school__partners__id=value)
+
+    def filter_county(self,queryset,name,value):
+        return queryset.exclude(Q(student__class_id__school__zone=None) | Q(student__class_id__school__subcounty=None)).filter(Q(student__class_id__school__zone__subcounty__county=value) | Q(student__class_id__school__subcounty__county=value))
+
+
 
     def filter_partner_admin(self, queryset, name, value):
         return queryset.filter(_class__school__partners__partner_admins__id=value)
