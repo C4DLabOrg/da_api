@@ -1,7 +1,7 @@
 from django.db import models
 from oosc.stream.models import Stream, GraduatesStream
 from oosc.schools.models import Schools
-
+from datetime import datetime
 # Create your models here.
 class Students(models.Model):
     GENDERS = (('M', 'MALE'), ('F', 'FEMALE'))
@@ -55,6 +55,9 @@ class Students(models.Model):
         self.class_id=None
         # self.class_id_id=11094
         # self.class_id_id=11078
+
+
+
 
     def activate(self):
         self.active=True

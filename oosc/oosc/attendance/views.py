@@ -4,6 +4,8 @@ from django.shortcuts import render
 from oosc.attendance.models import Attendance
 from rest_framework import generics,status
 from datetime import datetime
+
+from oosc.stream.models import Stream
 from oosc.students.models import Students
 from oosc.attendance.serializers import AbsentStudentSerializer
 from oosc.absence.serializers import DetailedAbsenceserializer, AbsenceSerializer
@@ -409,6 +411,7 @@ class TakeAttendance(APIView):
         absents=[]
         thedate=self.request.data["date"]
         #print (request.data)
+        classid=None
         try:
             with transaction.atomic():
                 for i in request.data["present"]:
@@ -429,6 +432,7 @@ class TakeAttendance(APIView):
                     attendance.id=now+str(i)
                     attendance.status=1
                     attendance._class=student.class_id
+                    if student.class_id != None:classid=student.class_id
                     attendance.student=student
                     attendance.save()
 
@@ -436,6 +440,7 @@ class TakeAttendance(APIView):
                 for i in request.data["absent"]:
                     #print ("Absemt")
                     student = Students()
+
                     student = Students.objects.filter(id=i)[0]
                     # student.total_absents = student.total_absents + 1
                     # if(student.total_absents>4):
@@ -461,11 +466,18 @@ class TakeAttendance(APIView):
                     attendance.id = now + str(i)
                     attendance.status = 0
                     attendance._class = student.class_id
+                    if student.class_id != None:classid=student.class_id
                     attendance.student = student
                     attendance.save()
             ####print("Done replying")
             ##Get the students with an open absence record
             absnts=DetailedAbsenceserializer(Absence.objects.filter(student_id__in=request.data["absent"],status=True),many=True)
+            #Update attendance has been taken for the class
+            print("Finalizing .... %s"%(classid))
+            classid.attendance_taken(thedate)
+            # if Stream.objects.filter(id=classid).exists():
+            #     cl=Stream.objects.filter(id=classid)[0]
+            #     cl.attendance_taken(thedate)
             return Response(data=absnts.data,status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
