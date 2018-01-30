@@ -3,7 +3,8 @@ from sys import stdout
 
 from datetime import datetime
 import openpyxl
-
+import os
+from datetime import date, timedelta
 # from openpyxl.cell import get_column_letter
 
 # wb = openpyxl.load_workbook('juja_road.xlsx')
@@ -17,23 +18,25 @@ import openpyxl
 #     sheet = wb.get_sheet_by_name(sheets[0])
 #     print(sheet.title)
 from django.core.files.storage import default_storage
+from django.utils.dateparse import parse_date
 from openpyxl.utils import get_column_letter
+
+from oosc.mylib.common import get_random, get_quick_stream_class_name
 
 months=[{"name":"Sept","days":30},{"name":"Oct","days":31},{"name":"Nov","days":30}]
 collumns=["School Name","School Emis Code","Student Id","First Name","Middle name","Last Name","Class Id","Class Name"]
 
-wb = openpyxl.Workbook()
+
 # wb.active.title="Jan"
 
 ##Creating the sheets
 
 def excel_generate(queryset):
+    wb = openpyxl.Workbook()
     print("generating the excel file")
     number=len(queryset)
     school_name=""
     print("Length ",number)
-
-
     maxcols=len(collumns)
     mycollumns=copy.deepcopy(collumns)
     ##append the days to the collumns depending on the number of days
@@ -108,5 +111,80 @@ def excel_generate(queryset):
     # print (path)
     return path
 # wb.save("oosc.xlsx")
+
+def get_age(dob):
+    if dob != None:
+        days_in_year = 365.2425
+        age =int((date.today() - dob).days / days_in_year)
+        return "%s"%(age)
+    return None
+
+def cal_perc(rw):
+    pre=rw["present"]
+    total=rw["total_attendance_days"]
+    per= float(pre)/float(total)*100
+    r="%s %s"%(int(per),"%")
+    return r
+
+def export_attendance(queryset,month,year):
+    collumns=["County","Subcounty","School Name","School Emis_code",
+              "Type","Gender","Age","Class","Guardian","Guardian Phone","Month Days","Days Attendance Taken","Present","Absent","Present %"]
+    number = len(queryset)
+    school_name = ""
+    print("Length ", number)
+    wb = openpyxl.Workbook()
+    sheet = wb.active
+    sheet.title = "Attendance Report %s-%s"%(month,year)
+    maxcols = len(collumns)
+
+    ##Setting up the headers
+    for k,col in enumerate(collumns):
+        cell = sheet.cell(row=1, column=k + 1)
+        cell.value = col
+        # cell.style.alignment.wrap_text = True
+        # sheet.freeze_panes = 'D1'
+        # sheet.freeze_panes = 'E1'
+        # sheet.freeze_panes = 'F1'
+        # sheet.freeze_panes = 'H1'
+        if k+1 <= maxcols:
+            sheet.column_dimensions[get_column_letter(k + 1)].width = 20
+
+    # writing data to the sheet
+
+    for i, stud in enumerate(queryset):
+        # print()
+        # stdout.write( "\r%s of %s" %(str(i+1),str(number)))
+        # stdout.flush()
+        sheet.cell(row=i + 2, column=1).value = stud["county_name"]
+        sheet.cell(row=i + 2, column=2).value = stud["subcounty_name"]
+        sheet.cell(row=i + 2, column=3).value = stud["school_name"]
+        sheet.cell(row=i + 2, column=4).value = stud["school_emis_code"]
+        sheet.cell(row=i + 2, column=5).value = stud["school_type"]
+        sheet.cell(row=i + 2, column=6).value = stud["gender"]
+        sheet.cell(row=i + 2, column=7).value = get_age(stud["dob_date"])
+        sheet.cell(row=i + 2, column=8).value = get_quick_stream_class_name(stud["class_name"])
+        sheet.cell(row=i + 2, column=9).value = stud["guardian_name"]
+        sheet.cell(row=i + 2, column=10).value = stud["guardian_phone"]
+        sheet.cell(row=i + 2, column=11).value = stud["total_month_days"]
+        sheet.cell(row=i + 2, column=12).value = stud["total_attendance_days"]
+        sheet.cell(row=i + 2, column=13).value = stud["present"]
+        sheet.cell(row=i + 2, column=14).value = stud["absent"]
+        sheet.cell(row=i + 2, column=15).value = cal_perc(stud)
+    print ("the saving name ")
+    name=get_random()
+
+    temp_file="%s.xlsx"%(name)
+    wb.save(temp_file)
+    with open(temp_file) as f:
+        fname='exports/%s_%s.xlsx'%(sheet.title,name)
+        fname=fname.replace(" ","-")
+        default_storage.delete(fname)
+        path = default_storage.save(fname, f)
+
+    os.remove(temp_file)
+    # print (path)
+    return path
+
+
 
 

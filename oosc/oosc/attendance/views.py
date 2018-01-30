@@ -46,6 +46,8 @@ class AttendanceFilter(FilterSet):
     start_date = django_filters.DateFilter(name="date",lookup_expr="gte"  )
     end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
     school=django_filters.NumberFilter(name="_class__school",)
+    year=django_filters.NumberFilter(name="date__year")
+    month=django_filters.NumberFilter(name="date__month")
     county=django_filters.NumberFilter(name="_class__school__zone__subcounty__county",method="filter_county")
     partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="partner",method="filter_partner_admin",label="Partner Admin Id")
@@ -54,7 +56,7 @@ class AttendanceFilter(FilterSet):
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
-        fields=['Class','date','start_date','end_date','_class',"school","student","county","partner","county_name"]
+        fields=['Class','date','start_date','year','end_date','_class',"school","student","county","partner","county_name"]
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(_class__school__partners__id=value)

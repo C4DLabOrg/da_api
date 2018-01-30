@@ -37,6 +37,8 @@ from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner, 
 
 urlsv2=[
    url(r'^admin/',include("oosc.admin.v2.urlsv2")),
+   url(r'^attendances/',include("oosc.attendance.v2.urlsv2"))
+
 ]
 
 urlpatterns = [

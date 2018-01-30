@@ -1,6 +1,11 @@
 from rest_framework.exceptions import APIException
 from django.db.models import Q
 
+import uuid
+
+def get_random():
+    return uuid.uuid1()
+
 class MyCustomException(APIException):
     status_code = 503
     detail="Service temporarily unavailable, try again later."
@@ -36,6 +41,13 @@ def filter_students_by_names(queryset,value):
     )
 
 
+
+def get_quick_stream_class_name(name):
+    replace_words=["std","class","STD","CLASS"]
+    num=[f for f in name if f.isdigit()][0]
+    for d in replace_words:name=name.replace(d,"")
+    name=name.replace(num,"")
+    return "CLASS %s%s"%(num,name)
 
 def get_stream_name(obj):
     # print ( "data", type(obj))
