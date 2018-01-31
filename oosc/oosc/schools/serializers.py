@@ -9,6 +9,11 @@ class PostSchoolSerializer(serializers.ModelSerializer):
         fields=('id','school_code','subcounty', 'school_name','level','status','partners', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
         'headteacher','phone_no','partners')
 
+    # def validate_emis_code(self,value):
+    #     if Schools.objects.filter(emis_code=value).exists():
+    #         raise serializers.ValidationError("Emis code already exists.")
+    #     return value
+
 class SchoolsSerializer(serializers.ModelSerializer):
     #headteacher_name=serializers.SerializerMethodField()
     geo_coordinates=serializers.SerializerMethodField()
@@ -48,5 +53,10 @@ class SchoolsSerializer(serializers.ModelSerializer):
         if obj.zone == None:
             return None
         return obj.zone.name
+
+    # def validate_emis_code(self, value):
+    #     if Schools.objects.filter(emis_code=value).exists():
+    #         raise serializers.ValidationError("Emis code already exists.")
+    #     return value
     # def get_headteacher_name(self,obj):
     #     return obj.headteacher.username
