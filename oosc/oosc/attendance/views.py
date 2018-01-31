@@ -52,11 +52,12 @@ class AttendanceFilter(FilterSet):
     partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="partner",method="filter_partner_admin",label="Partner Admin Id")
     county_name=django_filters.CharFilter(name="_class__school__zone__subcounty__county__county_name",lookup_expr="icontains")
+    is_oosc=django_filters.BooleanFilter(name="student__is_oosc")
 
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
         model=Attendance
-        fields=['Class','date','start_date','year','end_date','_class',"school","student","county","partner","county_name"]
+        fields=['Class','date','start_date','year','end_date','is_oosc','_class',"school","student","county","partner","county_name"]
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(_class__school__partners__id=value)
@@ -307,7 +308,8 @@ class ListCreateAttendance(generics.ListAPIView):
         at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
         # #print (at)
         if format=="monthly":
-            at=sorted(at,key=lambda x: int(x["value"].split("-")[1]))
+            print("Getting monthly data ..")
+            at=sorted(at,key=lambda x: parse_date(x["value"]),reverse=True)
             return at
         return at.order_by("value")
 
