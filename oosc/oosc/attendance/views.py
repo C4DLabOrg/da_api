@@ -28,6 +28,9 @@ from rest_framework import serializers
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
 from django.utils.dateparse import parse_date
+
+from oosc.teachers.views import str2bool
+
 """
 from oosc.students.models import Students as St
 from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg,BooleanField
@@ -52,7 +55,7 @@ class AttendanceFilter(FilterSet):
     partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="partner",method="filter_partner_admin",label="Partner Admin Id")
     county_name=django_filters.CharFilter(name="_class__school__zone__subcounty__county__county_name",lookup_expr="icontains")
-    is_oosc=django_filters.BooleanFilter(name="student__is_oosc")
+    is_oosc=django_filters.CharFilter(name="student__is_oosc",method="filter_is_oosc")
 
     #date_range = django_filters.DateRangeFilter(name='date')
     class Meta:
@@ -61,6 +64,9 @@ class AttendanceFilter(FilterSet):
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(_class__school__partners__id=value)
+
+    def filter_is_oosc(self, queryset, name, value):
+        return queryset.filter(student__is_oosc=str2bool(value))
 
     def filter_county(self,queryset,name,value):
         return queryset.exclude(Q(student__class_id__school__zone=None) | Q(student__class_id__school__subcounty=None)).filter(Q(student__class_id__school__zone__subcounty__county=value) | Q(student__class_id__school__subcounty__county=value))
@@ -254,12 +260,10 @@ class ListCreateAttendance(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_my_queryset()
-
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -306,12 +310,15 @@ class ListCreateAttendance(generics.ListAPIView):
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
         # #print (at)
         at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
-        # #print (at)
+
+        return self.filter_formatted_data(format=format,data=at)
+
+
+    def filter_formatted_data(self,format,data):
         if format=="monthly":
-            print("Getting monthly data ..")
-            at=sorted(at,key=lambda x: parse_date(x["value"]),reverse=True)
-            return at
-        return at.order_by("value")
+            return sorted(data,key=lambda x: parse_date(x["value"]),reverse=True)
+        return data.order_by("value")
+
 
     def get_format(self,format):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)

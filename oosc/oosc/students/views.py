@@ -29,7 +29,7 @@ from oosc.stream.models import Stream
 from oosc.schools.models import Schools
 from oosc.teachers.models import Teachers
 from datetime import datetime
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField,F
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField,F, DateField
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework.response import Response
@@ -40,6 +40,7 @@ from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 from oosc.partner.models import Partner
 from sys import stdout
+from django.utils.dateparse import parse_date
 
 
 class StudentFilter(FilterSet):
@@ -204,8 +205,16 @@ class GetEnrolled(generics.ListAPIView):
     nonefomats = [ "class","gender", "county"]
     fakepaginate = False
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_my_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
-    def get_queryset(self):
+    def get_my_queryset(self):
         studs=self.filter_queryset(Students.objects.all())
         format = self.kwargs['type']
         at=self.get_formated_data(studs,format=format)
@@ -258,22 +267,16 @@ class GetEnrolled(generics.ListAPIView):
         enrolledm= self.resp_fields()
         # enrolledm, oldf, enrolledf, oldm,dropoldm,dropoldf,dropnewm,dropnewf = self.resp_fields()
         outp = Concat("month", Value(''), output_field=CharField())
-
         at = data.annotate(month=self.get_format(format=format)).values("month") \
             .order_by('month','type').annotate(type=enrolledm).annotate(count=Count("type"))
+        return self.filter_formatted_data(format=format,data=at)
 
-        # at = data.annotate(month=self.get_format(format=format)).values("month") \
-        #     .annotate(
-        #       enrolled_males=enrolledm,
-        #       enrolled_females=enrolledf,
-        #       old_males=oldm,
-        #       old_females=oldf,
-        #       dropout_enrolled_males=dropnewm,
-        #       dropout_enrolled_females=dropnewf,
-        #       dropout_old_males=dropoldm,
-        #       dropout_old_females=dropoldf,
-        #        value=outp).order_by('value')
-        return at
+    def filter_formatted_data(self,format,data):
+        # if format=="monthly":
+        #     print("Sorting the monthlyv data .")
+        #     return sorted(data,key=lambda x: parse_date(x["month"]),reverse=True)
+        return data.order_by("month")
+
 
     def group(self,data):
         data_dict=json.loads(json.dumps(data))
@@ -357,8 +360,10 @@ class GetEnrolled(generics.ListAPIView):
 
     def get_format(self,format):
         daily=Concat(TruncDate("date_enrolled"),Value(''),output_field=CharField(),)
-        monthly= Concat(Value('1/'), ExtractMonth('date_enrolled'), Value('/'), ExtractYear("date_enrolled"),
-                      output_field=CharField(), )
+        monthly= Concat(ExtractYear("date_enrolled"), Value('-'), ExtractMonth('date_enrolled'), Value('-1'), output_field=DateField(), )
+
+        # monthly= Concat(Value('1/'), ExtractMonth('date_enrolled'), Value('/'), ExtractYear("date_enrolled"),
+        #               output_field=CharField(), )
 
         if(format=="monthly"):
             return monthly

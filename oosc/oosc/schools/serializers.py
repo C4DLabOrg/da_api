@@ -37,13 +37,11 @@ class SchoolsSerializer(serializers.ModelSerializer):
             return obj.subcounty.name
         return None
 
-
-
     def get_county_name(self,obj):
         if obj.zone != None:
-            return obj.zone.county.county_name
+            return obj.zone.subcounty.county.county_name
         if obj.subcounty:
-            return obj.subcounty.name
+            return obj.subcounty.county.county_name
         return None
 
     def get_zone_name(self,obj):
