@@ -15,6 +15,8 @@ from oosc.mylib.common import MyCustomException
 import calendar
 
 from oosc.mylib.excel_export import export_attendance
+from oosc.schools.models import Schools
+from oosc.schools.views import ListCreateSchool
 
 
 class ExportMonthlyAttendances(generics.ListAPIView):
@@ -24,32 +26,7 @@ class ExportMonthlyAttendances(generics.ListAPIView):
     filter_class = AttendanceFilter
     monthyear=None
 
-
     def list(self, request, *args, **kwargs):
-        # school = request.query_params.get("school", None)
-        # if school == None:
-        #     raise MyCustomException("You can only generate for a certain school",400)
-        # queryset=self.filter_queryset(self.queryset)
-        # queryset=queryset.exclude(active=False,class_id=None)
-        # queryset=queryset.annotate(class_name=F("class_id__class_name"),
-        #                  school_name= F("class_id__school__school_name"),
-        #                  school_emis_code=F("class_id__school__emis_code"),
-        #                  )
-        # queryset=queryset.values("id","fstname","midname","lstname","class_id","class_name","school_name","school_emis_code")
-        # queryset=queryset.order_by("school_emis_code","class_name")
-        # print ("stuff")
-        # print("have the queryset")
-        # queryset=list(queryset)
-        # path=excel_generate(queryset)
-        # path = default_storage.save('exports/file.xlsx',wb)
-        # print (default_storage(path).base_url)
-
-        # url = request.build_absolute_uri(location="/media/"+path)
-        # resp={"link":url}
-        # print(resp)
-
-        #####Parse the key:list from query_params to just a simple key:value pair
-
         # data={k[0]: k[1] for k in request.query_params.items()}
         print(self.parse_query_params())
         serializer=self.get_serializer(data=self.parse_query_params())
@@ -97,4 +74,31 @@ class ExportMonthlyAttendances(generics.ListAPIView):
         self.monthyear={k[0]: int(k[1]) if k[1].isdigit() else k[1] for k in dd if k[0] in my }
         print (self.monthyear)
         return data
+
+
+class MonitorAttendanceTaking(generics.ListAPIView):
+    serializer_class = AttendanceSerializer
+    queryset = Attendance.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=AttendanceFilter
+
+    def get_queryset(self):
+        self.queryset = self.filter_queryset(self.queryset)
+        self.get_schools()
+        print ("The attendances are ",self.queryset.count())
+        return self.queryset
+
+    def get_schools(self):
+        filters=["county","partner"]
+        attendance_schools=self.queryset.annotate(school=F("_class__school_id"))\
+            .annotate(times=Count("_class"))\
+            .values( "times")
+
+        print( "Attendance schools ", attendance_schools)
+
+        schools_queryset=DjangoFilterBackend().filter_queryset(self.request,Schools.objects.all(),ListCreateSchool)
+        # schools_queryset=DjangoFilterBackend().fi(self.request,Schools.objects.all(),self)
+        print( "The schools are", schools_queryset.count())
+
+
 

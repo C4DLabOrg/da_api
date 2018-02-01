@@ -27,6 +27,11 @@ class ListCreateClass(generics.ListCreateAPIView):
     filter_class=StreamFilter
 
 
+    def get_queryset(self):
+        return self.queryset.order_by("school","_class","class_name")
+
+
+
     def get_serializer_class(self):
         print(self.request.method)
         if self.request.method == "GET":
