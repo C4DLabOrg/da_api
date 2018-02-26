@@ -20,7 +20,7 @@ class RestPassword(generics.UpdateAPIView):
         instance = self.get_object()
         if instance.is_superuser:
             raise MyCustomException("Admin account.",403)
-        passwd=self.request.data.get("password","admin")
+        passwd=serializer.validated_data.get("password")
         instance.set_password(passwd)
         instance.save()
         if getattr(instance, '_prefetched_objects_cache', None):

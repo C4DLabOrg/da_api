@@ -6,7 +6,7 @@ from oosc.schools.models import Schools
 
 class ResetPasswordSerializer(serializers.Serializer):
     username=serializers.CharField(max_length=50)
-    password=serializers.CharField(required=False,max_length=50,write_only=True)
+    password=serializers.CharField(required=True,max_length=50,write_only=True)
 
 
     def validate_username(self,value):

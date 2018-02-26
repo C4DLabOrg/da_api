@@ -415,6 +415,7 @@ class ListCreateAttendance(generics.ListAPIView):
 #             return Response(data={"error": "Error", "error_description": e.message},status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class TakeAttendance(APIView):
     permission_classes = (IsTeacherOfTheSchool,)
     def post(self,request,format=None):

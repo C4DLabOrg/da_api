@@ -17,6 +17,9 @@ import calendar
 from oosc.mylib.excel_export import export_attendance
 from oosc.schools.models import Schools
 from oosc.schools.views import ListCreateSchool
+from oosc.stream.models import Stream
+from oosc.stream.serializers import StreamSerializer
+from oosc.stream.views import ListCreateClass, StreamFilter
 
 
 class ExportMonthlyAttendances(generics.ListAPIView):
@@ -78,27 +81,37 @@ class ExportMonthlyAttendances(generics.ListAPIView):
 
 class MonitorAttendanceTaking(generics.ListAPIView):
     serializer_class = AttendanceSerializer
-    queryset = Attendance.objects.all()
+    queryset = Stream.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    filter_class=AttendanceFilter
+    filter_class=StreamFilter
 
     def get_queryset(self):
         self.queryset = self.filter_queryset(self.queryset)
-        self.get_schools()
-        print ("The attendances are ",self.queryset.count())
+        # self.get_schools()
+        # print ("The attendances are ",self.queryset.count())
+
         return self.queryset
+
+    # def list(self, request, *args, **kwargs):
+    #     atts=self.get_schools()
+    #     return Response(atts)
+        # return Response(StreamSerializer(atts,many=True))
+
 
     def get_schools(self):
         filters=["county","partner"]
-        attendance_schools=self.queryset.annotate(school=F("_class__school_id"))\
-            .annotate(times=Count("_class"))\
-            .values( "times")
+        attendance_streams=list(self.queryset().annotate(school=F("_class__school_id")).values("school")\
+            .annotate(times=Count("school"))\
+            .values_list("_class",flat=True))
+        # print( "Attendance streams ", attendance_streams)
 
-        print( "Attendance schools ", attendance_schools)
-
-        schools_queryset=DjangoFilterBackend().filter_queryset(self.request,Schools.objects.all(),ListCreateSchool)
+        classes_queryset=list(DjangoFilterBackend().filter_queryset(self.request,Attendance.objects.all(),ExportMonthlyAttendances))
+        # no_attendances_streams = [d._class for d in classes_queryset if d._class not in attendance_streams ]
         # schools_queryset=DjangoFilterBackend().fi(self.request,Schools.objects.all(),self)
-        print( "The schools are", schools_queryset.count())
+        # print( "The Streams are", classes_queryset.count())
+        return classes_queryset
+
+
 
 
 
