@@ -165,9 +165,9 @@ class RetrieveUpdateTeacher(generics.RetrieveUpdateDestroyAPIView):
         usr.delete()
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
-    def perform_update(self, serializer):
-        if object.non_delete: raise MyCustomException("You cannot edit the super admin of the school.",403)
-        serializer.save()
+    # def perform_update(self, serializer):
+    #     if object.non_delete: raise MyCustomException("You cannot edit the super admin of the school.",403)
+    #     serializer.save()
 
 
 
