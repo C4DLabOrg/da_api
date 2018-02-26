@@ -56,7 +56,6 @@ class StudentsSerializer(serializers.ModelSerializer):
 class SimpleStudentSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
     short_name = serializers.SerializerMethodField()
-    reason=serializers.SerializerMethodField()
     class Meta:
         model=Students
         fields=("__all__")
@@ -72,11 +71,6 @@ class SimpleStudentSerializer(serializers.ModelSerializer):
         elif obj.lstname:
             return obj.fstname + " " + obj.lstname
         return obj.fstname + " " + obj.midname
-
-    def get_reason(self,obj):
-        if obj.logs:
-            return obj.logs
-        return None
     #nothing
 class SimplerStudentSerializer(serializers.Serializer):
    fstname=serializers.CharField(max_length=150,required=False)
