@@ -5,6 +5,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+
+from oosc.mylib.common import MyCustomException
 from oosc.teachers.models import Teachers
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
@@ -162,6 +164,11 @@ class RetrieveUpdateTeacher(generics.RetrieveUpdateDestroyAPIView):
         usr=User.objects.get(id=object.user_id)
         usr.delete()
         return Response("", status=status.HTTP_204_NO_CONTENT)
+
+    def perform_update(self, serializer):
+        if object.non_delete: raise MyCustomException("You cannot edit the super admin of the school.",403)
+        serializer.save()
+
 
 
 
