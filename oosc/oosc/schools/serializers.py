@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from oosc.schools.models import Schools
+from oosc.schools.models import Schools, Term
 
 
 class PostSchoolSerializer(serializers.ModelSerializer):
@@ -13,6 +13,14 @@ class PostSchoolSerializer(serializers.ModelSerializer):
     #     if Schools.objects.filter(emis_code=value).exists():
     #         raise serializers.ValidationError("Emis code already exists.")
     #     return value
+
+class TermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Term
+        fields=("__all__")
+
+
+
 
 class SchoolsSerializer(serializers.ModelSerializer):
     #headteacher_name=serializers.SerializerMethodField()

@@ -969,8 +969,6 @@ class ExportStudents(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class = StudentFilter
 
-
-
     def list(self, request, *args, **kwargs):
         school = request.query_params.get("school", None)
         if school == None:
