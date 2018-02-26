@@ -52,12 +52,14 @@ class StudentsSerializer(serializers.ModelSerializer):
 
 
 
+
 class SimpleStudentSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
     short_name = serializers.SerializerMethodField()
+    reason=serializers.SerializerMethodField()
     class Meta:
         model=Students
-        fields=('id','student_id','dropout_reason','guardian_name','offline_id','date_of_birth','short_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
+        fields=("__all__")
 
     def get_short_name(self, obj):
         if obj.lstname:
@@ -70,7 +72,18 @@ class SimpleStudentSerializer(serializers.ModelSerializer):
         elif obj.lstname:
             return obj.fstname + " " + obj.lstname
         return obj.fstname + " " + obj.midname
+
+    def get_reason(self,obj):
+        if obj.logs:
+            return obj.logs
+        return None
     #nothing
+class SimplerStudentSerializer(serializers.Serializer):
+   fstname=serializers.CharField(max_length=150,required=False)
+   lstname=serializers.CharField(max_length=150,required=False)
+   name=serializers.CharField(max_length=150,required=False)
+   gender=serializers.CharField(max_length=150,required=False)
+   logs=serializers.CharField(max_length=150,required=False)
 
 
 class ImportErrorSerializer(serializers.Serializer):

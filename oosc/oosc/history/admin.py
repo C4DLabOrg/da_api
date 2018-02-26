@@ -5,4 +5,4 @@ from oosc.history.models import History
 class classAdmin(admin.ModelAdmin):
     list_display=['student','_class','joined','created','modified','joined_description','left','left_description']
 
-admin.site.register(History,classAdmin);
+admin.site.register(History,classAdmin)

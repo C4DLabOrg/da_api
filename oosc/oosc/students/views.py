@@ -8,6 +8,7 @@ from django.shortcuts import render
 import json
 
 from django.templatetags.static import static
+from django_subquery.expressions import OuterRef, Subquery
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
@@ -17,7 +18,8 @@ from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer
+from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer, \
+    SimpleStudentSerializer, SimplerStudentSerializer
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
@@ -932,6 +934,28 @@ class ListAbsentStudents(generics.ListAPIView):
 
     def get_serializer_class(self):
         return AbsentStudentSerializer
+
+
+class GetDroupoutsWithReasons(generics.ListAPIView):
+    queryset = Students.objects.filter(active=False,graduated=False)
+    serializer_class=SimpleStudentSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=StudentFilter
+
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         # serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(queryset)
+    #     return Response(queryset)
+
+    def get_queryset(self):
+        hist=History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
+        return self.queryset.annotate(logs=Subquery(hist[:1]),
+                                      name=Concat(F("fstname"),Value(" "),F("midname"),Value(" "),F("lstname")))
+
 
 class ListDropouts(generics.ListAPIView):
     queryset = Students.objects.filter(active=False)
