@@ -135,7 +135,7 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
         if(ser.data["reason"].lower() == "error"):
             object.delete()
             return Response("",status=status.HTTP_204_NO_CONTENT);
-        object.deactivate()
+        object.deactivate(ser.data["reason"])
         object.save()
         hist=History.objects.filter(student=object,_class=object.class_id)
         if(hist.exists()):

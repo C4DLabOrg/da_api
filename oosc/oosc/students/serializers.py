@@ -13,7 +13,7 @@ class StudentsSerializer(serializers.ModelSerializer):
     stay_with_display=serializers.SerializerMethodField()
     class Meta:
         model = Students
-        fields = ('id','student_id','guardian_name','mode_of_transport_display','time_to_school_display','stay_with_display','offline_id','short_name','created','is_oosc','modified','guardian_phone','active','date_enrolled', 'emis_code','last_attendance','class_name','school_name','total_absents','student_name', 'fstname','midname','lstname','date_of_birth', 'admission_no', 'class_id',
+        fields = ('id','student_id','dropout_reason','guardian_name','mode_of_transport_display','time_to_school_display','stay_with_display','offline_id','short_name','created','is_oosc','modified','guardian_phone','active','date_enrolled', 'emis_code','last_attendance','class_name','school_name','total_absents','student_name', 'fstname','midname','lstname','date_of_birth', 'admission_no', 'class_id',
         'gender', 'previous_class', 'mode_of_transport','time_to_school', 'stay_with', 'household',
         'meals_per_day', 'not_in_school_before', 'emis_code_histories')
 
@@ -57,7 +57,7 @@ class SimpleStudentSerializer(serializers.ModelSerializer):
     short_name = serializers.SerializerMethodField()
     class Meta:
         model=Students
-        fields=('id','student_id','guardian_name','offline_id','date_of_birth','short_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
+        fields=('id','student_id','dropout_reason','guardian_name','offline_id','date_of_birth','short_name','created','is_oosc','modified','active','class_id','guardian_phone','student_name','gender','date_enrolled', 'emis_code','last_attendance','total_absents', 'fstname','midname','lstname')
 
     def get_short_name(self, obj):
         if obj.lstname:

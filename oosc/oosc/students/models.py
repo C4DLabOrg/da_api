@@ -38,6 +38,7 @@ class Students(models.Model):
     modified=models.DateTimeField(auto_now=True)
     is_oosc=models.BooleanField(default=False)
     graduated=models.BooleanField(default=False)
+    dropout_reason=models.CharField(max_length=200,null=True,blank=True)
     offline_id=models.CharField(max_length=20,null=True,blank=True)
     graduates_class=models.ForeignKey(GraduatesStream,null=True,blank=True,on_delete=models.SET_NULL)
     ## Is it an out of school children
@@ -50,9 +51,10 @@ class Students(models.Model):
     class Meta:
         ordering=['-gender']
 
-    def deactivate(self):
+    def deactivate(self,reason=None):
         self.active=False
         self.class_id=None
+        self.dropout_reason=reason
         # self.class_id_id=11094
         # self.class_id_id=11078
 
