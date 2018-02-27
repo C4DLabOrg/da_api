@@ -122,7 +122,7 @@ def get_stream_name(obj):
     return "CLASS %s %s" %(bs,str_name)
 
 
-def make_attendance_history():
+# def make_attendance_history():
 
 
 
