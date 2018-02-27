@@ -11,7 +11,7 @@ from datetime import datetime,timedelta
 from oosc.attendance.models import Attendance, AttendanceHistory
 from oosc.classes.models import PublicHoliday
 
-
+from sys import stdout
 def get_random():
     return uuid.uuid1()
 
@@ -141,7 +141,8 @@ def make_attendance_history():
         pbss=pobj[0]["count"] if len(pobj)>0 and "count" in pobj[0] else 0
         ath = AttendanceHistory(id=id, absent=abss,present=pbss, date=i["date"], _class_id=i["_class"])
         c=c+1
-        print ("%s of %s"%(c,len(atts)))
+        stdout.write ("\r%s of %s"%(c,len(atts)))
+        stdout.flush()
         ath.save()
     print (atts)
 
