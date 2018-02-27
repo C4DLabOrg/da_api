@@ -25,3 +25,11 @@ class AttendanceHistorySerializier(serializers.ModelSerializer):
     class Meta:
         model=AttendanceHistory
         fields=("__all__")
+class GetAttendanceHistorySerilizer(serializers.Serializer):
+    attendance_count=serializers.IntegerField(default=0)
+    id=serializers.IntegerField(default=0)
+    total_days=serializers.IntegerField(default=0)
+    school_emis_code=serializers.IntegerField(default=0)
+    school_name=serializers.CharField(required=False)
+    school_type=serializers.CharField(required=False)
+    class_name=serializers.CharField(required=False)

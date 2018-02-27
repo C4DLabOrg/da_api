@@ -12,7 +12,7 @@ from oosc.stream.models import Stream
 from oosc.stream.serializers import StreamSerializer
 from oosc.stream.views import StreamFilter
 from oosc.students.models import Students
-from oosc.attendance.serializers import AbsentStudentSerializer
+from oosc.attendance.serializers import AbsentStudentSerializer, GetAttendanceHistorySerilizer
 from oosc.absence.serializers import DetailedAbsenceserializer, AbsenceSerializer
 from oosc.attendance.serializers import AttendanceSerializer
 from oosc.absence.models import Absence
@@ -467,7 +467,7 @@ class AttendanceHistorySerializer(object):
 
 class MonitoringAttendanceTaking(generics.ListAPIView):
     queryset = Stream.objects.all()
-    serializer_class = StreamSerializer
+    serializer_class = GetAttendanceHistorySerilizer
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
 
@@ -504,15 +504,15 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
             return streams.filter(attendance_count__isnull=True)
 
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            # serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(queryset)
-
-        # serializer = self.get_serializer(queryset, many=True)
-        return Response(queryset)
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(queryset)
+    #
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(queryset)
 
     def parse_querparams(self):
         start_date = self.request.GET.get("start_date", None)
