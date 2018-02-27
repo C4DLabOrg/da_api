@@ -127,24 +127,30 @@ def get_stream_name(obj):
 def make_attendance_history():
     # .filter(date=datetime.now().date())
     atts=list(Attendance.objects.values("date","_class","status")\
-        .annotate(count=Count("status")))
+        .annotate(count=Count("status")).order_by("date","_class"))
     local_tz = pytz.timezone('Africa/Nairobi')
     print (len(atts))
     c=0
+    thedate=None
+    theclass=None
     for i in atts:
         id=datetime.strftime(i["date"].replace(tzinfo=pytz.utc).astimezone(local_tz),"%Y%m%d")+"%s"%(i["_class"])
         # print (id,)
-        pobj=filter(lambda x: x["date"] == i["date"] and x["_class"] == i["_class"] and x["status"]==1,copy.deepcopy(atts))
-        aobj=filter(lambda x: x["date"] == i["date"] and x["_class"] == i["_class"] and x["status"]==0,copy.deepcopy(atts))
-        # print ("stuff",pobj,aobj)
-        abss=aobj[0]["count"] if len(aobj) > 0 and "count" in aobj[0] else 0
-        pbss=pobj[0]["count"] if len(pobj)>0 and "count" in pobj[0] else 0
-        ath = AttendanceHistory(id=id, absent=abss,present=pbss, date=i["date"], _class_id=i["_class"])
+        if thedate==i["date"] and theclass==i["_class"]:
+            pass
+        else:
+            pobj=filter(lambda x: x["date"] == i["date"] and x["_class"] == i["_class"] and x["status"]==1,copy.deepcopy(atts))
+            aobj=filter(lambda x: x["date"] == i["date"] and x["_class"] == i["_class"] and x["status"]==0,copy.deepcopy(atts))
+            # print ("stuff",pobj,aobj)
+            abss=aobj[0]["count"] if len(aobj) > 0 and "count" in aobj[0] else 0
+            pbss=pobj[0]["count"] if len(pobj)>0 and "count" in pobj[0] else 0
+            ath = AttendanceHistory(id=id, absent=abss,present=pbss, date=i["date"], _class_id=i["_class"])
+            ath.save()
         c=c+1
         stdout.write ("\r%s of %s"%(c,len(atts)))
         stdout.flush()
-        ath.save()
-    print (atts)
+        thedate=i["date"]
+        theclass=i["_class"]
 
 
 # make_attendance_history()
