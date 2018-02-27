@@ -113,13 +113,14 @@ class SerializerAll(serializers.Serializer):
         # #print instance,self.get_total(instance)
         stud = self.context.get("student")
         type = self.context.get("type")
-        if stud:
+        if stud  :
             return {"present": instance["present_males"] + instance["present_females"],
                     "absent": instance["absent_males"] + instance["absent_females"],
                     "total": int(self.get_total(instance)), "value": instance["value"]}
         return super(SerializerAll, self).to_representation(instance)
 
 class SerializerAllPercentages(serializers.Serializer):
+
     value=serializers.CharField()
     present_males=serializers.IntegerField(write_only=True)
     present_females=serializers.IntegerField(allow_null=True,write_only=True)
@@ -157,7 +158,9 @@ class SerializerAllPercentages(serializers.Serializer):
         ##print instance,self.get_total(instance)
         stud=self.context.get("student")
         type=self.context.get("type")
-        if stud:
+        return_type=self.context.get("return_type")
+        # print ("return type",return_type)
+        if stud or return_type == "count":
             return {"present":instance["present_males"]+instance["present_females"],"absent":instance["absent_males"]+instance["absent_females"],"total":int(self.get_total(instance)),"value":instance["value"]}
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
@@ -295,7 +298,8 @@ class ListCreateAttendance(generics.ListAPIView):
     def get_serializer_context(self):
         ####print("setting the context")
         student = self.request.query_params.get('student', None)
-        return {'type': self.kwargs['type'], "student": student}
+        return_type = self.request.query_params.get('return_type', None)
+        return {'type': self.kwargs['type'], "student": student,"return_type":return_type}
 
     def get_serializer_class(self):
         if self.request.method == "GET":

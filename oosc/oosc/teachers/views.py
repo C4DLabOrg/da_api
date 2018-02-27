@@ -75,6 +75,7 @@ class ListCreateTeachers(APIView):
     permission_classes = ( IsAuthenticated, IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
         teach=Teachers.objects.filter(user=self.request.user.id)
+        print(teach)
         if(len(teach) > 0):
             teachers=TeacherAllSerializer(teach[0])
             return Response(data=teachers.data,status=status.HTTP_200_OK)
