@@ -17,7 +17,8 @@ Including another URLconf
 import debug_toolbar
 from django.conf.urls import url, include
 from django.contrib import admin
-from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport,ListAbsentees
+from oosc.attendance.views import ListCreateAttendance,TakeAttendance,WeeklyAttendanceReport,ListAbsentees, \
+    MonitoringAttendanceTaking
 from oosc.promotions.views import  CreateListPromoteSchool, RetrievePromoteSschool, RetrieveCompletePromoteSschool
 from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
 from oosc.constituencies.views import ListCreateCounstituency
@@ -45,6 +46,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/v2/', include(urlsv2)),
     url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
+    url(r'^api/attendances/monitor$',MonitoringAttendanceTaking.as_view(),name="weekly_attendance_report"),
     url(r'^api/attendances/(?P<type>.+)',ListCreateAttendance.as_view(),name="attendance-list-create"),
     url(r'^api/attendance',TakeAttendance.as_view(),name="take_attendance"),
     url(r'^api/absentees',ListAbsentees.as_view(),name="list_absentees_for_the_pastweek"),

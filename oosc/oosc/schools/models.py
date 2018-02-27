@@ -1,8 +1,10 @@
 from django.db import models
 #from oosc.teachers.models import Teachers
-from django.db.models import Q
+from django.db.models import Q, DateField
+from django.db.models.expressions import Value, F
+from django.db.models.functions import Concat
 
-from oosc.classes.models import PuclicHolidays
+from oosc.classes.models import PublicHoliday
 from oosc.subcounty.models import SubCounty
 from oosc.zone.models import Zone
 from django.contrib.auth.models import User
@@ -13,6 +15,9 @@ from oosc.partner.models import Partner
 
 from datetime import datetime, date, timedelta
 
+# from oosc.schools.models import Term
+# t=Term.objects.get(id="12018")
+# t.get_term_dates()
 
 class Schools(models.Model):
     LEVELS=(('PRIMARY','Primary'),('SECONDARY','Secondary'))
@@ -38,26 +43,35 @@ class Schools(models.Model):
 
 class Term(models.Model):
     TERMS=(('1','1st Term'),('2','2nd Term'),('3','3rd Term'))
-    id=models.CharField(primary_key=True)
+    id=models.CharField(primary_key=True,max_length=30)
     year=models.IntegerField(default=datetime.now().year)
     term=models.CharField(max_length=2,choices=TERMS)
     start_date=models.DateField()
     end_date=models.DateField()
     # objects=TermManager()
 
-    def get_term_dates(self):
+
+
+    def get_term_dates(self,year=None):
+        #Get the current year or any other year
+        thisyear=datetime.now().year if year==None else year
         thedate = self.start_date
-        # thirty_days = today + timedelta(days=1)
-        holidays=list(PuclicHolidays.objects.filter(Q(term_id=None)|Q(term_id=self.id)).values_list("date",flat=True))
+        ###Exclude holidays and sny days set
+        theholidays=list(PublicHoliday.objects.exclude(Q(year__lt=thisyear) | Q(year__gt=thisyear)).\
+            annotate(date=Concat(Value(thisyear),Value("-"),F("month"),Value("-"),F("day"),output_field=DateField()))\
+            .values_list("date",flat=True))
+        holidays=[datetime.strptime(d,"%Y-%m-%d").date() for d in theholidays]
         days=[]
-        while self.start_date <  thedate:
+
+        while thedate  !=  self.end_date:
             if thedate.weekday() < 5 and thedate not in holidays:
                 days.append(thedate)
-            print ("%s %s"%(self.start_date,thedate))
-
+            else:
+                pass
+                # print ("Weekend %s"%(thedate))
+            thedate+=timedelta(days=1)
+            # print ("New Date ",thedate)
         return days
-
-
 
 
 

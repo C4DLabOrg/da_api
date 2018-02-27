@@ -1,11 +1,16 @@
 from django.db.models.functions import Trunc
 from django.http.response import HttpResponseBase
 from django.shortcuts import render
-from oosc.attendance.models import Attendance
+
+from oosc.attendance.apps import attendance_taken
+from oosc.attendance.models import Attendance, AttendanceHistory
 from rest_framework import generics,status
 from datetime import datetime
 
+from oosc.mylib.common import MyCustomException, get_list_of_dates
 from oosc.stream.models import Stream
+from oosc.stream.serializers import StreamSerializer
+from oosc.stream.views import StreamFilter
 from oosc.students.models import Students
 from oosc.attendance.serializers import AbsentStudentSerializer
 from oosc.absence.serializers import DetailedAbsenceserializer, AbsenceSerializer
@@ -42,6 +47,16 @@ ot=list(St.objects.filter(class_id__school__emis_code__in=emis).values("class_id
 
 """
 
+
+class AttendanceHistoryFilter(FilterSet):
+    Class=django_filters.CharFilter(name="_class")
+    date=django_filters.DateFilter(name="date__date",)
+    start_date = django_filters.DateFilter(name="date",lookup_expr="gte"  )
+    end_date = django_filters.DateFilter(name='date', lookup_expr=('lte'))
+
+    class Meta:
+        model=AttendanceHistory
+        fields=('id','start_date','date','end_date','_class',"Class")
 
 class AttendanceFilter(FilterSet):
     Class=django_filters.CharFilter(name="_class")
@@ -176,7 +191,6 @@ class StandardresultPagination(PageNumberPagination):
     page_size = 100
     max_page_size = 1000
     page_size_query_param = 'page_size'
-
 
 
 
@@ -346,84 +360,23 @@ class ListCreateAttendance(generics.ListAPIView):
             # #print daily
             return daily
 
-# class TakeAttendance(APIView):
-#     def post(self, request, format=None):
-#         now = self.request.data["date"].replace('-', '')
-#         absents = []
-#         thedate = self.request.data["date"]
-#         #print (request.data)
-#         batchatts=[]
-#         try:
-#             for i in request.data["present"]:
-#                 #print ("present")
-#                 student = Students()
-#                 student = Students.objects.filter(id=i)[0]
-#                 student.total_absents = 0
-#                 student.last_attendance = datetime.now().date()
-#                 abs = Absence.objects.filter(student=student, status=False)
-#                 # if(len(abs)>0):
-#                 #     #print "reason for absence needed"
-#                 #     absents.append(student)
-#                 #     #print "added to absents"
-#                 # #print student
-#                 # student.save()
-#                 attendance = Attendance()
-#                 attendance.date = thedate
-#                 attendance.id = now + str(i)
-#                 attendance.status = 1
-#                 attendance._class = student.class_id
-#                 attendance.student = student
-#                 batchatts.append(attendance)
-#                 #print (attendance.id)
-#             for i in request.data["absent"]:
-#                 #print ("Absemt")
-#                 student = Students()
-#                 student = Students.objects.filter(id=i)[0]
-#                 # student.total_absents = student.total_absents + 1
-#                 # if(student.total_absents>4):
-#                 #     abs=Absence.objects.filter(student=student,status=False)
-#                 #     if(len(abs)>0):
-#                 #         #print ("found")
-#                 #         abs[0].date_to=datetime.now().date()
-#                 #         abs[0].save()
-#                 #     else:
-#                 #         #print ("saving ...")
-#                 #         ab=Absence()
-#                 #         ab.student=student
-#                 #         ab.date_to=datetime.now().date()
-#                 #         ab.date_from=student.last_attendance
-#                 #         ab.status=False
-#                 #         ab.save()
-#                 #         #print ("Saved ...")
-#                 # else:
-#                 #     #print ("within ")
-#                 #     student.save()
-#                 attendance = Attendance()
-#                 attendance.date = thedate
-#                 attendance.id = now + str(i)
-#                 attendance.status = 0
-#                 attendance._class = student.class_id
-#                 attendance.student = student
-#                 batchatts.append(attendance)
-#             #tt=Attendance.objects.bulk_create(batchatts)
-#             bulk_update(batchatts)
-#             ####print("Done replying ")
-#             absnts = Absence.objects.filter(student__in=absents)
-#             # ser=DetailedAbsenceserializer(absnts,many=True)
-#             return Response(data=[], status=status.HTTP_201_CREATED)
-#         except Exception as e:
-#             return Response(data={"error": "Error", "error_description": e.message},status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class TakeAttendance(APIView):
     permission_classes = (IsTeacherOfTheSchool,)
+
+    def send_attendance(self, present, absent,date,_class):
+        attendance_taken.send(sender=self.__class__, _class=_class,absent=absent,present=present,date=date)
+
     def post(self,request,format=None):
         now=self.request.data["date"].replace('-','')
         absents=[]
         thedate=self.request.data["date"]
         #print (request.data)
         classid=None
+        pres=len(request.data["present"])
+        abss=len(request.data["absent"])
+        date=thedate
+        dclassid=None
         try:
             with transaction.atomic():
                 for i in request.data["present"]:
@@ -431,6 +384,13 @@ class TakeAttendance(APIView):
                     student=Students()
                     student=Students.objects.filter(id=i)[0]
                     student.total_absents=0
+
+                    ###send the
+                    if student.class_id !=dclassid:
+                        dclassid=student.class_id
+                        self.send_attendance(present=pres,absent=abss,date=date,_class=student.class_id_id)
+
+
                     student.last_attendance=datetime.now().date()
                     abs = Absence.objects.filter(student=student, status=False)
                     # if(len(abs)>0):
@@ -454,6 +414,12 @@ class TakeAttendance(APIView):
                     student = Students()
 
                     student = Students.objects.filter(id=i)[0]
+
+                    ###send the
+                    if student.class_id != dclassid:
+                        dclassid = student.class_id
+                        self.send_attendance(present=pres, absent=abss, date=date, _class=student.class_id_id)
+
                     # student.total_absents = student.total_absents + 1
                     # if(student.total_absents>4):
                     #     abs=Absence.objects.filter(student=student,status=False)
@@ -495,72 +461,67 @@ class TakeAttendance(APIView):
             return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
 
 
-#
-# class TakeAttendance(APIView):
-#     def post(self,request,format=None):
-#         now=self.request.data["date"].replace('-','')
-#         absents=[]
-#         thedate=self.request.data["date"]
-#         #print (request.data)
-#         try:
-#             for i in request.data["present"]:
-#                 #print ("present")
-#                 student=Students()
-#                 student=Students.objects.filter(id=i)[0]
-#                 student.total_absents=0
-#                 student.last_attendance=datetime.now().date()
-#                 abs = Absence.objects.filter(student=student, status=False)
-#                 # if(len(abs)>0):
-#                 #     #print "reason for absence needed"
-#                 #     absents.append(student)
-#                 #     #print "added to absents"
-#                 # #print student
-#                 # student.save()
-#                 attendance=Attendance()
-#                 attendance.date=thedate
-#                 attendance.id=now+str(i)
-#                 attendance.status=1
-#                 attendance._class=student.class_id
-#                 attendance.student=student
-#                 attendance.save()
-#
-#                 #print (attendance.id)
-#             for i in request.data["absent"]:
-#                 #print ("Absemt")
-#                 student = Students()
-#                 student = Students.objects.filter(id=i)[0]
-#                 # student.total_absents = student.total_absents + 1
-#                 # if(student.total_absents>4):
-#                 #     abs=Absence.objects.filter(student=student,status=False)
-#                 #     if(len(abs)>0):
-#                 #         #print ("found")
-#                 #         abs[0].date_to=datetime.now().date()
-#                 #         abs[0].save()
-#                 #     else:
-#                 #         #print ("saving ...")
-#                 #         ab=Absence()
-#                 #         ab.student=student
-#                 #         ab.date_to=datetime.now().date()
-#                 #         ab.date_from=student.last_attendance
-#                 #         ab.status=False
-#                 #         ab.save()
-#                 #         #print ("Saved ...")
-#                 # else:
-#                 #     #print ("within ")
-#                 #     student.save()
-#                 attendance = Attendance()
-#                 attendance.date = thedate
-#                 attendance.id = now + str(i)
-#                 attendance.status = 0
-#                 attendance._class = student.class_id
-#                 attendance.student = student
-#                 attendance.save()
-#             ####print("Done replying")
-#             absnts=Absence.objects.filter(student__in=absents)
-#             #ser=DetailedAbsenceserializer(absnts,many=True)
-#             return Response(data=[],status=status.HTTP_201_CREATED)
-#         except Exception as e:
-#             return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
+class AttendanceHistorySerializer(object):
+    pass
+
+
+class MonitoringAttendanceTaking(generics.ListAPIView):
+    queryset = Stream.objects.all()
+    serializer_class = StreamSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=StreamFilter
+
+    def get_queryset(self):
+        start_date,end_date,attendance_taken=self.parse_querparams()
+        print ('%s to %s'%(start_date,end_date))
+        days=get_list_of_dates(start_date=start_date,end_date=end_date)
+        total_days=len(days)
+        # print (total_days)
+
+        atts=AttendanceHistory.objects.all()
+        streams=self.filter_queryset(self.queryset)
+        atts=atts.filter(_class_id=OuterRef("id")).filter(date__in=days).annotate(theclass=F("_class")).values("_class").\
+            annotate(count=Count("_class")).values_list("count",flat=True)
+        streams=streams.annotate(attendance_count=Subquery(atts[:1],output_field=IntegerField()),
+                                 total_days=Value(total_days,output_field=IntegerField()),
+                                 school_name=F("school__school_name"),
+                              school_type=F("school__status"),
+                              school_emis_code=F("school__emis_code"),
+                                 ).values("id","attendance_count","class_name","total_days","school_name","school_emis_code","school_type")\
+            .order_by("school_name","class_name")
+        # atts=atts.filter(date__in=days).annotate(theclass=F("_class")).values("_class").\
+        #     annotate(count=Count("_class"),
+        #              total_days=Value(total_days,output_field=IntegerField()),
+        #              school_name=F("_class__school__school_name"),
+        #              school_type=F("_class__school__status"),
+        #              school_emis_code=F("_class__school__emis_code"),
+        #              class_name=F("_class__class_name"))\
+        #     .values("count","_class_id","class_name","total_days","school_name","class_name","school_type","school_emis_code")
+        print (attendance_taken)
+        if  attendance_taken:
+            return streams.filter(attendance_count__gte=0)
+        else:
+            return streams.filter(attendance_count__isnull=True)
+
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            # serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(queryset)
+
+        # serializer = self.get_serializer(queryset, many=True)
+        return Response(queryset)
+
+    def parse_querparams(self):
+        start_date = self.request.GET.get("start_date", None)
+        end_date = self.request.GET.get("end_date", None)
+        taken_attendance = self.request.GET.get("taken_attendance", None)
+        if start_date == None or end_date == None or taken_attendance ==None: raise MyCustomException(
+            "You must include the `start_date` , `end_date` , `taken_attendance` in the query params");
+        print ("taken_attendance",taken_attendance)
+        return start_date,end_date,str2bool(taken_attendance)
 
 class WeeklyAttendanceReport(APIView):
     def get(self,request,format=None):

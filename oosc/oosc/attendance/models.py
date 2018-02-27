@@ -1,4 +1,8 @@
+import django
 from django.db import models
+from django.dispatch import receiver
+
+from oosc.attendance.apps import attendance_taken
 from oosc.stream.models import Stream
 from oosc.students.models import Students
 from datetime import datetime
@@ -17,3 +21,23 @@ class Attendance(models.Model):
         return str(self.student)
     class Meta:
         get_latest_by="date"
+
+
+
+
+class AttendanceHistory(models.Model):
+    date=models.DateField()
+    id=models.CharField(primary_key=True,blank=True,max_length=50)
+    _class=models.ForeignKey(Stream,on_delete=models.CASCADE)
+    present=models.IntegerField(default=0)
+    absent=models.IntegerField(default=0)
+
+
+@receiver(attendance_taken)
+def receive_attendance_taken(date,present,absent,_class,**kwargs):
+    print("REceived the signal")
+    print (date,present,absent,_class)
+    id = date.replace('-', '')+"%s"%(_class)
+    at=AttendanceHistory(id=id,present=present,_class_id=_class,absent=absent,date=date)
+    at.save()
+

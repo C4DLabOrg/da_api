@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from oosc.attendance.models import Attendance
+from oosc.attendance.models import Attendance, AttendanceHistory
 from oosc.students.serializers import SimpleStudentSerializer,StudentsSerializer
 from oosc.students.models import Students
 class AttendanceSerializer(serializers.ModelSerializer):
@@ -20,3 +20,8 @@ class AbsentStudentSerializer(serializers.ModelSerializer):
         return None
     def to_representation(self, instance):
         return self.get_student(instance)
+
+class AttendanceHistorySerializier(serializers.ModelSerializer):
+    class Meta:
+        model=AttendanceHistory
+        fields=("__all__")

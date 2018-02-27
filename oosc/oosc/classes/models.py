@@ -15,10 +15,14 @@ class Classes(models.Model):
         return self.name
 
 
-class PuclicHolidays(models.Model):
+class PublicHoliday(models.Model):
     name=models.CharField(max_length=50)
     # date=models.DateField()
-    year=models.IntegerField()
+    year=models.IntegerField(null=True,blank=True)
     one_time=models.BooleanField(default=False)
     month=models.IntegerField()
     day=models.IntegerField()
+
+
+    def __str__(self):
+        return "%s-%s" %(self.name,self.year)

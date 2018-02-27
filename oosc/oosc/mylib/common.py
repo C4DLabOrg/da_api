@@ -1,7 +1,14 @@
+from django.db.models import Value
+from django.db.models.expressions import F
+from django.db.models.functions import Concat
 from rest_framework.exceptions import APIException
-from django.db.models import Q
+from django.db.models import Q, DateField
 
 import uuid
+from datetime import datetime,timedelta
+
+from oosc.classes.models import PublicHoliday
+
 
 def get_random():
     return uuid.uuid1()
@@ -12,7 +19,7 @@ class MyCustomException(APIException):
     default_detail = 'Service temporarily unavailable, try again later.'
     default_code = 'service_unavailable'
 
-    def __init__(self,message,code):
+    def __init__(self,message,code=400):
         self.status_code=code
         self.default_detail=message
         self.detail=message
@@ -40,6 +47,30 @@ def filter_students_by_names(queryset,value):
         Q(fstname__icontains=value) | Q(lstname__icontains=value) | Q(midname__icontains=value)
     )
 
+
+def get_list_of_dates( start_date=None,end_date=None):
+    # Get the current year or any other year
+    if start_date ==None or end_date ==None:raise MyCustomException("You must include start and end dates",400)
+    thisyear = datetime.strptime(start_date,"%Y-%m-%d").year
+    thedate = datetime.strptime(start_date,"%Y-%m-%d")
+    end_date=datetime.strptime(end_date,"%Y-%m-%d")
+    ###Exclude holidays and sny days set
+    theholidays = list(PublicHoliday.objects.exclude(Q(year__lt=thisyear) | Q(year__gt=thisyear)). \
+                       annotate(
+        date=Concat(Value(thisyear), Value("-"), F("month"), Value("-"), F("day"), output_field=DateField())) \
+                       .values_list("date", flat=True))
+    holidays = [datetime.strptime(d, "%Y-%m-%d").date() for d in theholidays]
+    days = []
+
+    while thedate != end_date:
+        if thedate.weekday() < 5 and thedate not in holidays:
+            days.append(thedate)
+        else:
+            pass
+            # print ("Weekend %s"%(thedate))
+        thedate += timedelta(days=1)
+        # print ("New Date ",thedate)
+    return days
 
 
 def get_quick_stream_class_name(name):
@@ -91,6 +122,7 @@ def get_stream_name(obj):
     return "CLASS %s %s" %(bs,str_name)
 
 
+def make_attendance_history():
 
 
 
