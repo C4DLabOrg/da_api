@@ -475,6 +475,7 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
     pagination_class = StandardresultPagination
+    allowed_order_by=["school","attendance_count"]
 
     def get_queryset(self):
         start_date,end_date,attendance_taken=self.parse_querparams()
@@ -485,25 +486,33 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
         total_days=len(days)
         # print (total_days)
 
+        ###Get order by
+        order_by=self.request.GET.get("order_by",None)
+        if order_by not in self.allowed_order_by:order_by="school"
+
         atts=AttendanceHistory.objects.all()
         streams=self.filter_queryset(self.queryset)
         atts=atts.filter(_class_id=OuterRef("id")).filter(date__in=days).annotate(theclass=F("_class")).values("_class").\
             annotate(count=Count("_class")).values_list("count",flat=True)
+
+        ###Annoatate the data
         streams=streams.annotate(attendance_count=Subquery(atts[:1],output_field=IntegerField()),
                                  total_days=Value(total_days,output_field=IntegerField()),
                                  school_name=F("school__school_name"),
                               school_type=F("school__status"),
                               school_emis_code=F("school__emis_code"),
                                  ).values("id","attendance_count","class_name","total_days","school_name","school_emis_code","school_type")\
-            .order_by("school_name","class_name")
-        # atts=atts.filter(date__in=days).annotate(theclass=F("_class")).values("_class").\
-        #     annotate(count=Count("_class"),
-        #              total_days=Value(total_days,output_field=IntegerField()),
-        #              school_name=F("_class__school__school_name"),
-        #              school_type=F("_class__school__status"),
-        #              school_emis_code=F("_class__school__emis_code"),
-        #              class_name=F("_class__class_name"))\
-        #     .values("count","_class_id","class_name","total_days","school_name","class_name","school_type","school_emis_code")
+
+
+        ###Order_by
+        if order_by =="school":
+            streams=streams.order_by("school_name","-attendance_count","class_name")
+        else:
+            streams = streams.order_by( "-attendance_count","school_name","class_name")
+
+
+
+
         print (attendance_taken)
         if  attendance_taken:
             return streams.filter(attendance_count__gte=0)
