@@ -157,7 +157,7 @@ def export_attendance(queryset,month,year):
         # stdout.flush()
         sheet.cell(row=i + 2, column=1).value = stud["county_name"]
         sheet.cell(row=i + 2, column=2).value = stud["subcounty_name"]
-        # sheet.cell(row=i + 2, column=3).value = stud["school_name"]
+        sheet.cell(row=i + 2, column=3).value = stud["school_name"]
         sheet.cell(row=i + 2, column=4).value = stud["school_emis_code"]
         sheet.cell(row=i + 2, column=5).value = stud["school_type"]
         sheet.cell(row=i + 2, column=6).value = stud["gender"]
