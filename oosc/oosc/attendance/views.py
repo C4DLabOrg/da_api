@@ -488,7 +488,7 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
 
         ###Get order by
         order_by=self.request.GET.get("order_by",None)
-        if order_by not in self.allowed_order_by:order_by="school"
+        if order_by not in self.allowed_order_by:order_by="attendance_count"
 
         atts=AttendanceHistory.objects.all()
         streams=self.filter_queryset(self.queryset)
