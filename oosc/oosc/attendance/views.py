@@ -474,10 +474,13 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
     serializer_class = GetAttendanceHistorySerilizer
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
+    pagination_class = StandardresultPagination
 
     def get_queryset(self):
         start_date,end_date,attendance_taken=self.parse_querparams()
         print ('%s to %s'%(start_date,end_date))
+
+        ###Get the days attendace was expected
         days=get_list_of_dates(start_date=start_date,end_date=end_date)
         total_days=len(days)
         # print (total_days)

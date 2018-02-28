@@ -45,6 +45,7 @@ class ExportMonthlyAttendances(generics.ListAPIView):
     def get_queryset(self):
         queryset= self.filter_queryset(self.queryset)
         monthrange=calendar.monthrange(**self.monthyear)[1]
+        # first_day=
         # print (monthrange)
         queryset=queryset.values("student").annotate(
             present=Count(Case(When(status=1,then=1),output_field=IntegerField())),
