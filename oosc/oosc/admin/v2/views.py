@@ -59,7 +59,10 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
         username = self.kwargs["pk"]
         teachers = list(Teachers.objects.filter(user__username=username))
         if len(teachers) < 1:
-            raise MyCustomException("The teacher does not exist.")
+            if User.objects.filter(username=username).exists():
+                raise MyCustomException("User has no associated teacher account.")
+            else:
+                raise MyCustomException("The teacher does not exist.")
         tech = teachers[0]
         if tech.non_delete:
             tech.headteacher = True
