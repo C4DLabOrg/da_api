@@ -44,6 +44,8 @@ from oosc.partner.models import Partner
 from sys import stdout
 from django.utils.dateparse import parse_date
 
+from oosc.teachers.views import str2bool
+
 
 class StudentFilter(FilterSet):
     name = django_filters.CharFilter(name="student__name", method="filter_name",label="First Name | Middle Name | Last Name")
@@ -963,6 +965,33 @@ class ListDropouts(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
 
+class ExportStudentsData(generics.ListAPIView):
+    queryset = Students.objects.select_related("class_id", "class_id__school")
+    serializers_class=StudentsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = StudentFilter
+
+    def list(self, request, *args, **kwargs):
+        school = request.query_params.get("school", None)
+        queryset=self.filter_queryset(self.queryset)
+        queryset=queryset.exclude(active=False,class_id=None)
+        queryset=queryset.annotate(class_name=F("class_id__class_name"),
+                         school_name= F("class_id__school__school_name"),
+                         school_emis_code=F("class_id__school__emis_code"),
+                         )
+        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.order_by("school_emis_code","class_name")
+        print ("stuff")
+        print("have the queryset")
+        queryset=list(queryset)
+        path=excel_generate(queryset,include_days=False)
+        # path = default_storage.save('exports/file.xlsx',wb)
+        # print (default_storage(path).base_url)
+        url = request.build_absolute_uri(location="/media/"+path)
+        resp={"link":url}
+        print(resp)
+        return  Response(resp)
+
 class ExportStudents(generics.ListAPIView):
     queryset = Students.objects.select_related("class_id", "class_id__school")
     serializers_class=StudentsSerializer
@@ -979,7 +1008,7 @@ class ExportStudents(generics.ListAPIView):
                          school_name= F("class_id__school__school_name"),
                          school_emis_code=F("class_id__school__emis_code"),
                          )
-        queryset=queryset.values("id","fstname","midname","lstname","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
         print ("stuff")
         print("have the queryset")

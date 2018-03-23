@@ -26,8 +26,9 @@ from oosc.counties.views import ListCreateCounty
 from oosc.stream.views import ListCreateClass, RetrieveUpdateClass
 from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword, \
     GetUserType, PingServer
-from oosc.students.views import ListCreateStudent,GetEnrolled,ImportStudents,RetrieveUpdateStudent, ListAbsentStudents, \
-    ListDropouts, ImportStudentsV2, BulkMoveStudents, ExportStudents, GetDroupoutsWithReasons
+from oosc.students.views import ListCreateStudent, GetEnrolled, ImportStudents, RetrieveUpdateStudent, \
+    ListAbsentStudents, \
+    ListDropouts, ImportStudentsV2, BulkMoveStudents, ExportStudents, GetDroupoutsWithReasons, ExportStudentsData
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -67,6 +68,7 @@ urlpatterns = [
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/students/enrolls/(?P<type>.+)',GetEnrolled.as_view(),name="list-create-student"),
     url(r'^api/students/import',ImportStudentsV2.as_view(),name="import-student"),
+    url(r'^api/students/exportall',ExportStudentsData.as_view(),name="import-student"),
     url(r'^api/students/export',ExportStudents.as_view(),name="import-student"),
     url(r'^api/students/bulkmove',BulkMoveStudents.as_view(),name="bulk-move-student"),
     url(r'^api/students/absent',ListAbsentStudents.as_view(),name="import-student"),
