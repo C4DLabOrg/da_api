@@ -1,0 +1,3 @@
+git push origin micha
+sshpass -p '#c4dlab2012' ssh c4dlab@c4dlab.ac.ke "~/ooscupdate"
+

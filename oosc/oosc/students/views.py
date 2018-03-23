@@ -1,14 +1,25 @@
+import operator
 from django.contrib.auth.models import User,Group
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.http.response import HttpResponseBase
 from django.shortcuts import render
+import json
+
+from django.templatetags.static import static
+from django_subquery.expressions import OuterRef, Subquery
+from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
+from oosc.mylib.common import filter_students_by_names, MyCustomException
+from oosc.mylib.excel_export import excel_generate
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer
+from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer, \
+    SimpleStudentSerializer, SimplerStudentSerializer
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
@@ -20,7 +31,7 @@ from oosc.stream.models import Stream
 from oosc.schools.models import Schools
 from oosc.teachers.models import Teachers
 from datetime import datetime
-from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField,F
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,TextField,F, DateField
 from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
 from django.db.models.functions import Concat,Cast
 from rest_framework.response import Response
@@ -31,6 +42,7 @@ from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 from oosc.partner.models import Partner
 from sys import stdout
+from django.utils.dateparse import parse_date
 
 
 class StudentFilter(FilterSet):
@@ -38,15 +50,24 @@ class StudentFilter(FilterSet):
     Class=django_filters.NumberFilter(name="class_id",label="Stream Id")
     school=django_filters.NumberFilter(name="class_id__school",label="School Id")
     school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code", label="School emis code")
-    partner=django_filters.NumberFilter(name="partner",label="Partner Id",method="filter_partner")
-    county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county",label="County Id")
+    partner=django_filters.NumberFilter(name="",label="Partner  Id",method="filter_partner")
+    partner_admin=django_filters.NumberFilter(name="",label="Partner Admin Id",method="filter_partner_admin")
+    county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county",label="County Id",method="filter_county")
 
 
     class Meta:
         model=Students
         fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
+
     def filter_name(self,queryset,name,value):
-        return queryset.filter(Q(fstname__icontains=value) | Q(lstname__icontains=value)| Q(midname__icontains=value))
+        return filter_students_by_names(queryset,value)
+
+    def filter_county(self,queryset,name,value):
+        return queryset.exclude(Q(class_id__school__zone=None) | Q(class_id__school__subcounty=None)).filter(Q(class_id__school__zone__subcounty__county=value) | Q(class_id__school__subcounty__county=value))
+
+
+    def filter_partner_admin(self,queryset,name,value):
+        return  queryset.filter(class_id__school__partners__partner_admins__id=value)
 
     def filter_partner(self, queryset, name, value):
         return queryset.filter(class_id__school__partners__id=value)
@@ -116,7 +137,7 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
         if(ser.data["reason"].lower() == "error"):
             object.delete()
             return Response("",status=status.HTTP_204_NO_CONTENT);
-        object.deactivate()
+        object.deactivate(ser.data["reason"])
         object.save()
         hist=History.objects.filter(student=object,_class=object.class_id)
         if(hist.exists()):
@@ -153,38 +174,88 @@ class EnrollmentFilter(FilterSet):
 class EnrollmentSerializer(serializers.Serializer):
     enrolled_males=serializers.IntegerField()
     enrolled_females=serializers.IntegerField()
+    dropout_enrolled_males=serializers.IntegerField()
+    dropout_enrolled_females=serializers.IntegerField()
     old_males=serializers.IntegerField()
     old_females=serializers.IntegerField()
+    dropout_old_males = serializers.IntegerField()
+    dropout_old_females = serializers.IntegerField()
     value=serializers.CharField()
     total=serializers.SerializerMethodField()
+    active_total=serializers.SerializerMethodField()
+    dropout_total=serializers.SerializerMethodField()
+
     def get_total(self,obj):
+        return obj["enrolled_males"]+obj["enrolled_females"]+obj["old_males"]+obj["old_females"] + obj["dropout_enrolled_males"]+obj["dropout_enrolled_females"]+obj["dropout_old_males"]+obj["dropout_old_females"]
+
+    def get_active_total(self,obj):
         return obj["enrolled_males"]+obj["enrolled_females"]+obj["old_males"]+obj["old_females"]
+
+    def get_dropout_total(self,obj):
+        return  obj["dropout_enrolled_males"]+obj["dropout_enrolled_females"]+obj["dropout_old_males"]+obj["dropout_old_females"]
+
     def to_representation(self, instance):
-        data = super(EnrollmentSerializer, self).to_representation(instance)
-        return data
+        # data = super(EnrollmentSerializer, self).to_representation(instance)
+        return instance
 
 class GetEnrolled(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     queryset = Students.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
+    pagination_class = None
     nonefomats = [ "class","gender", "county"]
     fakepaginate = False
 
-    def get_queryset(self):
-        studs=self.filter_queryset(Students.objects.filter(active=True))
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_my_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_my_queryset(self):
+        studs=self.filter_queryset(Students.objects.all())
         format = self.kwargs['type']
         at=self.get_formated_data(studs,format=format)
+        # print(at)
         return at
 
     def resp_fields(self):
         #lst = str(datetime.now().date() - timedelta(days=365))
         #enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
-        enrolledm = Count(Case(When(Q(is_oosc=True) & Q(gender="M"), then=1), output_field=IntegerField(), ))
-        oldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False), then=1), output_field=IntegerField(), ))
-        enrolledf = Count(Case(When(Q(gender="F") & Q(is_oosc=True), then=1), output_field=IntegerField(), ))
-        oldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False), then=1), output_field=IntegerField(), ))
-        return enrolledm,oldf,enrolledf,oldm
+        enrolledm = Case(
+            When(Q(is_oosc=False) & Q(gender="F") & Q(active=False), then=Value("dropout_old_females")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When((Q(is_oosc=True) & Q(gender="M") & Q(active=False)), then=Value("dropout_enrolled_males")),
+            When(Q(is_oosc=True) & Q(active=False) & Q(gender="F"), then=Value("dropout_enrolled_females")),
+            When(Q(is_oosc=True) & Q(gender="M" ) & Q(active=True), then=Value("enrolled_males")),
+            When(Q(is_oosc=True) & Q(gender="F" ) & Q(active=True), then=Value("enrolled_females")),
+            When(Q(is_oosc=False) & Q(gender="F" ) & Q(active=True), then=Value("old_females")),
+            When(Q(is_oosc=False) & Q(gender="M" ) & Q(active=True), then=Value("old_males")),
+            default=Value("others")
+            ,output_field=CharField()
+        )
+
+        return enrolledm
+
+    # def resp_fields(self):
+    #     #lst = str(datetime.now().date() - timedelta(days=365))
+    #     #enrolledm = Count(Case(When(Q(date_enrolled__gte=lst) & Q(gender="M"), then=1), output_field=IntegerField(), ))
+    #     enrolledm = Count(Case(When(Q(is_oosc=True) & Q(gender="M" ) & Q(active=True), then=1), output_field=IntegerField(), ))
+    #     oldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False)& Q(active=True) , then=1), output_field=IntegerField(), ))
+    #     enrolledf = Count(Case(When(Q(gender="F") & Q(is_oosc=True) & Q(active=True), then=1), output_field=IntegerField(), ))
+    #     oldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False) & Q(active=True) , then=1), output_field=IntegerField(), ))
+    #     dropoldm = Count(Case(When(Q(gender="M") & Q(is_oosc=False) &  Q(active=False), then=1), output_field=IntegerField(), ))
+    #     dropoldf = Count(Case(When(Q(gender="F") & Q(is_oosc=False)& Q(active=False), then=1), output_field=IntegerField(), ))
+    #     dropnewm = Count(Case(When((Q(gender="M") & Q(is_oosc=True)& Q(active=False)), then=1), output_field=IntegerField(), ))
+    #     dropnewf = Count(Case(When(Q(gender="F") & Q(is_oosc=True)& Q(active=False), then=1), output_field=IntegerField(), ))
+    #
+    #     return enrolledm,oldf,enrolledf,oldm,dropoldm,dropoldf,dropnewm,dropnewf
+
     # def get(self,request,format=None):
     #     now=str(datetime.now().date()+timedelta(days=1))
     #     lst=str(datetime.now().date()-timedelta(days=365))
@@ -195,22 +266,70 @@ class GetEnrolled(generics.ListAPIView):
     #     return Response({"total":len(studs),"males":len(males),
     #                      "females":len(females)},status=status.HTTP_200_OK)
     def get_formated_data(self, data, format):
-        enrolledm, oldf, enrolledf, oldm = self.resp_fields()
+        enrolledm= self.resp_fields()
+        # enrolledm, oldf, enrolledf, oldm,dropoldm,dropoldf,dropnewm,dropnewf = self.resp_fields()
         outp = Concat("month", Value(''), output_field=CharField())
-        at = data.annotate(month=self.get_format(format=format)).values("month").annotate(enrolled_males=enrolledm,
-                                                                                          enrolled_females=enrolledf,
-                                                                                          old_males=oldm,
-                                                                                          old_females=oldf, value=outp).order_by('value')
-        return at
+        at = data.annotate(month=self.get_format(format=format)).values("month") \
+            .order_by('month','type').annotate(type=enrolledm).annotate(count=Count("type"))
+        return self.filter_formatted_data(format=format,data=at)
+
+    def filter_formatted_data(self,format,data):
+        # if format=="monthly":
+        #     print("Sorting the monthlyv data .")
+        #     return sorted(data,key=lambda x: parse_date(x["month"]),reverse=True)
+        return data.order_by("month")
+
+
+    def group(self,data):
+        data_dict=json.loads(json.dumps(data))
+        values=[d["month"] for d in data_dict]
+        values=list(set(values))
+        output=[]
+        for a in values:
+            if a =="":continue
+            value_obj = {}
+            value_obj["value"] = a
+            #Try getting the value object
+            value_objs=[p for p in data_dict if p["month"] == a]
+            total_attrs=["old_males","old_females","enrolled_males","enrolled_females"]
+            dropout_total_attrs=["dropout_old_males","dropout_old_females","dropout_enrolled_males","dropout_enrolled_females"]
+            dropout_total=0
+            total=0
+            for b in value_objs:
+                if b["type"] in total_attrs :
+                    total+=b["count"]
+                elif b["type"] in dropout_total_attrs:
+                  dropout_total+=b["count"]
+                value_obj[b["type"]]=b["count"]
+            value_obj["total"]=total
+            value_obj["dropout_total"]=dropout_total
+            output.append(self.confirm_obj(value_obj))
+
+        return sorted(output,key= lambda k:k.get('value',0),reverse=False)
+
+    def confirm_obj(self,obj):
+        attrs=["dropout_old_females","dropout_old_males","dropout_enrolled_females"
+            ,"dropout_enrolled_males","old_males","old_females","enrolled_males","enrolled_females"]
+        for at in attrs:
+            try:
+                obj[at]
+            except:
+                obj[at]=0
+
+        return obj
 
     def paginate_queryset(self, queryset):
-        if self.paginator is None:
-            return None
-        theformat = self.kwargs['type']
-        if theformat in self.nonefomats:
-            self.fakepaginate = True
-            return None
-        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+        self.fakepaginate=True
+        return None
+        # if self.paginator is None:
+        #     return None
+        # theformat = self.kwargs['type']
+        # if theformat in self.nonefomats:
+        #     self.fakepaginate = True
+        #     return None
+        # return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+
 
     def finalize_response(self, request, response, *args, **kwargs):
         assert isinstance(response, HttpResponseBase), (
@@ -218,7 +337,7 @@ class GetEnrolled(generics.ListAPIView):
             'to be returned from the view, but received a `%s`'
             % type(response)
         )
-
+        response.data=self.group(response.data)
         #If it does not use pagination and require fake pagination for response
         if self.fakepaginate:
             data=response.data
@@ -243,8 +362,10 @@ class GetEnrolled(generics.ListAPIView):
 
     def get_format(self,format):
         daily=Concat(TruncDate("date_enrolled"),Value(''),output_field=CharField(),)
-        monthly= Concat(Value('1/'), ExtractMonth('date_enrolled'), Value('/'), ExtractYear("date_enrolled"),
-                      output_field=CharField(), )
+        monthly= Concat(ExtractYear("date_enrolled"), Value('-'), ExtractMonth('date_enrolled'), Value('-1'), output_field=DateField(), )
+
+        # monthly= Concat(Value('1/'), ExtractMonth('date_enrolled'), Value('/'), ExtractYear("date_enrolled"),
+        #               output_field=CharField(), )
 
         if(format=="monthly"):
             return monthly
@@ -259,6 +380,7 @@ class GetEnrolled(generics.ListAPIView):
             return Concat("class_id__school__school_name",Value(','),id,output_field=CharField())
         elif format=="stream":
             return Concat("class_id__class_name",Value(''),output_field=CharField())
+
         elif format=="county":
             return Concat("class_id__school__zone__subcounty__county__county_name",Value(''),output_field=CharField())
         elif format=="class":
@@ -284,6 +406,7 @@ class ImportStudentSerializer(serializers.Serializer):
     school=serializers.IntegerField()
     clas=serializers.CharField(max_length=50)
     gender=serializers.CharField(max_length=20)
+    date_enrolled=serializers.DateField()
     #date_enrolled=serializers.DateField(required=False,allow_null=True)
     # emis_code=serializers.IntegerField(required=False,allow_null=True)
     def validate_gender(self,value):
@@ -298,9 +421,47 @@ class ImportStudentSerializer(serializers.Serializer):
             raise serializers.ValidationError("Only students between class 1 and 8")
         return value
 
+class NoStudentsList(APIException):
+    status_code = 400
+    default_detail = 'Provide a list of students to move.'
+    default_code = 'bad_request'
 
+class BulkMoveStudentSerializer(serializers.Serializer):
+    students=serializers.ListField(child=serializers.IntegerField(required=True))
+    class_id=serializers.IntegerField()
 
+    def validate_students(self,value):
+        if value is None:
+            raise serializers.ValidationError("This field is required.")
+        elif type(value) is not list:
+            raise serializers.ValidationError("Provive a list of students.")
+        return value
 
+    def validate_class_id(self,value):
+        if Stream.objects.filter(id=value).exists():
+            return value
+        raise serializers.ValidationError("Class does not exist")
+
+class BulkMoveStudents(APIView):
+    def post(self,request,format=None):
+        ser=BulkMoveStudentSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        lis=ser.validated_data.get("students")
+        if len(lis) == 0: raise NoStudentsList
+        classid=ser.validated_data.get("class_id")
+        print (lis,classid)
+        lis=Students.objects.filter(id__in=lis).values_list("id",flat=True)
+        f=Students.objects.filter(id__in=lis).update(class_id=classid)
+        # hist = History()
+        # hist.student = stud
+        # hist._class = serializer.validated_data.get("class_id")
+        # hist.joined = stud.date_enrolled
+        # hist.joined_description = "Class Change"
+        # hist.save()
+        hist=[History(student_id=d,_class_id=classid,joined_description="Class Change") for d in lis]
+        History.objects.bulk_create(hist)
+
+        return Response({"updated":f},status=status.HTTP_202_ACCEPTED)
 
 
 
@@ -487,10 +648,18 @@ class AbsentStudentSerializer(serializers.Serializer):
 class ImportStudentsV2(APIView):
     total_success = 0
     total_fails = 0
+    total_duplicates=0
+    is_oosc=False
+
+    def str2bool(self,v):
+        return v.lower() in ("yes", "true", "t", "1")
     def post(self,request,format=None):
         file=""
         results=""
         verify=request.query_params.get('verify',None)
+        isoosc=request.query_params.get('is_oosc',"no")
+        self.is_oosc= self.str2bool(isoosc)
+        print("the is_ooc",self.is_oosc)
         try:
             file = request.FILES["file"]
         except:
@@ -519,7 +688,7 @@ class ImportStudentsV2(APIView):
             stdout.write("\rImporting  %d" % i)
             stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
-                  "clas": dat[13], "gender": dat[11]}
+                  "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
             ser = ImportStudentSerializer(data=dt)
             if ser.is_valid():
                 school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
@@ -546,7 +715,7 @@ class ImportStudentsV2(APIView):
                 total_fails+=1
 
         print ""
-        total_success=Students.objects.filter(id__in=students).update(is_oosc=True)
+        total_success=Students.objects.filter(id__in=students).update(is_oosc=self.is_oosc)
         res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails)
         return ImportResultsSerializer(res).data
 
@@ -593,7 +762,7 @@ class ImportStudentsV2(APIView):
                     errors.append(error)
             #Print a new line
             #print("")
-        res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails)
+        res=ImportResults(ImportErrorSerializer(errors,many=True).data,total_success,total_fails,self.total_duplicates)
         return ImportResultsSerializer(res).data
     def import_data(self,data,request):
         results="Imported results"
@@ -606,6 +775,7 @@ class ImportStudentsV2(APIView):
         partner = None
         if is_partner:
             partner = Partner.objects.filter(user=request.user)[0]
+
         print ("%d" %total)
         for i, dat in enumerate(data):
             if (total is not 0):
@@ -613,7 +783,7 @@ class ImportStudentsV2(APIView):
                 stdout.write("\rImporting %s " % percentage)
                 stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
-                  "clas": dat[13], "gender": dat[11]}
+                  "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
             ser = ImportStudentSerializer(data=dt)
             if (ser.is_valid()):
                 ##Confirm the school in the db
@@ -654,8 +824,15 @@ class ImportStudentsV2(APIView):
             self.total_success=len(resa)
         except Exception as e:
             print (e.message)
-        res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails)
-        return ImportResultsSerializer(res).data
+
+        ##Updating the last upload data for partner
+        if self.total_success >0:
+            if partner:
+                Partner.objects.filter(id=partner.id).update(last_data_upload=datetime.now())
+        res = ImportResults(ImportErrorSerializer(errors, many=True).data, self.total_success , self.total_fails,self.total_duplicates)
+        dt= ImportResultsSerializer(res).data
+        print({"success":self.total_success,"duplicates":self.total_duplicates,"error":len(errors)})
+        return dt
 
     def get_school_teacher(self,sch):
         teach=Teachers.objects.filter(school=sch)
@@ -705,24 +882,27 @@ class ImportStudentsV2(APIView):
         if (std.exists()):
             # print "Found"
             std=None
-            self.total_fails += 1
+            self.total_duplicates += 1
         else:
             std = Students()
             std.fstname = ser.data.get("fstname")
             std.midname = ser.data.get("midname")
             std.lstname = ser.data.get("lstname")
+            std.date_enrolled=ser.data.get("date_enrolled")
             std.gender = get_gender(ser.data.get("gender"))
+            std.graduated=False
+            std.is_oosc=self.is_oosc
             std.class_id = cl
-            if (valid_date(date_enrolled)):
-                std.date_enrolled = date_enrolled
-                lst = str(datetime.now().date() - timedelta(days=35))
-                if (std.date_enrolled > lst):
-                    std.is_oosc = True
-                else:
-                    std.is_oosc = False
-            else:
-                std.date_enrolled = datetime.now()
-                std.is_oosc = True
+            # if (valid_date(date_enrolled)):
+            #     std.date_enrolled = date_enrolled
+            #     lst = str(datetime.now().date() - timedelta(days=35))
+            #     if (std.date_enrolled > lst):
+            #         std.is_oosc = True
+            #     else:
+            #         std.is_oosc = False
+            # else:
+            #     std.date_enrolled = datetime.now()
+            #     std.is_oosc = True
             #std.save()
             self.total_success += 1
         return std
@@ -755,8 +935,59 @@ class ListAbsentStudents(generics.ListAPIView):
     def get_serializer_class(self):
         return AbsentStudentSerializer
 
+
+class GetDroupoutsWithReasons(generics.ListAPIView):
+    queryset = Students.objects.filter(active=False,graduated=False)
+    serializer_class=SimpleStudentSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=StudentFilter
+
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         # serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(queryset)
+    #     return Response(queryset)
+
+    def get_queryset(self):
+        hist=History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
+        return self.queryset.annotate(logs=Subquery(hist[:1]),
+                                      name=Concat(F("fstname"),Value(" "),F("midname"),Value(" "),F("lstname"))).exclude(logs="ERR")
+
+
 class ListDropouts(generics.ListAPIView):
     queryset = Students.objects.filter(active=False)
     serializer_class = StudentsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
+
+class ExportStudents(generics.ListAPIView):
+    queryset = Students.objects.select_related("class_id", "class_id__school")
+    serializers_class=StudentsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = StudentFilter
+
+    def list(self, request, *args, **kwargs):
+        school = request.query_params.get("school", None)
+        if school == None:
+            raise MyCustomException("You can only generate for a certain school",400)
+        queryset=self.filter_queryset(self.queryset)
+        queryset=queryset.exclude(active=False,class_id=None)
+        queryset=queryset.annotate(class_name=F("class_id__class_name"),
+                         school_name= F("class_id__school__school_name"),
+                         school_emis_code=F("class_id__school__emis_code"),
+                         )
+        queryset=queryset.values("id","fstname","midname","lstname","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.order_by("school_emis_code","class_name")
+        print ("stuff")
+        print("have the queryset")
+        queryset=list(queryset)
+        path=excel_generate(queryset)
+        # path = default_storage.save('exports/file.xlsx',wb)
+        # print (default_storage(path).base_url)
+        url = request.build_absolute_uri(location="/media/"+path)
+        resp={"link":url}
+        print(resp)
+        return  Response(resp)

@@ -5,12 +5,14 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+
+from oosc.mylib.common import MyCustomException
 from oosc.teachers.models import Teachers
 from rest_framework.response import Response
 from django.contrib.auth.models import User,Group
 from oosc.teachers.serializers import TeacherSerializer,TeacherAllSerializer,Passwordserializer,ForgotPAsswordSerializer
-from oosc.partner.models import Partner
-from oosc.partner.serializers import PartnerSerializer
+from oosc.partner.models import Partner, PartnerAdmin
+from oosc.partner.serializers import PartnerSerializer, PartnerAdminSerializer
 from permission import IsHeadteacherOrAdmin
 from rest_framework.views import APIView
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
@@ -58,7 +60,7 @@ class StreamSerializer(serializers.Serializer):
        if value is None:
            raise serializers.ValidationError("Classes required")
        sts=list(Stream.objects.filter(id__in=value).values_list("id",flat=True))
-       print (sts)
+       #print (sts)
        if(len(sts) <1):raise serializers.ValidationError("Enter Valid stream ids for your school")
        return sts
 
@@ -70,9 +72,10 @@ class StreamSerializer(serializers.Serializer):
 
 
 class ListCreateTeachers(APIView):
-    permission_classes = (IsHeadteacherOrAdmin,)
+    permission_classes = ( IsAuthenticated, IsHeadteacherOrAdmin,)
     def get(self,request,format=None):
         teach=Teachers.objects.filter(user=self.request.user.id)
+        print(teach)
         if(len(teach) > 0):
             teachers=TeacherAllSerializer(teach[0])
             return Response(data=teachers.data,status=status.HTTP_200_OK)
@@ -163,6 +166,11 @@ class RetrieveUpdateTeacher(generics.RetrieveUpdateDestroyAPIView):
         usr.delete()
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
+    # def perform_update(self, serializer):
+    #     if object.non_delete: raise MyCustomException("You cannot edit the super admin of the school.",403)
+    #     serializer.save()
+
+
 
 
 
@@ -212,8 +220,9 @@ class GetUserType(APIView):
     def get(self,request,format=None):
         #return Response("hello")
         user=request.user
-        partner=Partner.objects.filter(user=user)
-        teacher=Teachers.objects.filter(user=user)
+        partner=Partner.objects.filter(user_id=user.id)
+        teacher=Teachers.objects.filter(user_id=user.id)
+        partner_admins=list(PartnerAdmin.objects.filter(user_id=user.id))
         if(user.is_superuser):
             return Response({"type":"admin"})
         elif(partner.exists()):
@@ -224,6 +233,9 @@ class GetUserType(APIView):
             if teacher.headteacher:
                 return Response({"type":"teacher","info":TeacherAllSerializer(teacher).data})
             return Response({"details":"You must be an admin of the school"},status=status.HTTP_401_UNAUTHORIZED)
+        elif len(partner_admins)>0:
+            ptadmin=partner_admins[0]
+            return Response({"type":"partner_admin","info":PartnerAdminSerializer(ptadmin).data})
         else:
             return Response({"type":"unknown"},status=status.HTTP_401_UNAUTHORIZED)
 

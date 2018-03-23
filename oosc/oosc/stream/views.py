@@ -1,3 +1,5 @@
+import django_filters
+from django.db.models import Q
 from django.shortcuts import  get_object_or_404
 from django.http import Http404
 from rest_framework import generics
@@ -7,19 +9,57 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
 from oosc.stream.models import Stream
-from oosc.stream.serializers import StreamSerializer
+from oosc.stream.serializers import StreamSerializer, GetStreamSerializer
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 
+from oosc.teachers.views import str2bool
+
+
 class StreamFilter(FilterSet):
+    partner_admin=django_filters.NumberFilter(name="active" ,label="Partner Admin" ,method="filter_partner_admin")
+    county = django_filters.NumberFilter(name="school__zone__subcounty__county", method="filter_county")
+    partner = django_filters.NumberFilter(name="partner", method="filter_partner")
+    partner_admin = django_filters.NumberFilter(name="partner", method="filter_partner_admin", label="Partner Admin Id")
+    county_name = django_filters.CharFilter(name="school__zone__subcounty__county__county_name",
+                                            lookup_expr="icontains")
     class Meta:
         model=Stream
-        fields=('school','class_name')
+        fields=('school','class_name',"partner","partner_admin","county_name")
+
+    def filter_partner_admin(self, queryset, name, value):
+        return queryset.filter(school__partners__partner_admins__id=value)
+
+    def filter_partner(self, queryset, name, value):
+        return queryset.filter(school__partners__id=value)
+
+
+    def filter_county(self, queryset, name, value):
+        return queryset.exclude(
+            Q(school__zone=None) | Q(school__subcounty=None)).filter(
+            Q(school__zone__subcounty__county=value) | Q(
+                school__subcounty__county=value))
+
+    def filter_partner_admin(self, queryset, name, value):
+        return queryset.filter(school__partners__partner_admins__id=value)
+
 
 class ListCreateClass(generics.ListCreateAPIView):
     queryset = Stream.objects.all()
     serializer_class = StreamSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=StreamFilter
+
+
+    def get_queryset(self):
+        return self.queryset.order_by("school","_class","class_name")
+
+
+
+    def get_serializer_class(self):
+        print(self.request.method)
+        if self.request.method == "GET":
+            return GetStreamSerializer
+        return StreamSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -28,6 +68,7 @@ class ListCreateClass(generics.ListCreateAPIView):
         sch=serializer.validated_data.get("school")
         cl=serializer.validated_data.get("class_name")
         _cl=serializer.validated_data.get("class_name")
+        # print (cl.upper())
         d=list(Stream.objects.filter(class_name=cl.upper(),school_id=sch))
         if len(d) > 0:
             ser=StreamSerializer(d[0])
@@ -51,6 +92,11 @@ class StreamNotFound(APIException):
 class RetrieveUpdateClass(generics.RetrieveUpdateDestroyAPIView):
     queryset = Stream.objects.all()
     serializer_class = StreamSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return GetStreamSerializer
+        return StreamSerializer
 
     def get_delete_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field

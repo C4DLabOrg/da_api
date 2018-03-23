@@ -137,7 +137,9 @@ WSGI_APPLICATION = 'oosc.config.wsgi.application'
 #     }
 #
 # }
+
 #Production Only
+os.environ['TZ'] = 'Africa/Nairobi'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -192,5 +194,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# DEFAULT_FILE_STORAGE=os.path.join(BASE_DIR,'..','uploads')
+
 MEDIA_ROOT=os.path.join(BASE_DIR,'..','uploads')
+
 MEDIA_URL="/media/"

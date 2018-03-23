@@ -1,5 +1,9 @@
 from django.db import transaction
+from django.db.models import Case, CharField
 from django.db.models import Count
+from django.db.models import Q
+from django.db.models import Value
+from django.db.models import When
 from django.shortcuts import render
 from oosc.schools.models import Schools
 from rest_framework import generics
@@ -31,16 +35,24 @@ from oosc.schools.permissions import IsPartner
 
 
 class SchoolsFilter(FilterSet):
-    county=django_filters.NumberFilter(name="zone__subcounty__county",label="County Id")
+    county=django_filters.NumberFilter(name="county_filter",method="filter_county",label="County Id")
     school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
     partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
     active=django_filters.BooleanFilter(name="active" ,label="Active (1=True,2=False)" ,method="filter_active")
+    partner_admin=django_filters.NumberFilter(name="active" ,label="Partner Admin" ,method="filter_partner_admin")
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner')
 
+    def filter_county(self,queryset,name,value):
+        return queryset.exclude(Q(zone=None) | Q(subcounty=None)).filter(Q(zone__subcounty__county=value) | Q(subcounty__county=value))
+
+
     def filter_partner(self,queryset,name,value):
         return queryset.filter(partners__id=value)
+
+    def filter_partner_admin(self,queryset,name,value):
+        return  queryset.filter(partners__partner_admins__id=value)
 
     def filter_active(self, queryset, name, value):
         return queryset.filter(stream__isnull=False).distinct()
@@ -152,7 +164,7 @@ class ImportSchools(APIView):
         print(time.time()-start,len(sc))
         return Response(data=data[1])
 
-class SearchEmiscode(generics.RetrieveAPIView):
+class SearchEmiscode(generics.RetrieveUpdateAPIView):
     queryset = Schools.objects.all()
     serializer_class = SchoolsSerializer
     def get_object(self):
@@ -170,22 +182,61 @@ class GetAllReport(APIView):
         activeschools=schools.filter(streams__isnull=False)
         teachers = Teachers.objects.all()
         partner=request.query_params.get("partner",None)
+        partner_admin=request.query_params.get("partner_admin",None)
+
         if partner:
             students=students.filter(class_id__school__partners__id=partner)
             teachers=teachers.filter(school__partners__id=partner)
             schools=schools.filter(partners__id=partner)
             activeschools=activeschools.filter(partners__id=partner)
-        sts = list(students.order_by().values("gender").annotate(count=Count("gender")))
-        mstudents=self.get_count(sts,"M")#students.filter(gender="M").count()
-        fstudents=self.get_count(sts,"F")#students.filter(gender="F").count()
+        if partner_admin:
+            students = students.filter(class_id__school__partners__partner_admins__id=partner_admin)
+            teachers = teachers.filter(school__partners__partner_admins__id=partner_admin)
+            schools = schools.filter(partners__partner_admins__id=partner_admin)
+            activeschools = activeschools.filter(partners__partner_admins__id=partner_admin)
+
+        sts = list(students.order_by().annotate(type=Case(
+            When(Q(is_oosc=False) & Q(gender="F") & Q(active=False), then=Value("dropout_old_females")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=False), then=Value("dropout_old_males")),
+            When((Q(is_oosc=True) & Q(gender="M") & Q(active=False)), then=Value("dropout_enrolled_males")),
+            When(Q(is_oosc=True) & Q(active=False) & Q(gender="F"), then=Value("dropout_enrolled_females")),
+            When(Q(is_oosc=True) & Q(gender="M") & Q(active=True), then=Value("enrolled_males")),
+            When(Q(is_oosc=True) & Q(gender="F") & Q(active=True), then=Value("enrolled_females")),
+            When(Q(is_oosc=False) & Q(gender="F") & Q(active=True), then=Value("old_females")),
+            When(Q(is_oosc=False) & Q(gender="M") & Q(active=True), then=Value("old_males")),
+            default=Value("others"),
+            output_field=CharField()
+        )).values("type").annotate(count=Count("type")))
+        mstudents=self.get_count(sts,"old_males") + self.get_count(sts,"enrolled_males") #students.filter(gender="M").count()
+        fstudents=self.get_count(sts,"old_females") + self.get_count(sts,"enrolled_females")#students.filter(gender="F").count()
+        mdropouts=self.get_count(sts,"dropout_old_males") + self.get_count(sts,"dropout_enrolled_males") #students.filter(gender="M").count()
+        fdropouts=self.get_count(sts,"dropout_old_females") + self.get_count(sts,"dropout_enrolled_females")#students.filter(gender="F").count()
+
+        # oldmstudents=students.filter(gender="M",is_oosc=False,active=True).count()
+        # newmstudents=students.filter(gender="M",is_oosc=True,active=True).count()
+        # dropoldmstudents=students.filter(gender="M",is_oosc=False,active=False).count()
+        # dropnewmstudents=students.filter(gender="M",is_oosc=True,active=False).count()
+        # newfstudents=students.filter(gender="F",is_oosc=True,active=True).count()
+        # oldfstudents=students.filter(gender="F",is_oosc=False,active=True).count()
+        # dropoldfstudents=students.filter(gender="F",is_oosc=False,active=False).count()
+        # dropnewftudents=students.filter(gender="F",is_oosc=True,active=False).count()
+
+
         activeschools=activeschools.distinct().count()
         teachers=teachers.count()
         schools=schools.count()
 
-        return Response(data={"schools":schools,"active_schools":activeschools,"teachers":teachers,"students":{"males":mstudents,"females":fstudents}})
+        return Response(data={"schools":schools,"active_schools":activeschools,
+                              "teachers":teachers,
+                              "students":{"males":mstudents,
+                                          "females":fstudents,
+                                          "dropout_males":mdropouts,
+                                          "dropout_females":fdropouts
+                                          }})
 
     def get_count(self, list, item):
-        obs = [g["count"] for g in list if g["gender"] == item]
+        obs = [g["count"] for g in list if g["type"] == item]
         if len(obs) > 0: return obs[0]
         return 0
 
