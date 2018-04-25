@@ -83,13 +83,13 @@ class DeleteStreams(generics.DestroyAPIView):
 
 class DeleteStudentsByStreams(generics.DestroyAPIView):
     serializer_class = DeleteStreamStudentsSerializer
-    queryset = Students.objects.all()
+    queryset = Stream.objects.all()
 
     def delete (self,request,*args,**kwargs):
         serializer=self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
         streams=serializer.validated_data.get("streams")
-        dele=Students.objects.filter(class_id_id__in=streams).delete()
+        dele=Stream.objects.filter(id__in=streams).delete()
         print(dele)
         return Response({"total": dele[0], "objects": dele[1]}, status=status.HTTP_202_ACCEPTED)
 

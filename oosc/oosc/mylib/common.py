@@ -1,3 +1,5 @@
+import re
+
 import pytz
 from django.db.models import Value, Count
 from django.db.models.expressions import F
@@ -28,7 +30,20 @@ class MyCustomException(APIException):
 
 
 def my_class_name(obj):
-    return get_stream_name(obj)
+
+    """
+    Format the class name to conform to the norms
+    :param obj:
+    :return:
+    """
+    # return get_stream_name(obj)
+
+    ####Using regular expression
+    try:
+        full_name,_class,stream_name=get_stream_name_regex(obj.class_name)
+    except:
+        full_name=get_stream_name(obj)
+    return full_name
 
 def get_bs_number(cl_name):
     for a in cl_name:
@@ -119,9 +134,20 @@ def get_stream_name(obj):
 
 
                 str_name=nems[-1]
-
-
     return "CLASS %s %s" %(bs,str_name)
+
+
+def get_stream_name_regex(name):
+    exp=r"(std|class)? ?([0-9])+(\w{1,})?"
+    pattern=re.compile(exp,re.IGNORECASE)
+    results=pattern.findall(name)
+    results=results[0]
+    print("The results are ",len(results))
+    # print("%s %s "%(results[1],results[2]))
+    fullname= "CLASS %s %s"%(results[1],results[2])
+    _class=results[1]
+    stream_name=results[2]
+    return fullname, _class,stream_name
 
 
 def make_attendance_history():

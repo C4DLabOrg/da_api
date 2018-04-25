@@ -28,9 +28,10 @@ class SchoolEmiscodesSerializer(serializers.Serializer):
 class DeleteStreamStudentsSerializer(serializers.Serializer):
     streams=serializers.ListField(child=serializers.IntegerField())
 
-    def validate_emis_codes(self,value):
+    def validate_streams(self,value):
         unverified_stream_ids=set(value)
         verified_stream_ids=list(Stream.objects.filter(id__in=unverified_stream_ids).values_list("id",flat=True))
+        print(verified_stream_ids)
         if len(verified_stream_ids) < 1:
             raise serializers.ValidationError("No valid streams found.")
         return verified_stream_ids
