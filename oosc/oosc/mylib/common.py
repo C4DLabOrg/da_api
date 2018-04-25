@@ -112,7 +112,7 @@ def get_stream_name(obj):
             else:
                 ##Loop through the names found
                 for nnm in nems:
-                    ### Loop therough the names am checking against names STD, CLASS
+                    ### Loop therough the names and checking against names STD, CLASS
                     for g in names:
                         if nnm in g:
                             del nems[nems.index(nnm)]

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from oosc.schools.models import Schools
+from oosc.stream.models import Stream
 
 
 class ResetPasswordSerializer(serializers.Serializer):
@@ -24,3 +25,12 @@ class SchoolEmiscodesSerializer(serializers.Serializer):
             raise serializers.ValidationError("No schools were found.")
         return verified_emis_codes
 
+class DeleteStreamStudentsSerializer(serializers.Serializer):
+    streams=serializers.ListField(child=serializers.IntegerField())
+
+    def validate_emis_codes(self,value):
+        unverified_stream_ids=set(value)
+        verified_stream_ids=list(Stream.objects.filter(id__in=unverified_stream_ids).values_list("id",flat=True))
+        if len(verified_stream_ids) < 1:
+            raise serializers.ValidationError("No valid streams found.")
+        return verified_stream_ids

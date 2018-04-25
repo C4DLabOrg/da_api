@@ -4,9 +4,10 @@ from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from oosc.admin.v2.serializers import ResetPasswordSerializer, SchoolEmiscodesSerializer
+from oosc.admin.v2.serializers import ResetPasswordSerializer, SchoolEmiscodesSerializer, DeleteStreamStudentsSerializer
 from oosc.mylib.common import MyCustomException
 from oosc.stream.models import Stream
+from oosc.students.models import Students
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer
 
@@ -79,3 +80,19 @@ class DeleteStreams(generics.DestroyAPIView):
         emis_codes = serializer.validated_data.get("emis_codes")
         dele = Stream.objects.filter(school__emis_code__in=emis_codes).delete()
         return Response({"total": dele[0], "objects": dele[1]}, status=status.HTTP_202_ACCEPTED)
+
+class DeleteStudentsByStreams(generics.DestroyAPIView):
+    serializer_class = DeleteStreamStudentsSerializer
+    queryset = Students.objects.all()
+
+    def delete (self,request,*args,**kwargs):
+        serializer=self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        streams=serializer.validated_data.get("streams")
+        dele=Students.objects.filter(class_id_id__in=streams).delete()
+        print(dele)
+        return Response({"total": dele[0], "objects": dele[1]}, status=status.HTTP_202_ACCEPTED)
+
+
+
+
