@@ -1,6 +1,7 @@
 import re
 
 import pytz
+from django.core.paginator import Paginator
 from django.db.models import Value, Count
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
@@ -136,28 +137,31 @@ def get_stream_name(obj):
                 str_name=nems[-1]
     return "CLASS %s %s" %(bs,str_name)
 
+def chunked_iterator(queryset, chunk_size=10000):
+    paginator = Paginator(queryset, chunk_size)
+    for page in range(1, paginator.num_pages + 1):
+        for obj in paginator.page(page).object_list:
+            yield obj
 
 def get_stream_name_regex(name):
     exp = r"(std|class)? ?([0-9])+ ?(.{1,})?"
     pattern = re.compile(exp, re.IGNORECASE)
-    results = pattern.findall(name)
-    results = results[0]
-    print("The results are ", len(results))
-    # print("%s %s "%(results[1],results[2]))
-    fullname = "CLASS %s %s" % (results[1], results[2].replace(" ", ""))
-    _class = results[1]
-    stream_name = results[2]
-    return fullname, _class, stream_name
-    # exp=r"(std|class)? ?([0-9])+ ?(\w{1,})?"
-    # pattern=re.compile(exp,re.IGNORECASE)
-    # results=pattern.findall(name)
-    # results=results[0]
-    # print("The results are ",len(results))
-    # # print("%s %s "%(results[1],results[2]))
-    # fullname= "CLASS %s %s"%(results[1],results[2])
-    # _class=results[1]
-    # stream_name=results[2]
-    # return fullname, _class,stream_name
+    totalresults = pattern.findall(name)
+
+    results = totalresults[0] if len(totalresults) > 0 else None
+
+    if results :
+        # print("The results are ", len(results))
+        # fullname = "CLASS %s %s" % (results[1], results[2].replace(" ", ""))
+        fullname = "CLASS %s %s" % (results[1], results[2])
+        _class = results[1].upper()
+        stream_name = results[2].upper()
+        return fullname.upper(), _class, stream_name
+    else:
+        print("Failed ",totalresults,results,name)
+
+    return name,"",""
+
 
 
 def make_attendance_history():

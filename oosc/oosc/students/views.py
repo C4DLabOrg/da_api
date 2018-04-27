@@ -12,7 +12,7 @@ from django_subquery.expressions import OuterRef, Subquery
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
-from oosc.mylib.common import filter_students_by_names, MyCustomException
+from oosc.mylib.common import filter_students_by_names, MyCustomException, get_stream_name_regex
 from oosc.mylib.excel_export import excel_generate
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
@@ -865,10 +865,11 @@ class ImportStudentsV2(APIView):
 
 
     def get_class(self, school,clas):
-        cls = Stream.objects.filter(class_name__icontains=clas.upper(), school=school)
+        fullname,dd,dd=get_stream_name_regex(clas)
+        cls = Stream.objects.filter(class_name__icontains=fullname, school=school)
         cl = Stream()
         if not (cls.exists()):
-            cl.class_name = clas.upper()
+            cl.class_name = fullname
             cl._class_id =get_class(clas)
             cl.school = school
             cl.save()
