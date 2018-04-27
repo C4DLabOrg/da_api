@@ -36,7 +36,7 @@ def my_class_name(obj):
     :param obj:
     :return:
     """
-    return get_stream_name(obj)
+    # return get_stream_name(obj)
 
     ####Using regular expression
     try:
