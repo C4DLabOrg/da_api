@@ -138,7 +138,7 @@ def get_stream_name(obj):
 
 
 def get_stream_name_regex(name):
-    exp=r"(std|class)? ?([0-9])+(\w{1,})?"
+    exp=r"(std|class)? ?([0-9])+ ?(\w{1,})?"
     pattern=re.compile(exp,re.IGNORECASE)
     results=pattern.findall(name)
     results=results[0]
