@@ -83,8 +83,7 @@ class ListCreateClass(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 """
-from oosc.stream.views import updatestreamnames as us
-us()
+
 """
 def updatestreamnames():
     print("Updating the class_names")

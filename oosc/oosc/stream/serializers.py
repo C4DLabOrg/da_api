@@ -20,14 +20,14 @@ class StreamSerializer(serializers.ModelSerializer):
 
 
 class GetStreamSerializer(serializers.ModelSerializer):
-    class_name=serializers.SerializerMethodField()
+    # class_name=serializers.SerializerMethodField()
     class Meta:
         model = Stream
         fields = ('id','class_name','school','teachers','_class','last_attendance')
 
-    def get_class_name(self, obj):
-        ## Old Code##
-        return my_class_name(obj)
+    # def get_class_name(self, obj):
+        # Old Code##
+        # return my_class_name(obj)
         # full_name,_class,stream_name=get_stream_name_regex(obj.class_name)
         # return full_name
 
@@ -37,7 +37,7 @@ class GetStreamSerializer(serializers.ModelSerializer):
 
 class StudentsStreamSerializer(serializers.ModelSerializer):
     students=serializers.SerializerMethodField()
-    class_name = serializers.SerializerMethodField()
+    # class_name = serializers.SerializerMethodField()
     class Meta:
         model=Stream
         fields=('id','class_name','students','_class','school','last_attendance')
@@ -47,5 +47,5 @@ class StudentsStreamSerializer(serializers.ModelSerializer):
         ser=SimpleStudentSerializer(queryset,many=True)
         return ser.data
 
-    def get_class_name(self,obj):
-        return  my_class_name(obj)
+    # def get_class_name(self,obj):
+    #     return  my_class_name(obj)
