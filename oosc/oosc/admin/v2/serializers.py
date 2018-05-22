@@ -22,7 +22,7 @@ class SchoolsSerializerV2(serializers.ModelSerializer):
     partners=SimlePartnerSerializer(read_only=True,many=True)
     class Meta:
         model=Schools
-        fields=("__all__")
+        fields=("zone",'partners','emis_code','id','school_name')
 
 class SchoolEmiscodesSerializer(serializers.Serializer):
     emis_codes=serializers.ListField(child=serializers.IntegerField())
