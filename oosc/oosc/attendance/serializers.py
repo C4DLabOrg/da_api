@@ -25,6 +25,7 @@ class AttendanceHistorySerializier(serializers.ModelSerializer):
     class Meta:
         model=AttendanceHistory
         fields=("__all__")
+
 class GetAttendanceHistorySerilizer(serializers.Serializer):
     attendance_count=serializers.IntegerField(default=0)
     id=serializers.IntegerField(default=0)

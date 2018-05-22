@@ -41,6 +41,10 @@ class PartnerSerializer(serializers.ModelSerializer):
         if len(obs)>0:return obs[0]
         return 0
 
+class SimlePartnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Partner
+        fields=("__all__")
 class SavePartnerSerializer(serializers.ModelSerializer):
     email=serializers.SerializerMethodField()
     class Meta:

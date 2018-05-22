@@ -36,6 +36,7 @@ class Schools(models.Model):
     status=models.CharField(choices=STATUS,max_length=50,default='PUBLIC')
     partners=models.ManyToManyField(Partner,null=True,blank=True,related_name="schools")
     partner_conflict=models.BooleanField(default=False)
+    active=models.BooleanField(default=True)
 
     def __str__(self):
         return self.school_name

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from oosc.partner.serializers import SimlePartnerSerializer
 from oosc.schools.models import Schools
 from oosc.stream.models import Stream
 
@@ -15,6 +16,11 @@ class ResetPasswordSerializer(serializers.Serializer):
             return value
         raise serializers.ValidationError("Phone/Emiscode account does not exist.")
 
+class SchoolsSerializerV2(serializers.ModelSerializer):
+    partners=SimlePartnerSerializer(read_only=True,many=True)
+    class Meta:
+        model=Schools
+        fields=("__all__")
 class SchoolEmiscodesSerializer(serializers.Serializer):
     emis_codes=serializers.ListField(child=serializers.IntegerField())
     def validate_emis_codes(self,value):
