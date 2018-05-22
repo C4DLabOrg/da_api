@@ -86,8 +86,6 @@ class AttendanceFilter(FilterSet):
     def filter_county(self,queryset,name,value):
         return queryset.exclude(Q(student__class_id__school__zone=None) | Q(student__class_id__school__subcounty=None)).filter(Q(student__class_id__school__zone__subcounty__county=value) | Q(student__class_id__school__subcounty__county=value))
 
-
-
     def filter_partner_admin(self, queryset, name, value):
         return queryset.filter(_class__school__partners__partner_admins__id=value)
 
@@ -161,7 +159,13 @@ class SerializerAllPercentages(serializers.Serializer):
         return_type=self.context.get("return_type")
         # print ("return type",return_type)
         if stud or return_type == "count":
-            return {"present":instance["present_males"]+instance["present_females"],"absent":instance["absent_males"]+instance["absent_females"],"total":int(self.get_total(instance)),"value":instance["value"]}
+            return {"present":instance["present_males"]+instance["present_females"],
+                    "present_males":instance["present_males"],
+                    "present_females":instance["present_females"],
+                    "absent":instance["absent_males"]+instance["absent_females"],
+                    "absent_males":instance["absent_males"],
+                    "absent_females":instance["absent_females"],
+                    "total":int(self.get_total(instance)),"value":instance["value"]}
         return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
                 "present":self.get_percentage(instance,"present"),"absent":self.get_percentage(instance,"absent"),
@@ -214,7 +218,7 @@ class ListCreateAttendance(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class=AttendanceFilter
     pagination_class = StandardresultPagination
-    nonefomats = ["yearly", "class","monthly","gender","county","oosc"]
+    nonefomats = ["yearly", "class","monthly","gender","county","oosc","partner"]
     fakepaginate=False
 
     def paginate_queryset(self, queryset):
@@ -307,6 +311,7 @@ class ListCreateAttendance(generics.ListAPIView):
             if format != "daily":
                 return SerializerAllPercentages
             return SerializerAll
+
         elif self.request.method == 'POST':
             return AttendanceSerializer
 
@@ -341,16 +346,22 @@ class ListCreateAttendance(generics.ListAPIView):
     def get_format(self,format):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
         weekly=Concat(Trunc("date","week"),Value(''),output_field=CharField(),)
+
         if(format=="monthly"):
             return Concat(ExtractYear("date"),Value('-'),ExtractMonth('date'),Value('-1'),output_field=DateField(),)
         elif format=="daily":
             return daily
         elif format=="weekly":
             return weekly
+        # elif format=="partner":
+        #     return Concat(F("student__school__partners"))
         elif format== "yearly":
             return ExtractYear('date')
         elif format == "stream":
             return Concat("_class__class_name", Value(''), output_field=CharField())
+
+        elif format=="partner":
+            return Concat("student__class_id__school__partners",Value('-'),"student__class_id__school__partners__name",output_field=CharField())
         elif format =="county":
             return Concat("_class__school__zone__subcounty__county__county_name",Value(''),output_field=CharField())
         elif format=="class":

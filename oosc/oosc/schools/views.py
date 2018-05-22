@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from oosc.counties.models import Counties
 from oosc.subcounty.models import SubCounty
+from oosc.teachers.views import str2bool
 from oosc.zone.models import Zone
 from oosc.teachers.models import Teachers
 from oosc.students.models import Students
@@ -38,11 +39,12 @@ class SchoolsFilter(FilterSet):
     county=django_filters.NumberFilter(name="county_filter",method="filter_county",label="County Id")
     school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
     partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
+    partner_conflict=django_filters.CharFilter(name="partner_conflict" ,label="Partner Conflict (true,false)" ,method="filter_partner_conflict")
     active=django_filters.BooleanFilter(name="active" ,label="Active (1=True,2=False)" ,method="filter_active")
     partner_admin=django_filters.NumberFilter(name="active" ,label="Partner Admin" ,method="filter_partner_admin")
     class Meta:
         model=Schools
-        fields=('id','emis_code','zone','county',"school_name",'partner')
+        fields=('id','emis_code','zone','county',"school_name",'partner','partner_conflict')
 
     def filter_county(self,queryset,name,value):
         return queryset.exclude(Q(zone=None) | Q(subcounty=None)).filter(Q(zone__subcounty__county=value) | Q(subcounty__county=value))
@@ -50,6 +52,10 @@ class SchoolsFilter(FilterSet):
 
     def filter_partner(self,queryset,name,value):
         return queryset.filter(partners__id=value)
+
+    def filter_partner_conflict(self,queryset,name,value):
+        value=str2bool(value)
+        return queryset.filter(partner_conflict=value)
 
     def filter_partner_admin(self,queryset,name,value):
         return  queryset.filter(partners__partner_admins__id=value)

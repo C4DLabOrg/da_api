@@ -1,4 +1,6 @@
 import django_filters
+import sys
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import  get_object_or_404
 from django.http import Http404
@@ -7,7 +9,9 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from oosc.mylib.common import chunked_iterator, get_stream_name_regex
 from oosc.stream.models import Stream
 from oosc.stream.serializers import StreamSerializer, GetStreamSerializer
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
@@ -77,6 +81,36 @@ class ListCreateClass(generics.ListCreateAPIView):
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+"""
+
+"""
+def updatestreamnames():
+    print("Updating the class_names")
+    counter=0
+    total=Stream.objects.all().count()
+    for stream in chunked_iterator(Stream.objects.all(), chunk_size=1000):
+        stream.class_name,_class,stream_name=get_stream_name_regex(stream.class_name)
+        stream.save()
+        sys.stdout.write("\r %s  of %s"%(str(counter),str(total)))
+        sys.stdout.flush()
+        counter+=1
+    return Response({"detail":"Updated all"})
+
+class UpdateClassNamesView(APIView):
+    queryset = Stream.objects.all()
+    serializer_class = StreamSerializer
+
+    def post(self):
+        print("Updating the class_names")
+        counter=0
+        for stream in chunked_iterator(Stream.objects.all(), chunk_size=1000):
+            stream.class_name=get_stream_name_regex(stream.class_name)
+            stream.save()
+            sys.stdout("\r AT :%s"%(str(counter)))
+            counter+=1
+        return Response({"detail":"Updated all"})
+
 
 
 class ClassHasStudents (APIException):

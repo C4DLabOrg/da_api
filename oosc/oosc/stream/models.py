@@ -25,7 +25,6 @@ class Stream(models.Model):
         m = list(self.class_name)
         for n in m:
             if n.isdigit():
-                print n
                 return n
 
     def attendance_taken(self, date):

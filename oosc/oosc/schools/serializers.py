@@ -6,7 +6,7 @@ class PostSchoolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Schools
-        fields=('id','school_code','subcounty', 'school_name','level','status','partners', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
+        fields=('id','school_code','subcounty', 'school_name','partner_conflict','level','status','partners', 'latitude','longitude', 'emis_code', 'zone', 'source_of_water',
         'headteacher','phone_no','partners')
 
     # def validate_emis_code(self,value):
@@ -30,7 +30,7 @@ class SchoolsSerializer(serializers.ModelSerializer):
     subcounty_name=serializers.SerializerMethodField()
     class Meta:
         model = Schools
-        fields = ('id','school_code', 'school_name','partners','level'
+        fields = ('id','school_code','partner_conflict' , 'school_name','partners','level'
                   ,'county_name',
                     'subcounty_name',
                  'zone_name'
@@ -39,6 +39,7 @@ class SchoolsSerializer(serializers.ModelSerializer):
                  'subcounty'
                   , 'source_of_water',
         'headteacher','phone_no')
+
 
     def get_geo_coordinates(self,obj):
         return {"lat":obj.latitude,"lng":obj.longitude}

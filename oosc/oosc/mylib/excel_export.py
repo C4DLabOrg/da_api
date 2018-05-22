@@ -24,14 +24,15 @@ from openpyxl.utils import get_column_letter
 from oosc.mylib.common import get_random, get_quick_stream_class_name
 
 months=[{"name":"Sept","days":30},{"name":"Oct","days":31},{"name":"Nov","days":30}]
-collumns=["School Name","School Emis Code","Student Id","First Name","Middle name","Last Name","Class Id","Class Name"]
+collumns=["School Name","School Emis Code","System Student Id","First Name","Middle name","Last Name","Gender","System Class Id","Class Name"]
 
 
 # wb.active.title="Jan"
 
 ##Creating the sheets
 
-def excel_generate(queryset):
+
+def excel_generate(queryset,include_days=True):
     wb = openpyxl.Workbook()
     print("generating the excel file")
     number=len(queryset)
@@ -39,8 +40,9 @@ def excel_generate(queryset):
     print("Length ",number)
     maxcols=len(collumns)
     mycollumns=copy.deepcopy(collumns)
-    ##append the days to the collumns depending on the number of days
-    for j in range(1, months[0]["days"] + 1): mycollumns.append(str(j))
+    ##append the days to the collumns depending on the number of days if the months are provided
+    if include_days:
+        for j in range(1, months[0]["days"] + 1): mycollumns.append(str(j))
 
     ##Sheet 1 setting the headers
     sheet=wb.active
@@ -71,8 +73,9 @@ def excel_generate(queryset):
         sheet.cell(row=i+2, column=4).value=stud["fstname"]
         sheet.cell(row=i+2, column=5).value=stud["midname"]
         sheet.cell(row=i+2, column=6).value=stud["lstname"]
-        sheet.cell(row=i+2, column=7).value=stud["class_id"]
-        sheet.cell(row=i+2, column=8).value=stud["class_name"]
+        sheet.cell(row=i+2, column=7).value=stud["gender"]
+        sheet.cell(row=i+2, column=8).value=stud["class_id"]
+        sheet.cell(row=i+2, column=9).value=stud["class_name"]
 
 
         ### sheet {i} writing the data
@@ -95,13 +98,15 @@ def excel_generate(queryset):
             #     sheet.cell(row=i + 2, column=6).value = stud["class_name"]
     print("Copy pasting sheets")
     # sheet=wb.create_sheet(index=i, title=month["name"])
-    sheet_nov = wb.copy_worksheet(wb.active)
-    sheet_nov.title = months[1]["name"]
+    if include_days:
+        sheet_nov = wb.copy_worksheet(wb.active)
+        sheet_nov.title = months[1]["name"]
+        sheet_oct = wb.copy_worksheet(wb.active)
+        sheet_oct.title = months[2]["name"]
 
-    sheet_oct = wb.copy_worksheet(wb.active)
-    sheet_oct.title = months[2]["name"]
-
-    school_name=queryset[0]["school_name"].replace(" ","_")+"_"+datetime.now().strftime("%d_%b_%Y") if len(queryset) >0 else "oosc_d"
+    if include_days:school_name=queryset[0]["school_name"].replace(" ","_")+"_"+datetime.now().strftime("%d_%b_%Y") if len(queryset) >0 else "oosc_d"
+    else:school_name="Students %s"%(datetime.now().strftime("%Y-%m-%d %X"))
+    school_name=school_name.replace(" ","_")
     # print("Done creating the sheets")
     wb.save("oosc.xlsx")
     # print("Saving the file")

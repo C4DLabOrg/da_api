@@ -12,7 +12,7 @@ from django_subquery.expressions import OuterRef, Subquery
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
-from oosc.mylib.common import filter_students_by_names, MyCustomException
+from oosc.mylib.common import filter_students_by_names, MyCustomException, get_stream_name_regex
 from oosc.mylib.excel_export import excel_generate
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
@@ -43,6 +43,8 @@ from rest_framework.pagination import PageNumberPagination
 from oosc.partner.models import Partner
 from sys import stdout
 from django.utils.dateparse import parse_date
+
+from oosc.teachers.views import str2bool
 
 
 class StudentFilter(FilterSet):
@@ -863,10 +865,11 @@ class ImportStudentsV2(APIView):
 
 
     def get_class(self, school,clas):
-        cls = Stream.objects.filter(class_name__icontains=clas.upper(), school=school)
+        fullname,dd,dd=get_stream_name_regex(clas)
+        cls = Stream.objects.filter(class_name__icontains=fullname, school=school)
         cl = Stream()
         if not (cls.exists()):
-            cl.class_name = clas.upper()
+            cl.class_name = fullname
             cl._class_id =get_class(clas)
             cl.school = school
             cl.save()
@@ -963,6 +966,33 @@ class ListDropouts(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class = EnrollmentFilter
 
+class ExportStudentsData(generics.ListAPIView):
+    queryset = Students.objects.select_related("class_id", "class_id__school")
+    serializers_class=StudentsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = StudentFilter
+
+    def list(self, request, *args, **kwargs):
+        school = request.query_params.get("school", None)
+        queryset=self.filter_queryset(self.queryset)
+        queryset=queryset.exclude(active=False,class_id=None)
+        queryset=queryset.annotate(class_name=F("class_id__class_name"),
+                         school_name= F("class_id__school__school_name"),
+                         school_emis_code=F("class_id__school__emis_code"),
+                         )
+        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.order_by("school_emis_code","class_name")
+        print ("stuff")
+        print("have the queryset")
+        queryset=list(queryset)
+        path=excel_generate(queryset,include_days=False)
+        # path = default_storage.save('exports/file.xlsx',wb)
+        # print (default_storage(path).base_url)
+        url = request.build_absolute_uri(location="/media/"+path)
+        resp={"link":url}
+        print(resp)
+        return  Response(resp)
+
 class ExportStudents(generics.ListAPIView):
     queryset = Students.objects.select_related("class_id", "class_id__school")
     serializers_class=StudentsSerializer
@@ -979,7 +1009,7 @@ class ExportStudents(generics.ListAPIView):
                          school_name= F("class_id__school__school_name"),
                          school_emis_code=F("class_id__school__emis_code"),
                          )
-        queryset=queryset.values("id","fstname","midname","lstname","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
         print ("stuff")
         print("have the queryset")

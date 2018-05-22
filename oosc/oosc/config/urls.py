@@ -26,15 +26,16 @@ from oosc.counties.views import ListCreateCounty
 from oosc.stream.views import ListCreateClass, RetrieveUpdateClass
 from oosc.teachers.views import RetrieveUpdateTeacher,ListCreateTeachers,ListTeachers,ChangePassword,ForgotPasssword, \
     GetUserType, PingServer
-from oosc.students.views import ListCreateStudent,GetEnrolled,ImportStudents,RetrieveUpdateStudent, ListAbsentStudents, \
-    ListDropouts, ImportStudentsV2, BulkMoveStudents, ExportStudents, GetDroupoutsWithReasons
+from oosc.students.views import ListCreateStudent, GetEnrolled, ImportStudents, RetrieveUpdateStudent, \
+    ListAbsentStudents, \
+    ListDropouts, ImportStudentsV2, BulkMoveStudents, ExportStudents, GetDroupoutsWithReasons, ExportStudentsData
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from oosc.absence.views import GetEditAbsence
 from oosc.reason.views import ListCreatereason
-from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner, ListCreatePartnerAdmin
-
+from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner, ListCreatePartnerAdmin, \
+    ClearPartnerSchools, AssignPartnerSchools
 
 urlsv2=[
    url(r'^admin/',include("oosc.admin.v2.urlsv2")),
@@ -67,6 +68,7 @@ urlpatterns = [
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/students/enrolls/(?P<type>.+)',GetEnrolled.as_view(),name="list-create-student"),
     url(r'^api/students/import',ImportStudentsV2.as_view(),name="import-student"),
+    url(r'^api/students/exportall',ExportStudentsData.as_view(),name="import-student"),
     url(r'^api/students/export',ExportStudents.as_view(),name="import-student"),
     url(r'^api/students/bulkmove',BulkMoveStudents.as_view(),name="bulk-move-student"),
     url(r'^api/students/absent',ListAbsentStudents.as_view(),name="import-student"),
@@ -78,6 +80,8 @@ urlpatterns = [
     url(r'^api/teachers',ListTeachers.as_view(),name="List_Teachers"),
     url(r'^api/partners/(?P<pk>[0-9]+)', RetrieveUpdateDestroyPartner.as_view(),name="Retrieve_update_delete_partner"),
     url(r'^api/partners-admin',ListCreatePartnerAdmin.as_view(),name="List_create_partner"),
+    url(r'^api/partners/clear-schools',ClearPartnerSchools.as_view(),name="List_create_partner"),
+    url(r'^api/partners/update-schools',AssignPartnerSchools.as_view(),name="List_create_partner"),
     url(r'^api/partners',ListCreatePartner.as_view(),name="List_create_partner"),
     url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
     url(r'^api/ping$',PingServer.as_view(),name="ping_test_for_server"),

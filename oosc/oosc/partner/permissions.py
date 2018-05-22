@@ -8,7 +8,8 @@ class IsAdmin(BasePermission):
     def has_permission(self, request, view):
         if  request.method in SAFE :
             return True
-        is_in_unicef = Group.objects.get(name="unicef").user_set.filter(id=request.user.id).exists()
+        group,created=Group.objects.get_or_create(name="unicef")
+        is_in_unicef = group.user_set.filter(id=request.user.id).exists()
         if( ( is_in_unicef or request.user.is_superuser ) and request.user.is_authenticated() and request.user):
             return True
         return False
