@@ -9,7 +9,11 @@ from openpyxl.utils import get_column_letter
 
 def exportcsv(headers=[], title="Sheet", filename=None, queryset=[]):
     """
-    headers=[{"name":"Title",value:"school_title"}]
+    Example
+    filename="test"
+    queryset=[{"school_title":"Warugara","count":4}]
+    headers=[{"name":"School Title","value":"school_title"},{"name":"Students Count","value":"count"}]
+    path=exportcsv(filename=filename,queryset=queryset,headers=headers,title="Schools")
     :param headers:
     :param title:
     :param filename:
