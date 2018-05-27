@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 # Create your models here.
-
+from oosc.mylib.queryset2excel import exportcsv
 
 
 class Classes(models.Model):
@@ -26,3 +26,9 @@ class PublicHoliday(models.Model):
 
     def __str__(self):
         return "%s-%s" %(self.name,self.year)
+
+# filename="test"
+# queryset=[{"school_title":"Warugara","count":4}]
+# headers=[{"name":"School Title","value":"school_title"},{"name":"Students Count","value":"count"}]
+# path=exportcsv(filename=filename,queryset=queryset,headers=headers,title="Schools")
+# print(path)
