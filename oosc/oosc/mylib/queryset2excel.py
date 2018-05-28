@@ -48,7 +48,7 @@ def exportcsv(headers=[], title="Sheet", filename=None, queryset=[]):
     for i,data in enumerate(queryset):
         ###Loop through all the headers
         for j,col in enumerate(headers):
-            ##i+2 since (i, starts at 0, and the row 1 is for headers)
+            ##i+2 since (i starts at 0, and the row 1 is for headers)
             sheet.cell(row=i+2,column=j+1).value=data[col["value"]]
 
     ##The output filename
