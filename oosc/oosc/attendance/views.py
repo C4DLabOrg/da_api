@@ -532,17 +532,18 @@ class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
 
         attendances=self.filter_queryset(self.queryset)
         attendances= attendances.filter(date__in=days).annotate(partner_id=partner_id)\
+            .exclude(partner_id=None)\
             .values("partner_id").annotate(
-                                      # value=at,
+                                      value=at,
                                       males=m,females=f,
                                       total_days=Value(total_days,output_field=IntegerField()),
-                                      # total_males=Subquery(male_students[:1],output_field=IntegerField()),
-                                      # total_females=Subquery(female_students[:1],output_field=IntegerField())
+                                      total_males=Subquery(male_students[:1],output_field=IntegerField()),
+                                      total_females=Subquery(female_students[:1],output_field=IntegerField())
             )\
             .values(
             "males","females",
-                    # "value",
-                    # "total_males","total_females",
+                    "value",
+                    "total_males","total_females",
                     "total_days","partner_id")
         return attendances
 
