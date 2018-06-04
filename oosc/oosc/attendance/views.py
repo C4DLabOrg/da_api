@@ -8,6 +8,8 @@ from rest_framework import generics,status
 from datetime import datetime
 import pytz
 from oosc.mylib.common import MyCustomException, get_list_of_dates
+from oosc.partner.models import Partner
+from oosc.partner.views import PartnerFilter
 from oosc.stream.models import Stream
 from oosc.stream.serializers import StreamSerializer
 from oosc.stream.views import StreamFilter
@@ -478,6 +480,81 @@ class TakeAttendance(APIView):
 
 class AttendanceHistorySerializer(object):
     pass
+
+
+class MonitorPartnerSerializer(serializers.Serializer):
+    # "males", "females", "value", "total_males", "total_males", "total_days"
+    males=serializers.IntegerField(allow_null=True,required=False)
+    females=serializers.IntegerField(allow_null=True,required=False)
+    total_males=serializers.IntegerField(allow_null=True,required=False)
+    total_females=serializers.IntegerField(allow_null=True,required=False)
+    total_days=serializers.IntegerField(allow_null=True,required=False)
+    partner_id=serializers.IntegerField(allow_null=True,required=False)
+    value=serializers.CharField(allow_null=True,required=False)
+
+class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
+    queryset = Attendance.objects.all()
+    serializer_class = MonitorPartnerSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=AttendanceFilter
+    allowed_order_by = ["school", "attendance_count"]
+
+
+
+    def get_queryset(self):
+        #Confirm query params present
+        self.parse_querparams()
+
+        start_date, end_date = self.parse_querparams()
+        print ('%s to %s' % (start_date, end_date))
+
+        ###Get the days attendace was expected
+        days = get_list_of_dates(start_date=start_date, end_date=end_date)
+        total_days = len(days)
+        print ("Total days ",total_days)
+
+        ###Get order by
+        order_by = self.request.GET.get("order_by", None)
+        if order_by not in self.allowed_order_by: order_by = "attendance_count"
+
+        male_students=Students.objects.filter(gender="M",active=True,class_id__school__partners__id = OuterRef("partner_id")).values("gender").annotate(count=Count("gender")).values("count")
+        female_students=Students.objects.filter(gender="F",active=True,class_id__school__partners__id = OuterRef("partner_id")).values("gender").annotate(count=Count("gender")).values("count")
+
+        at = Concat("student__class_id__school__partners", Value('-'), "student__class_id__school__partners__name",
+                    output_field=CharField())
+        partner_id = F("student__class_id__school__partners")
+        #Male attendance Count
+        m = Count(Case(When(Q(student__gender="M") & Q(student__active=True), then=1), output_field=IntegerField(), ))
+
+        #Female attendance count
+        # , class_id__school__partners__id = OuterRef("partner_id")
+        f = Count(Case(When(Q(student__gender="F") & Q(student__active=True), then=1), output_field=IntegerField(), ))
+
+        attendances=self.filter_queryset(self.queryset)
+        attendances= attendances.filter(date__in=days).annotate(partner_id=partner_id)\
+            .values("partner_id").annotate(
+                                      # value=at,
+                                      males=m,females=f,
+                                      total_days=Value(total_days,output_field=IntegerField()),
+                                      # total_males=Subquery(male_students[:1],output_field=IntegerField()),
+                                      # total_females=Subquery(female_students[:1],output_field=IntegerField())
+            )\
+            .values(
+            "males","females",
+                    # "value",
+                    # "total_males","total_females",
+                    "total_days","partner_id")
+        return attendances
+
+    def parse_querparams(self):
+        start_date = self.request.GET.get("start_date", None)
+        end_date = self.request.GET.get("end_date", None)
+        if start_date == None or end_date == None : raise MyCustomException(
+            "You must include the `start_date` , `end_date`  in the query params");
+        return start_date,end_date
+
+
+
 
 
 class MonitoringAttendanceTaking(generics.ListAPIView):

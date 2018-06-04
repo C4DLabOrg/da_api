@@ -137,7 +137,7 @@ class ExportDuplicatePartnerSchools(generics.ListAPIView):
 
 
     def map_data(self,x):
-        #Set the county and xubcounty
+        #Set the county and subcounty
         if x["zone"]:
             x["county"]=x["zone"]["county_name"]
             x["subcounty"]=x["zone"]["subcounty_name"]
@@ -146,6 +146,6 @@ class ExportDuplicatePartnerSchools(generics.ListAPIView):
             x["county"]=""
             x["subcounty"]=""
             x["zone_name"]=""
-
+        ##Map the partners object array into a comma separate 'id-name' string
         x["partner_names"]=",".join(map(lambda x:"%s-%s"%(str(x["id"]),x["name"]),x["partners"]))
         return x
