@@ -531,20 +531,19 @@ class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
         f = Count(Case(When(Q(student__gender="F") & Q(student__active=True), then=1), output_field=IntegerField(), ))
 
         attendances=self.filter_queryset(self.queryset)
-        attendances= attendances.filter(date__in=days).annotate(partner_id=partner_id)\
-            .exclude(partner_id=None)\
+        attendances= attendances.filter(date__in=days).annotate(value=at)\
+            .exclude(value="-")\
             .values("partner_id").annotate(
-                                      value=at,
                                       males=m,females=f,
                                       total_days=Value(total_days,output_field=IntegerField()),
-                                      total_males=Subquery(male_students[:1],output_field=IntegerField()),
-                                      total_females=Subquery(female_students[:1],output_field=IntegerField())
+                                      # total_males=Subquery(male_students[:1],output_field=IntegerField()),
+                                      # total_females=Subquery(female_students[:1],output_field=IntegerField())
             )\
             .values(
             "males","females",
                     "value",
-                    "total_males","total_females",
-                    "total_days","partner_id")
+                    # "total_males","total_females",
+                    "total_days")
         return attendances
 
     def parse_querparams(self):
