@@ -624,22 +624,23 @@ class MonitorPartnerAttendanceTaking(generics.ListAPIView):
 
         student_at = Concat("class_id__school__partners", Value('-'), "class_id__school__partners__name", \
                     output_field=CharField())
-
-        self.all_students=list(Students.objects.filter(active=True).annotate(partner=student_at).values("partner").annotate(sum=Count("gender")).values("sum","partner"))
-
-        print(self.all_students)
+        #
+        # self.all_students=list(Students.objects.filter(active=True).annotate(partner=student_at).values("partner").annotate(sum=Count("gender")).values("sum","partner"))
+        #
+        # print(self.all_students)
 
         atts=self.filter_queryset(self.queryset)
-        # print(days)
-        atts=atts.filter(date__in=days).annotate(partner=at).exclude().values("partner").annotate(
+        print(self.total_days)
+        atts=atts.filter(date__in=days).annotate(partner=at).values("partner").annotate(
             sum_present=Sum("present"), sum_absent=Sum("absent"))\
             .annotate(total_attendance=F("sum_present")+F("sum_absent"))\
             .values("partner", "sum_present", "sum_absent","total_attendance")
         ####Append the other details and sort by the percentage
+
         return sorted(map(self.map_total,atts),key=lambda x:x["percentage"],reverse=True)
 
     def map_total(self,x):
-        x["total_students"]=filter(lambda y:y["partner"]==x["partner"],self.all_students)[0]["sum"]
+        x["total_students"]=Students.objects.filter(active=True,class_id__school__partners=x["partner"].split("-")[0]).count()#filter(lambda y:y["partner"]==x["partner"],self.all_students)[0]["sum"]
         x["total_days"]=self.total_days
         x["expected_attendance"]=self.total_days*x["total_students"]
         x["missing_attendance"]=x["expected_attendance"]-x["total_attendance"]
