@@ -631,7 +631,7 @@ class MonitorPartnerAttendanceTaking(generics.ListAPIView):
 
         atts=self.filter_queryset(self.queryset)
         print(self.total_days)
-        atts=atts.filter(date__in=days).annotate(partner=at).values("partner").annotate(
+        atts=atts.filter(date__in=days).annotate(partner=at,pt=F("_class__school__partners__test")).exclude(pt=True).values("partner").annotate(
             sum_present=Sum("present"), sum_absent=Sum("absent"))\
             .annotate(total_attendance=F("sum_present")+F("sum_absent"))\
             .values("partner", "sum_present", "sum_absent","total_attendance")
