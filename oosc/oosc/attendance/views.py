@@ -625,12 +625,13 @@ class MonitorPartnerAttendanceTaking(generics.ListAPIView):
         student_at = Concat("class_id__school__partners", Value('-'), "class_id__school__partners__name", \
                     output_field=CharField())
 
-        self.all_students=list(Students.objects.annotate(partner=student_at).values("partner").annotate(sum=Count("gender")).values("sum","partner"))
+        self.all_students=list(Students.objects.filter(active=True).annotate(partner=student_at).values("partner").annotate(sum=Count("gender")).values("sum","partner"))
 
-        # print(self.all_students)
+        print(self.all_students)
+
         atts=self.filter_queryset(self.queryset)
         # print(days)
-        atts=atts.filter(date__in=days).annotate(partner=at).exclude().values("partner").annotate(
+        atts=atts.filter(date__in=days,student__active=True).annotate(partner=at).exclude().values("partner").annotate(
             sum_present=Sum("present"), sum_absent=Sum("absent"))\
             .annotate(total_attendance=F("sum_present")+F("sum_absent"))\
             .values("partner", "sum_present", "sum_absent","total_attendance")
