@@ -492,7 +492,19 @@ class MonitorPartnerSerializer(serializers.Serializer):
     partner_id=serializers.IntegerField(allow_null=True,required=False)
     value=serializers.CharField(allow_null=True,required=False)
 
-class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
+class MonitoriPartnerSerializerv2(serializers.Serializer):
+    # "partner", "sum_present", "sum_absent"
+    sum_present = serializers.IntegerField(allow_null=True, required=False)
+    sum_absent = serializers.IntegerField(allow_null=True, required=False)
+    total_students = serializers.IntegerField(allow_null=True, required=False)
+    total_days = serializers.IntegerField(allow_null=True, required=False)
+    total_attendance = serializers.IntegerField(allow_null=True, required=False)
+    expected_attendance = serializers.IntegerField(allow_null=True, required=False)
+    missing_attendance = serializers.IntegerField(allow_null=True, required=False)
+    attendance_taken_percentage = serializers.CharField(allow_null=True, required=False)
+    partner = serializers.CharField(allow_null=True, required=False)
+
+class MonitorPartnerAttendanceTaking_Depricated(generics.ListCreateAPIView):
     queryset = Attendance.objects.all()
     serializer_class = MonitorPartnerSerializer
     filter_backends = (DjangoFilterBackend,)
@@ -567,6 +579,73 @@ class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
 
 
 
+class MonitorPartnerAttendanceTaking(generics.ListAPIView):
+    queryset = AttendanceHistory.objects.all()
+    serializer_class = MonitoriPartnerSerializerv2
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = AttendanceHistoryFilter
+    pagination_class = StandardresultPagination
+    all_students=None
+    total_days=None
+
+    allowed_order_by = ["school", "attendance_count"]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_my_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def parse_querparams(self):
+        start_date = self.request.GET.get("start_date", None)
+        end_date = self.request.GET.get("end_date", None)
+        if start_date == None or end_date == None : raise MyCustomException(
+            "You must include the `start_date` , `end_date` ,  in the query params");
+        return start_date, end_date
+
+    def get_my_queryset(self):
+        start_date,end_date=self.parse_querparams()
+        # print ('%s to %s'%(start_date,end_date))
+
+        ###Get the days attendace was expected
+        days=get_list_of_dates(start_date=start_date,end_date=end_date)
+        self.total_days=len(days)
+
+        # print (total_days)
+
+        ###Get order by
+        order_by=self.request.GET.get("order_by",None)
+        if order_by not in self.allowed_order_by:order_by="attendance_count"
+        at = Concat("_class__school__partners", Value('-'), "_class__school__partners__name",\
+                    output_field=CharField())
+
+        student_at = Concat("class_id__school__partners", Value('-'), "class_id__school__partners__name", \
+                    output_field=CharField())
+
+        self.all_students=list(Students.objects.annotate(partner=student_at).values("partner").annotate(sum=Count("gender")).values("sum","partner"))
+
+        # print(self.all_students)
+        atts=self.filter_queryset(self.queryset)
+        # print(days)
+        atts=atts.filter(date__in=days).annotate(partner=at).exclude().values("partner").annotate(
+            sum_present=Sum("present"), sum_absent=Sum("absent"))\
+            .annotate(total_attendance=F("sum_present")+F("sum_absent"))\
+            .values("partner", "sum_present", "sum_absent","total_attendance")
+        ####Append the other details and sort by the percentage
+        return sorted(map(self.map_total,atts),key=lambda x:x["percentage"],reverse=True)
+
+    def map_total(self,x):
+        x["total_students"]=filter(lambda y:y["partner"]==x["partner"],self.all_students)[0]["sum"]
+        x["total_days"]=self.total_days
+        x["expected_attendance"]=self.total_days*x["total_students"]
+        x["missing_attendance"]=x["expected_attendance"]-x["total_attendance"]
+        x["percentage"]=float(x["total_attendance"])*100/float(x["expected_attendance"])
+        x["attendance_taken_percentage"]="%.2f%s"%(float(x["total_attendance"])*100/float(x["expected_attendance"]),'%')
+        return x
+
 
 class MonitoringAttendanceTaking(generics.ListAPIView):
     queryset = Stream.objects.all()
@@ -598,8 +677,8 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
         streams=streams.annotate(attendance_count=Subquery(atts[:1],output_field=IntegerField()),
                                  total_days=Value(total_days,output_field=IntegerField()),
                                  school_name=F("school__school_name"),
-                              school_type=F("school__status"),
-                              school_emis_code=F("school__emis_code"),
+                                school_type=F("school__status"),
+                                school_emis_code=F("school__emis_code"),
                                  ).values("id","attendance_count","class_name","total_days","school_name","school_emis_code","school_type")\
 
 
@@ -608,8 +687,6 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
             streams=streams.order_by("school_name","-attendance_count","class_name")
         else:
             streams = streams.order_by( "-attendance_count","school_name","class_name")
-
-
 
 
         print (attendance_taken)
