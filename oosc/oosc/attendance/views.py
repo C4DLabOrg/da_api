@@ -522,6 +522,8 @@ class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
 
         at = Concat("student__class_id__school__partners", Value('-'), "student__class_id__school__partners__name",
                     output_field=CharField())
+        at_student = Concat("class_id__school__partners", Value('-'), "class_id__school__partners__name",
+                    output_field=CharField())
         partner_id = F("student__class_id__school__partners")
         #Male attendance Count
         m = Count(Case(When(Q(student__gender="M") & Q(student__active=True), then=1), output_field=IntegerField(), ))
@@ -530,19 +532,28 @@ class MonitorPartnerAttendanceTaking(generics.ListCreateAPIView):
         # , class_id__school__partners__id = OuterRef("partner_id")
         f = Count(Case(When(Q(student__gender="F") & Q(student__active=True), then=1), output_field=IntegerField(), ))
 
+        fs = Count(Case(When(Q(gender="F") & Q(active=True), then=2), output_field=IntegerField(), ))
+        ms = Count(Case(When(Q(gender="M") & Q(active=True), then=1), output_field=IntegerField(), ))
+
+        # Female attendance count
+        # , class_id__school__partners__id = OuterRef("partner_id")
+
+        ##Totals
+        thestudents=list(Students.objects.filter(active=True).values("gender")\
+                         .annotate(partner=at_student,count=Count("gender")).values("count","gender","partner"))
+
+        print(thestudents)
+
         attendances=self.filter_queryset(self.queryset)
         attendances= attendances.filter(date__in=days).annotate(value=at)\
             .exclude(value="-")\
-            .values("partner_id").annotate(
+            .values("value").annotate(
                                       males=m,females=f,
                                       total_days=Value(total_days,output_field=IntegerField()),
-                                      # total_males=Subquery(male_students[:1],output_field=IntegerField()),
-                                      # total_females=Subquery(female_students[:1],output_field=IntegerField())
             )\
             .values(
             "males","females",
                     "value",
-                    # "total_males","total_females",
                     "total_days")
         return attendances
 
