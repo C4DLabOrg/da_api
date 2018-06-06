@@ -12,8 +12,9 @@ from django_subquery.expressions import OuterRef, Subquery
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
-from oosc.mylib.common import filter_students_by_names, MyCustomException, get_stream_name_regex
+from oosc.mylib.common import filter_students_by_names, MyCustomException, get_stream_name_regex, get_list_of_dates
 from oosc.mylib.excel_export import excel_generate
+from oosc.mylib.queryset2excel import exportcsv
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
@@ -982,15 +983,15 @@ class ExportStudentsData(generics.ListAPIView):
                          )
         queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
-        print ("stuff")
-        print("have the queryset")
+        # print ("stuff")
+        # print("have the queryset")
         queryset=list(queryset)
         path=excel_generate(queryset,include_days=False)
         # path = default_storage.save('exports/file.xlsx',wb)
         # print (default_storage(path).base_url)
         url = request.build_absolute_uri(location="/media/"+path)
         resp={"link":url}
-        print(resp)
+        # print(resp)
         return  Response(resp)
 
 class ExportStudents(generics.ListAPIView):
@@ -1001,6 +1002,8 @@ class ExportStudents(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         school = request.query_params.get("school", None)
+        start_date, end_date=self.parse_querparams()
+
         if school == None:
             raise MyCustomException("You can only generate for a certain school",400)
         queryset=self.filter_queryset(self.queryset)
@@ -1011,13 +1014,37 @@ class ExportStudents(generics.ListAPIView):
                          )
         queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
-        print ("stuff")
-        print("have the queryset")
+        # print ("stuff")
+        # print("have the queryset")
+        # filename="test"
+        # queryset=[{"school_title":"Warugara","count":4}]
+        # headers=[{"name":"School Title","value":"school_title"},{"name":"Students Count","value":"count"},{"name":"Test  Final","value":"test"}]
+        # path=exportcsv(filename=filename,queryset=queryset,headers=headers,title="Schools")
+        # print(path)
+        # print("The path taken by the export")
         queryset=list(queryset)
-        path=excel_generate(queryset)
+        if len(queryset) == 0:
+            raise MyCustomException("No Data found.",400)
+        filename="Attendance_%s_%s"%(start_date,end_date)
+        headers=[{"name":"School Name","value":"school_name"},{"name":"Emis Code","value":"school_emis_code"},{"name":"Student System Id","value":"id"},
+                 {"name": "First Name", "value": "fstname"},{"name":"Mid Name","value":"midname"},{"name":"Last Name","value":"lstname"},{"name":"Gender","value":"gender"},
+                 {"name": "System Class Id", "value": "class_id"},{"name":"Class Name","value":"class_name"}]
+
+        thedays = get_list_of_dates(start_date=start_date, end_date=end_date)
+        daysheaders=[{"name":str(d).split(" ")[0],"value":d} for d in thedays]
+        allheaders=headers+daysheaders
+        path = exportcsv(filename=filename, queryset=queryset, headers=allheaders, title="Attendance")
+        # path=excel_generate(queryset)
         # path = default_storage.save('exports/file.xlsx',wb)
         # print (default_storage(path).base_url)
         url = request.build_absolute_uri(location="/media/"+path)
         resp={"link":url}
-        print(resp)
+        # print(resp)
         return  Response(resp)
+
+    def parse_querparams(self):
+        start_date = self.request.GET.get("start_date", None)
+        end_date = self.request.GET.get("end_date", None)
+        if start_date == None or end_date == None: raise MyCustomException(
+            "You must include the `start_date` , `end_date` ,  in the query params");
+        return start_date, end_date

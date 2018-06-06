@@ -77,25 +77,6 @@ def excel_generate(queryset,include_days=True):
         sheet.cell(row=i+2, column=8).value=stud["class_id"]
         sheet.cell(row=i+2, column=9).value=stud["class_name"]
 
-
-        ### sheet {i} writing the data
-            #setting the headers for the sheet
-            # for k,col in enumerate(mycollumns):
-            #     cell=sheet.cell(row=1, column=k+1)
-            #     cell.value = col
-            #     # cell.style.alignment.wrap_text = True
-            #     if k+1 <= maxcols:
-            #         sheet.column_dimensions[get_column_letter(k + 1)].width = 20
-            #
-            # #writing the data for sheet {i}
-            #         # writing data to the sheet
-            # for i, stud in enumerate(queryset):
-            #     sheet.cell(row=i + 2, column=1).value = stud["school_name"]
-            #     sheet.cell(row=i + 2, column=2).value = stud["school_emis_code"]
-            #     sheet.cell(row=i + 2, column=3).value = stud["id"]
-            #     sheet.cell(row=i + 2, column=4).value = stud["name"]
-            #     sheet.cell(row=i + 2, column=5).value = stud["class_id"]
-            #     sheet.cell(row=i + 2, column=6).value = stud["class_name"]
     print("Copy pasting sheets")
     # sheet=wb.create_sheet(index=i, title=month["name"])
     if include_days:

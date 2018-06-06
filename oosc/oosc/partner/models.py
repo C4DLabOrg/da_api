@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
+from oosc.mylib.queryset2excel import exportcsv
+
 
 class Partner(models.Model):
     user=models.OneToOneField(User)
@@ -25,5 +27,9 @@ class PartnerAdmin(models.Model):
 
     def __str__(self):
         return self.name
-
-
+# filename="test"
+# queryset=[{"school_title":"Warugara","count":4}]
+# headers=[{"name":"School Title","value":"school_title"},{"name":"Students Count","value":"count"},{"name":"Test  Final","value":"test"}]
+# path=exportcsv(filename=filename,queryset=queryset,headers=headers,title="Schools")
+# print(path)
+# print("The path taken by the export")
