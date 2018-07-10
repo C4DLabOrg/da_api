@@ -656,6 +656,7 @@ class ImportStudentsV2(APIView):
 
     def str2bool(self,v):
         return v.lower() in ("yes", "true", "t", "1")
+
     def post(self,request,format=None):
         file=""
         results=""
@@ -719,7 +720,7 @@ class ImportStudentsV2(APIView):
 
         print ""
         total_success=Students.objects.filter(id__in=students).update(is_oosc=self.is_oosc)
-        res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails)
+        res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails,0)
         return ImportResultsSerializer(res).data
 
 
