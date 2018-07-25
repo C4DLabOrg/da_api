@@ -982,7 +982,7 @@ class ExportStudentsData(generics.ListAPIView):
                          school_name= F("class_id__school__school_name"),
                          school_emis_code=F("class_id__school__emis_code"),
                          )
-        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","is_oosc","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
         # print ("stuff")
         # print("have the queryset")
