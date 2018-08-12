@@ -19,8 +19,8 @@ from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer, \
-    SimpleStudentSerializer, SimplerStudentSerializer
+from oosc.students.serializers import StudentsSerializer, ImportErrorSerializer, ImportResultsSerializer, \
+    SimpleStudentSerializer, SimplerStudentSerializer, StudentsUpdateOoscSerializer
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
@@ -939,6 +939,25 @@ class ListAbsentStudents(generics.ListAPIView):
 
     def get_serializer_class(self):
         return AbsentStudentSerializer
+
+
+class UpdateStudentsOoscStatus(generics.UpdateAPIView):
+    queryset = Students.objects.all()
+    serializer_class = StudentsUpdateOoscSerializer
+    #lookup_field = "id"
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        print(serializer.validated_data.get("students"))
+        records=Students.objects.filter(id__in=serializer.validated_data.get("students"))\
+            .update(is_oosc=serializer.validated_data.get("is_oosc"))
+        return Response({"detail":"Ok","detail_description":"{0} record updated.".format(records)})
+
+    def get_object(self):
+        pass
 
 
 class GetDroupoutsWithReasons(generics.ListAPIView):

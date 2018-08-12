@@ -649,6 +649,7 @@ class MonitorPartnerAttendanceTaking(generics.ListAPIView):
         return x
 
 
+
 class MonitoringAttendanceTaking(generics.ListAPIView):
     queryset = Stream.objects.all()
     serializer_class = GetAttendanceHistorySerilizer

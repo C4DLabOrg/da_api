@@ -3,6 +3,21 @@ from oosc.students.models import Students
 from datetime import timedelta,datetime
 import dateutil.parser
 
+
+class StudentsUpdateOoscSerializer(serializers.Serializer):
+    students=serializers.ListField(child=serializers.IntegerField())
+    is_oosc=serializers.BooleanField()
+
+    def validate_students(self,value):
+        unverified_students=set(value)
+        verified_students=list(Students.objects.filter(id__in=unverified_students).values_list("id",flat=True))
+        # print (verified_emis_codes)
+        if len(verified_students) < 1:
+            raise serializers.ValidationError("No Students were found.")
+        return verified_students
+
+
+
 class StudentsSerializer(serializers.ModelSerializer):
     student_name=serializers.SerializerMethodField()
     class_name=serializers.SerializerMethodField()
