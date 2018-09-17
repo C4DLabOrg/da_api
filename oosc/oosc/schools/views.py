@@ -1,10 +1,14 @@
 from django.db import transaction
-from django.db.models import Case, CharField
+from django.db.models import Case, CharField, F
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import Value
 from django.db.models import When
+from django.db.models.functions import Concat
 from django.shortcuts import render
+from django_subquery.expressions import OuterRef, Subquery
+
+from oosc.history.models import History
 from oosc.schools.models import Schools
 from rest_framework import generics
 from oosc.schools.serializers import SchoolsSerializer, PostSchoolSerializer
@@ -219,6 +223,11 @@ class GetAllReport(APIView):
         mdropouts=self.get_count(sts,"dropout_old_males") + self.get_count(sts,"dropout_enrolled_males") #students.filter(gender="M").count()
         fdropouts=self.get_count(sts,"dropout_old_females") + self.get_count(sts,"dropout_enrolled_females")#students.filter(gender="F").count()
 
+        hist = History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
+        totals=Students.objects.filter(is_oosc=True).annotate(logs=Subquery(hist[:1]),
+                                                           name=Concat(F("fstname"), Value(" "), F("midname"),
+                                                                       Value(" "), F("lstname"))).filter(logs="DROP").count()
+
         # oldmstudents=students.filter(gender="M",is_oosc=False,active=True).count()
         # newmstudents=students.filter(gender="M",is_oosc=True,active=True).count()
         # dropoldmstudents=students.filter(gender="M",is_oosc=False,active=False).count()
@@ -228,7 +237,6 @@ class GetAllReport(APIView):
         # dropoldfstudents=students.filter(gender="F",is_oosc=False,active=False).count()
         # dropnewftudents=students.filter(gender="F",is_oosc=True,active=False).count()
 
-
         activeschools=activeschools.distinct().count()
         teachers=teachers.count()
         schools=schools.count()
@@ -237,8 +245,8 @@ class GetAllReport(APIView):
                               "teachers":teachers,
                               "students":{"males":mstudents,
                                           "females":fstudents,
-                                          "dropout_males":mdropouts,
-                                          "dropout_females":fdropouts
+                                          "dropout_males":totals,
+                                          "dropout_females":0
                                           }})
 
     def get_count(self, list, item):

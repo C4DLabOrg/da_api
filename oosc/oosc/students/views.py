@@ -977,8 +977,11 @@ class GetDroupoutsWithReasons(generics.ListAPIView):
 
     def get_queryset(self):
         hist=History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
-        return self.queryset.annotate(logs=Subquery(hist[:1]),
-                                      name=Concat(F("fstname"),Value(" "),F("midname"),Value(" "),F("lstname"))).exclude(logs="ERR")
+        # self.queryset.filter(is_oosc=True).annotate(logs=Subquery(hist[:1]),
+        #                                             name=Concat(F("fstname"), Value(" "), F("midname"), Value(" "),
+        #                                                         F("lstname"))).filter(logs="DROP").update("")
+        return self.queryset.filter(is_oosc=True).annotate(logs=Subquery(hist[:1]),
+                                      name=Concat(F("fstname"),Value(" "),F("midname"),Value(" "),F("lstname"))).filter(logs="DROP")
 
 
 class ListDropouts(generics.ListAPIView):
