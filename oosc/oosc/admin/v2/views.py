@@ -54,9 +54,11 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save()
         try:
-            user = self.get_object().user
+            tech=self.get_object()
+            user = tech.user
             user.set_password("admin")
             user.save()
+            tech.save()
         except Exception as e:
             raise MyCustomException("Failed to update password. {}".format(e.message), 404)
 
@@ -69,6 +71,7 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
             else:
                 raise MyCustomException("The teacher does not exist.")
         tech = teachers[0]
+        tech.headteacher = True
         if tech.non_delete:
             tech.headteacher = True
         return tech
