@@ -54,7 +54,7 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save()
         try:
-            user = serializer.validated_data.get("user")
+            user = self.get_object().user
             user.set_password("admin")
             user.save()
         except Exception as e:
