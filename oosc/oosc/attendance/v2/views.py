@@ -124,7 +124,7 @@ class AttendanceImportError:
 
 class ImportAttendance(APIView):
     myheaders=[]
-    days_begin_index = 8
+    days_begin_index = 9
     success=0
     errors=[]
     duplicates=0
@@ -133,7 +133,6 @@ class ImportAttendance(APIView):
     failed=0
     def post(self,request,format=None):
         self.myheaders = []
-        self.days_begin_index = 8
         self.success = 0
         self.errors = []
         self.duplicates = 0
@@ -218,16 +217,22 @@ class ImportAttendance(APIView):
         ##Validate class_id and_student_id
         has_student_id, has_class_id=self.validate_classid_sutdent_id(stud_id,class_id)
         if not has_class_id or not has_student_id:
-            self.failed+=1
+            self.failed+=len(days)
             mess=[]
-            if not has_student_id:mess.append("Student Id")
-            if not has_class_id:mess.append("Class Id")
+            if not has_student_id:mess.append("System Student Id")
+            if not has_class_id:mess.append("System Class Id")
             self.errors.append(AttendanceImportError(row_number=index+2,error_message="Invalid {}".format("".join(mess))))
             return []
 
         for i,att in enumerate(days):
             thedate=self.get_row_date(i)
-            if not is_date(thedate):continue
+            if not is_date(thedate):
+                erro_message="Wrong format date '{}'  in collumn {}. Accepted date format is YYYY-MM-DD.".format(thedate,i+1+self.days_begin_index)
+                er=filter(lambda x:x.error_message==erro_message,self.errors)
+                if len(er)<1:
+                    self.errors.append(AttendanceImportError(row_number=0,error_message=erro_message))
+                self.failed+=1
+                continue
             attendance=Attendance(date=thedate,
                                   id="{}{}".format(thedate.replace("-",""),stud_id),
                                   status=self.parse_present_absent(att),
