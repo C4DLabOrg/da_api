@@ -667,7 +667,7 @@ class ImportStudentsV2(APIView):
         try:
             file = request.FILES["file"]
         except:
-            Response("No .csv file sent", status=status.HTTP_400_BAD_REQUEST)
+            return Response("No .csv file sent", status=status.HTTP_400_BAD_REQUEST)
         data=""
         # Convert each row into array and ignore the header row
         if file:

@@ -98,7 +98,7 @@ class SimplerStudentSerializer(serializers.Serializer):
 class ImportErrorSerializer(serializers.Serializer):
     row_number=serializers.IntegerField()
     error_message=serializers.JSONField()
-    row_details=serializers.JSONField()
+    row_details=serializers.JSONField(allow_null=True)
 
 class ImportResultsSerializer(serializers.Serializer):
     errors=serializers.ListField(child=ImportErrorSerializer())
@@ -106,6 +106,7 @@ class ImportResultsSerializer(serializers.Serializer):
     total_fails=serializers.IntegerField()
     total_duplicates=serializers.IntegerField()
     success_percentage=serializers.SerializerMethodField()
+
     def get_success_percentage(self,obj):
         total=obj.total_fails+obj.total_success+obj.total_duplicates
         if total ==0:

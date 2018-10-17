@@ -90,6 +90,12 @@ def get_list_of_dates( start_date=None,end_date=None):
         # print ("New Date ",thedate)
     return days
 
+def is_date(date_text):
+    try:
+        datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 def get_quick_stream_class_name(name):
     replace_words=["std","class","STD","CLASS"]

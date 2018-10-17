@@ -35,7 +35,7 @@ class AttendanceHistory(models.Model):
 
 @receiver(attendance_taken)
 def receive_attendance_taken(date,present,absent,_class,**kwargs):
-    print("REceived the signal")
+    # print("REceived the signal")
     print (date,present,absent,_class)
     id = date.replace('-', '')+"%s"%(_class)
     at=AttendanceHistory(id=id,present=present,_class_id=_class,absent=absent,date=date)

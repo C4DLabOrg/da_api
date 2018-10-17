@@ -648,8 +648,6 @@ class MonitorPartnerAttendanceTaking(generics.ListAPIView):
         x["attendance_taken_percentage"]="%.2f%s"%(float(x["total_attendance"])*100/float(x["expected_attendance"]),'%')
         return x
 
-
-
 class MonitoringAttendanceTaking(generics.ListAPIView):
     queryset = Stream.objects.all()
     serializer_class = GetAttendanceHistorySerilizer
@@ -745,6 +743,8 @@ class WeeklyAttendanceReport(APIView):
                               "absent":{"total":int((atotal/total)*100),"males":int((amales/total)*100),"females":int((afemales/total)*100)}})
 
 #class GraphAttendance()
+
+
 
 
 

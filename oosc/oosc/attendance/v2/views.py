@@ -1,17 +1,23 @@
+import csv
+from datetime import datetime
+
+import sys
 from django.db.models import Case
 from django.db.models import F, Count,IntegerField
 from django.db.models import Value
 from django.db.models import When
 from django.db.models.functions import Concat
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from oosc.attendance.models import Attendance
 from oosc.attendance.serializers import AttendanceSerializer
-from oosc.attendance.v2.serializers import ExportAttendanceSerializer
+from oosc.attendance.v2.serializers import ExportAttendanceSerializer, \
+    AttendanceImportErrorSerializer, AttendanceImportResultsSerializer
 from oosc.attendance.views import AttendanceFilter
-from oosc.mylib.common import MyCustomException
+from oosc.mylib.common import MyCustomException, is_date
 import calendar
 
 from oosc.mylib.excel_export import export_attendance
@@ -20,6 +26,8 @@ from oosc.schools.views import ListCreateSchool
 from oosc.stream.models import Stream
 from oosc.stream.serializers import StreamSerializer
 from oosc.stream.views import ListCreateClass, StreamFilter
+from oosc.students.models import Students, ImportResults
+from oosc.students.serializers import ImportResultsSerializer
 
 
 class ExportMonthlyAttendances(generics.ListAPIView):
@@ -96,12 +104,6 @@ class MonitorAttendanceTaking(generics.ListAPIView):
 
         return self.queryset
 
-    # def list(self, request, *args, **kwargs):
-    #     atts=self.get_schools()
-    #     return Response(atts)
-        # return Response(StreamSerializer(atts,many=True))
-
-
     def get_schools(self):
         filters=["county","partner"]
         attendance_streams=list(self.queryset().annotate(school=F("_class__school_id")).values("school")\
@@ -115,6 +117,139 @@ class MonitorAttendanceTaking(generics.ListAPIView):
         # print( "The Streams are", classes_queryset.count())
         return classes_queryset
 
+class AttendanceImportError:
+    def __init__(self,row_number,error_message):
+        self.row_number=row_number
+        self.error_message=error_message
+
+class ImportAttendance(APIView):
+    myheaders=[]
+    days_begin_index = 8
+    success=0
+    errors=[]
+    duplicates=0
+    records_success=0
+    records_failed=0
+    failed=0
+    def post(self,request,format=None):
+        try:
+            file = request.FILES["file"]
+        except:
+            raise MyCustomException("No .csv file sent")
+        data = []
+        # Convert each row into array and ignore the header row
+        if file:
+            try:
+                data = [row for row in csv.reader(file.read().splitlines())]
+            except Exception as e:
+                print(e.message)
+                raise MyCustomException("Error reading file. Make sure its a comma separated csv. {}".format(e.message))
+        res=self.import_attendance(data)
+        print(res)
+        return Response(res)
+
+    def import_attendance(self,rows):
+        # now = str(datetime.now()).split(" ").pop(0).replace('-', '')#2018-07-0909 T767
+        ##studen_id=index 2,class_id=index 7
+        ##headers 8 collums
+        self.myheaders=rows.pop(0)
+        attendances=[]
+        for i,row in enumerate(rows):
+            sys.stdout.write("\rImporting... {}".format(i+1))
+            attendances+=self.generate_attendance_for_row_each_student(i,row)
+            if len(attendances) > 6000:
+                self.bulk_create_attendances(attendances)
+                attendances=[]
+                # bulk_insert
+        ###Do insert of remaining
+        self.bulk_create_attendances(attendances)
+
+        ###return response
+        res = ImportResults(AttendanceImportErrorSerializer(self.errors, many=True).data, self.success, self.failed,self.duplicates)
+        return AttendanceImportResultsSerializer(res).data
+
+    def bulk_create_attendances(self,attendances):
+        ## check the aattendaces that exists
+        ids=[at.id for at in attendances]
+
+        ###Filter the duplicate ids
+        duplicates=Attendance.objects.filter(id__in=ids).values_list("id",flat=True)
+        new=[]
+        updates=[]
+        for att in attendances:
+            if att.id not in duplicates:
+                new.append(att)
+            else:
+                updates.append(att)
+        try:
+            resa = Attendance.objects.bulk_create(new)
+            self.success+=len(resa)
+        except Exception as e:
+            self.failed += len(attendances)
+            print (e.message)
+
+        ####Update the present ones
+        ups=0
+        for att in updates:
+            try:
+                att.save()
+                ups+=1
+            except Exception as e:
+                print(e.message)
+        self.duplicates+=ups
+
+        print(self.success,self.failed,self.duplicates)
+
+
+
+    def generate_attendance_for_row_each_student(self,index,rec):
+        stud_id=rec[2]
+        class_id=rec[7]
+        days=rec[self.days_begin_index:]
+        attendances=[]
+
+        ##Validate class_id and_student_id
+        has_student_id, has_class_id=self.validate_classid_sutdent_id(stud_id,class_id)
+        if not has_class_id or not has_student_id:
+            self.failed+=1
+            mess=[]
+            if not has_student_id:mess.append("Student Id")
+            if not has_class_id:mess.append("Class Id")
+            self.errors.append(AttendanceImportError(row_number=index+2,error_message="Invalid {}".format("".join(mess))))
+
+        for i,att in enumerate(days):
+            thedate=self.get_row_date(i)
+            if not is_date(thedate):continue
+            attendance=Attendance(date=thedate,
+                                  id="{}{}".format(thedate.replace("-",""),stud_id),
+                                  status=self.parse_present_absent(att),
+                                  _class_id=class_id,
+                                  student_id=stud_id
+                                  )
+            attendances.append(attendance)
+        return attendances
+
+
+
+    def validate_classid_sutdent_id(self,student_id,class_id):
+        has_student_id=Students.objects.filter(id=student_id).exists()
+        has_class_id=Stream.objects.filter(id=class_id).exists()
+        return has_student_id,has_class_id
+
+    def get_row_date(self,index):
+        try:
+            return self.myheaders[index+self.days_begin_index]
+        except:
+            return ""
+
+    def parse_present_absent(self,value):
+        try:
+            status=int(value)
+            if(status==0):return 0
+            elif status==1:return 1
+            else:return 0
+        except:
+            return 0
 
 
 
