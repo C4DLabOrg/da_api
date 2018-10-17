@@ -406,6 +406,7 @@ class ImportStudentSerializer(serializers.Serializer):
     fstname=serializers.CharField(max_length=50)
     midname=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
     lstname=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
+    admission_no=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
     school=serializers.IntegerField()
     clas=serializers.CharField(max_length=50)
     gender=serializers.CharField(max_length=20)
@@ -692,7 +693,9 @@ class ImportStudentsV2(APIView):
             stdout.write("\rImporting  %d" % i)
             stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                  "admission_no":dat[9],
                   "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
+
             ser = ImportStudentSerializer(data=dt)
             if ser.is_valid():
                 school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
@@ -707,6 +710,7 @@ class ImportStudentsV2(APIView):
                     continue
                 std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
                                               midname=ser.data.get("midname"),
+                                              admission_no=ser.data.get("admission_no"),
                                               class_id=cl)
                 if(std.exists()):
                     std=std[0]
