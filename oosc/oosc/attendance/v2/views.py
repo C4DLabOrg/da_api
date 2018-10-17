@@ -132,6 +132,14 @@ class ImportAttendance(APIView):
     records_failed=0
     failed=0
     def post(self,request,format=None):
+        self.myheaders = []
+        self.days_begin_index = 8
+        self.success = 0
+        self.errors = []
+        self.duplicates = 0
+        self.records_success = 0
+        self.records_failed = 0
+        self.failed = 0
         try:
             file = request.FILES["file"]
         except:
@@ -145,7 +153,6 @@ class ImportAttendance(APIView):
                 print(e.message)
                 raise MyCustomException("Error reading file. Make sure its a comma separated csv. {}".format(e.message))
         res=self.import_attendance(data)
-        print(res)
         return Response(res)
 
     def import_attendance(self,rows):
@@ -216,6 +223,7 @@ class ImportAttendance(APIView):
             if not has_student_id:mess.append("Student Id")
             if not has_class_id:mess.append("Class Id")
             self.errors.append(AttendanceImportError(row_number=index+2,error_message="Invalid {}".format("".join(mess))))
+            return []
 
         for i,att in enumerate(days):
             thedate=self.get_row_date(i)
