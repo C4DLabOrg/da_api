@@ -17,7 +17,7 @@ class Students(models.Model):
     lstname = models.CharField(max_length=200,null=True,blank=True)
     date_of_birth = models.DateField(null=True,blank=True)
     date_enrolled=models.DateField(auto_created=True)
-    admission_no  = models.CharField(default=0,null=True,blank=True)
+    admission_no  = models.CharField(max_length=50,null=True,blank=True)
     class_id      = models.ForeignKey(Stream,null=True,blank=True, on_delete = models.CASCADE,related_name="students") #shows the current class
     gender        = models.CharField(max_length=2,choices=GENDERS, default='ML')
     previous_class    = models.IntegerField(default=0,null=True,blank=True)

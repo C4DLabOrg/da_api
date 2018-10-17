@@ -745,6 +745,7 @@ class ImportStudentsV2(APIView):
                     stdout.write("\rVerifying %s " % percentage)
                     stdout.flush()
                 dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                      "admission_no": dat[9],
                       "clas": dat[13], "gender": dat[11]}
                 ser = ImportStudentSerializer(data=dt)
                 if(ser.is_valid()):
@@ -791,6 +792,7 @@ class ImportStudentsV2(APIView):
                 stdout.write("\rImporting %s " % percentage)
                 stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                  "admission_no": dat[9],
                   "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
             ser = ImportStudentSerializer(data=dt)
             if (ser.is_valid()):
@@ -886,6 +888,7 @@ class ImportStudentsV2(APIView):
     def create_student(self, cl, ser,date_enrolled):
         std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
                                       midname=ser.data.get("midname"),
+                                      admission_no=ser.data.get("admission_no"),
                                       class_id=cl)
         # check if student Exists
         if (std.exists()):
