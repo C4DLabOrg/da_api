@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2e7eed3d-00e0-4c0f-af0b-c8f68d2edefe" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/students/views.py" afterPath="$PROJECT_DIR$/oosc/oosc/students/views.py" />
+      <change beforePath="$PROJECT_DIR$/oosc/oosc/students/models.py" afterPath="$PROJECT_DIR$/oosc/oosc/students/models.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -44,7 +43,7 @@
             <entry file="file://$PROJECT_DIR$/oosc/oosc/students/models.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="208">
-                  <caret line="19" column="42" lean-forward="false" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="42" />
+                  <caret line="19" column="37" lean-forward="false" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
                   <folding>
                     <element signature="e#0#28#0" expanded="true" />
                   </folding>
@@ -278,7 +277,6 @@
         <option value="$PROJECT_DIR$/oosc/oosc/attendance/permissions.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/mylib/excel_export.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/config/urls.py" />
-        <option value="$PROJECT_DIR$/oosc/oosc/students/models.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/schools/views.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/attendance/views.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/students/serializers.py" />
@@ -289,6 +287,7 @@
         <option value="$PROJECT_DIR$/oosc/oosc/attendance/v2/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/attendance/v2/views.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/students/views.py" />
+        <option value="$PROJECT_DIR$/oosc/oosc/students/models.py" />
       </list>
     </option>
   </component>
@@ -890,7 +889,7 @@
     <entry file="file://$PROJECT_DIR$/oosc/oosc/students/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="208">
-          <caret line="19" column="42" lean-forward="false" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="42" />
+          <caret line="19" column="37" lean-forward="false" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
           </folding>
