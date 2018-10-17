@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2e7eed3d-00e0-4c0f-af0b-c8f68d2edefe" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/students/models.py" afterPath="$PROJECT_DIR$/oosc/oosc/students/models.py" />
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/students/views.py" afterPath="$PROJECT_DIR$/oosc/oosc/students/views.py" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/oosc/oosc.xlsx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/oosc/oosc/admin/v2/views.py" afterPath="$PROJECT_DIR$/oosc/oosc/admin/v2/views.py" />
+      <change beforePath="$PROJECT_DIR$/oosc/temp_Attendance 2018-01-01-2018-02-01.xlsx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/oosc/temp_Attendance 2018-2019.xlsx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/oosc/temp_Attendance_2018-01-01_2018-02-01.xlsx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/oosc/temp_Attendance_2018-08-15_2018-08-22.xlsx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/oosc/temp_duplicate_partner_schools.xlsx" afterPath="" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,18 +29,6 @@
                   <caret line="113" column="63" lean-forward="true" selection-start-line="102" selection-start-column="0" selection-end-line="113" selection-end-column="63" />
                   <folding>
                     <element signature="e#0#38#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/oosc/oosc/classes/models.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="405">
-                  <caret line="32" column="16" lean-forward="false" selection-start-line="32" selection-start-column="7" selection-end-line="32" selection-end-column="16" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -119,7 +113,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/oosc/oosc/students/views.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="1993">
@@ -132,6 +126,16 @@
                     <element signature="e#40025#41178#0" expanded="false" />
                     <element signature="e#41241#41979#0" expanded="false" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/oosc/oosc/admin/v2/views.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="285">
+                  <caret line="60" column="84" lean-forward="false" selection-start-line="60" selection-start-column="84" selection-end-line="60" selection-end-column="84" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -272,7 +276,6 @@
         <option value="$PROJECT_DIR$/oosc/oosc/admin/v2/serializers.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/classes/models.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/admin/v2/urlsv2.py" />
-        <option value="$PROJECT_DIR$/oosc/oosc/admin/v2/views.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/mylib/queryset2excel.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/partner/models.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/attendance/permissions.py" />
@@ -289,6 +292,7 @@
         <option value="$PROJECT_DIR$/oosc/oosc/attendance/v2/views.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/students/models.py" />
         <option value="$PROJECT_DIR$/oosc/oosc/students/views.py" />
+        <option value="$PROJECT_DIR$/oosc/oosc/admin/v2/views.py" />
       </list>
     </option>
   </component>
@@ -339,7 +343,15 @@
               <item name="oosc" type="462c0819:PsiDirectoryNode" />
               <item name="oosc" type="462c0819:PsiDirectoryNode" />
               <item name="oosc" type="462c0819:PsiDirectoryNode" />
-              <item name="students" type="462c0819:PsiDirectoryNode" />
+              <item name="admin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="oosc" type="b2602c69:ProjectViewProjectNode" />
+              <item name="oosc" type="462c0819:PsiDirectoryNode" />
+              <item name="oosc" type="462c0819:PsiDirectoryNode" />
+              <item name="oosc" type="462c0819:PsiDirectoryNode" />
+              <item name="admin" type="462c0819:PsiDirectoryNode" />
+              <item name="v2" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -412,15 +424,15 @@
     <frame x="0" y="0" width="1366" height="768" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20223048" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3457249" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32932332" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36115107" sideWeight="0.5026022" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294964" sideWeight="0.49739778" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3582734" sideWeight="0.49739778" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3582734" sideWeight="0.49739778" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294964" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294964" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16834532" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25179857" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -597,13 +609,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="601">
           <caret line="447" column="0" lean-forward="false" selection-start-line="447" selection-start-column="0" selection-end-line="447" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oosc/oosc/admin/v2/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="900">
-          <caret line="76" column="0" lean-forward="false" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -894,6 +899,14 @@
             <element signature="e#40025#41178#0" expanded="false" />
             <element signature="e#41241#41979#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/oosc/oosc/admin/v2/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="60" column="84" lean-forward="false" selection-start-line="60" selection-start-column="84" selection-end-line="60" selection-end-column="84" />
+          <folding />
         </state>
       </provider>
     </entry>

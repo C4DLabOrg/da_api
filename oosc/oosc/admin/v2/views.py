@@ -57,8 +57,8 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
             user = serializer.validated_data.get("user")
             user.set_password("admin")
             user.save()
-        except:
-            raise MyCustomException("Failed to update password", 404)
+        except Exception as e:
+            raise MyCustomException("Failed to update password. {}".format(e.message), 404)
 
     def get_object(self):
         username = self.kwargs["pk"]
