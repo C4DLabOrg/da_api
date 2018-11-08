@@ -19,7 +19,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from oosc.attendance.views import ListCreateAttendance, TakeAttendance, WeeklyAttendanceReport, ListAbsentees, \
     MonitoringAttendanceTaking, MonitorPartnerAttendanceTaking
-from oosc.promotions.views import  CreateListPromoteSchool, RetrievePromoteSschool, RetrieveCompletePromoteSschool
+from oosc.promotions.views import CreateListPromoteSchool, RetrievePromoteSschool, RetrieveCompletePromoteSschool, \
+    PromotionsStaisticsView
 from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
@@ -89,6 +90,7 @@ urlpatterns = [
     url(r'^api/partners',ListCreatePartner.as_view(),name="List_create_partner"),
     url(r'^api/user-type',GetUserType.as_view(),name="get_singed_in_user_type"),
     url(r'^api/ping$',PingServer.as_view(),name="ping_test_for_server"),
+    url('^api/promotions/statistics',PromotionsStaisticsView.as_view(),name="promotions_number"),
     url('^api/statistics',GetAllReport.as_view(),name="all_students_teacgers-schools_number"),
     # url(r'^__debug__/', include(debug_toolbar.urls)),
 

@@ -224,9 +224,15 @@ class GetAllReport(APIView):
         fdropouts=self.get_count(sts,"dropout_old_females") + self.get_count(sts,"dropout_enrolled_females")#students.filter(gender="F").count()
 
         hist = History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
-        totals=Students.objects.filter(is_oosc=True).annotate(logs=Subquery(hist[:1]),
+
+
+        dmtotals=students.filter(is_oosc=True,gender="M").annotate(logs=Subquery(hist[:1]),
                                                            name=Concat(F("fstname"), Value(" "), F("midname"),
                                                                        Value(" "), F("lstname"))).filter(logs="DROP").count()
+        dftotals = students.filter(is_oosc=True,gender="F").annotate(logs=Subquery(hist[:1]),
+                                                         name=Concat(F("fstname"), Value(" "), F("midname"),
+                                                                     Value(" "), F("lstname"))).filter(
+            logs="DROP").count()
 
         # oldmstudents=students.filter(gender="M",is_oosc=False,active=True).count()
         # newmstudents=students.filter(gender="M",is_oosc=True,active=True).count()
@@ -245,8 +251,8 @@ class GetAllReport(APIView):
                               "teachers":teachers,
                               "students":{"males":mstudents,
                                           "females":fstudents,
-                                          "dropout_males":totals,
-                                          "dropout_females":0
+                                          "dropout_males":dmtotals,
+                                          "dropout_females":dftotals
                                           }})
 
     def get_count(self, list, item):

@@ -30,7 +30,7 @@ class ListReasonForDropout(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     queryset = Students.objects.filter(active=False)
     filter_backends = (MyDjangoFilterBackend,)
-    pagination_class = None
+    pagination_class = StandardresultPagination
     myformats = ["class", "gender","partner", "county","reason","yearly","monthly","daily","school"]
     fakepaginate = False
 
