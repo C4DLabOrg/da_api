@@ -10,13 +10,69 @@ from django.db.models import Q, DateField
 import copy
 import uuid
 from datetime import datetime,timedelta
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 
 from oosc.attendance.models import Attendance, AttendanceHistory
 from oosc.classes.models import PublicHoliday
+from django_filters.rest_framework import FilterSet
+
 
 from sys import stdout
 def get_random():
     return uuid.uuid1()
+
+
+
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
+
+def get_dynamic_model_filter_class(model_class):
+    # for s in survey.formulas.all().values_list("slug",flat=True):
+    #     slugs.append(s)
+    # myextra_kwargs = {f.name: {"required": True} for f in model_class._meta.fields if not f.blank}
+    class Meta:
+        model = model_class
+        fields = ("__all__")
+        exclude=("image","logo","file")
+        # extra_kwargs = myextra_kwargs
+
+    attrs = {"Meta": Meta}
+    serializer = type('Response' + model_class.__class__.__name__ + "Filter", (FilterSet,), attrs)
+    return serializer
+
+class MyDjangoFilterBackend(DjangoFilterBackend):
+    myfilter_class = None
+
+    def get_filter_class(self, view, queryset=None):
+        """
+        Return the django-filters `FilterSet` used to filter the queryset.
+        """
+
+        if self.myfilter_class:
+            return self.myfilter_class
+        query = getattr(view, 'queryset', None)
+        try:
+            model = query.model
+            filter_model = model
+            filter_class = get_dynamic_model_filter_class(model)
+            assert issubclass(queryset.model, filter_model), \
+                'FilterSet model %s does not match queryset model %s' % \
+                (filter_model, queryset.model)
+            self.myfilter_class = filter_class
+            return filter_class
+        except Exception as e:
+            print(e)
+            raise MyCustomException("The View must inherit from MyDynamicGetSerializerQuerysetModelMixin ")
+
+    def filter_queryset(self, request, queryset, view):
+        filter_class = self.get_filter_class(view, queryset)
+        if filter_class:
+            return filter_class(request.query_params, queryset=queryset).qs
+        return queryset
 
 class MyCustomException(APIException):
     status_code = 503
