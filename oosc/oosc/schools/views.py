@@ -229,9 +229,22 @@ class GetAllReport(APIView):
         dmtotals=students.filter(is_oosc=True,gender="M").annotate(logs=Subquery(hist[:1]),
                                                            name=Concat(F("fstname"), Value(" "), F("midname"),
                                                                        Value(" "), F("lstname"))).filter(logs="DROP").count()
+
         dftotals = students.filter(is_oosc=True,gender="F").annotate(logs=Subquery(hist[:1]),
                                                          name=Concat(F("fstname"), Value(" "), F("midname"),
                                                                      Value(" "), F("lstname"))).filter(
+            logs="DROP").count()
+
+        olddmtotals = students.filter(is_oosc=False, gender="M").annotate(logs=Subquery(hist[:1]),
+                                                                      name=Concat(F("fstname"), Value(" "),
+                                                                                  F("midname"),
+                                                                                  Value(" "), F("lstname"))).filter(
+            logs="DROP").count()
+
+        olddftotals = students.filter(is_oosc=False, gender="F").annotate(logs=Subquery(hist[:1]),
+                                                                      name=Concat(F("fstname"), Value(" "),
+                                                                                  F("midname"),
+                                                                                  Value(" "), F("lstname"))).filter(
             logs="DROP").count()
 
         # oldmstudents=students.filter(gender="M",is_oosc=False,active=True).count()
@@ -252,7 +265,9 @@ class GetAllReport(APIView):
                               "students":{"males":mstudents,
                                           "females":fstudents,
                                           "dropout_males":dmtotals,
-                                          "dropout_females":dftotals
+                                          "dropout_females":dftotals,
+                                          "old_dropout_males": olddmtotals,
+                                          "old_dropout_females": olddftotals,
                                           }})
 
     def get_count(self, list, item):

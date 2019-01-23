@@ -35,7 +35,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from oosc.absence.views import GetEditAbsence
-from oosc.reason.views import ListCreatereason, ListReasonForDropout
+from oosc.reason.views import ListCreatereason, ListReasonForDropout, ListReasonForDropoutv2
 from oosc.partner.views import ListCreatePartner, RetrieveUpdateDestroyPartner, ListCreatePartnerAdmin, \
     ClearPartnerSchools, AssignPartnerSchools
 
@@ -77,6 +77,7 @@ urlpatterns = [
     url(r'^api/students/bulkmove',BulkMoveStudents.as_view(),name="bulk-move-student"),
     url(r'^api/students/absent',ListAbsentStudents.as_view(),name="import-student"),
     url(r'^api/students/dropouts',GetDroupoutsWithReasons.as_view(),name="import-student"),
+    url(r'^api/v2/dropouts/(?P<type>.+)',ListReasonForDropoutv2.as_view(),name="dropouts_import-student"),
     url(r'^api/dropouts/(?P<type>.+)',ListReasonForDropout.as_view(),name="dropouts_import-student"),
     url(r'^api/students/(?P<pk>[0-9]+)',RetrieveUpdateStudent.as_view(),name="list-create-student"),
     url(r'^api/students',ListCreateStudent.as_view(),name="list-create-student"),
