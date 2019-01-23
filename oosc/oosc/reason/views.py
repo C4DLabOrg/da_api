@@ -47,9 +47,9 @@ class ListReasonForDropoutv2(generics.ListAPIView):
 
     def get_my_queryset(self):
         hist = History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
-        students=Students.objects.filter(active=False, gender="M").annotate(logs=Subquery(hist[:1]),
+        students=Students.objects.filter(active=False).annotate(logs=Subquery(hist[:1]),
                                                            name=Concat(F("fstname"), Value(" "), F("midname"),
-                                                                       Value(" "), F("lstname")))
+                                                                       Value(" "), F("lstname"))).filter(logs="DROP")
 
         studs = self.filter_queryset(students)
         format = self.kwargs['type']
