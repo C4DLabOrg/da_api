@@ -1,7 +1,10 @@
+import random
 import re
 
+import django_filters
 import pytz
 from django.core.paginator import Paginator
+from django.db import models
 from django.db.models import Value, Count
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
@@ -44,6 +47,19 @@ def get_dynamic_model_filter_class(model_class):
     serializer = type('Response' + model_class.__class__.__name__ + "Filter", (FilterSet,), attrs)
     return serializer
 
+
+class StandardresultPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
+def generate_password():
+    chars = ["A", "a", "B", "b", "C", "c", "D", "d", "e", "H", "h", "F", "E", "G", "g", "f", "2",
+             "3", "4", "5", "6", "7"]
+    return ''.join(random.choice(chars) for _ in range(8))
+
+
+
 class MyDjangoFilterBackend(DjangoFilterBackend):
     myfilter_class = None
 
@@ -51,28 +67,51 @@ class MyDjangoFilterBackend(DjangoFilterBackend):
         """
         Return the django-filters `FilterSet` used to filter the queryset.
         """
-
         if self.myfilter_class:
             return self.myfilter_class
-        query = getattr(view, 'queryset', None)
+
+        queryset = getattr(view, 'queryset', None)
+
         try:
-            model = query.model
+            model = queryset.model
             filter_model = model
-            filter_class = get_dynamic_model_filter_class(model)
+            ##print"The filter class ...")
+            filter_class = self.get_dynamic_filter_class(model)
+            ##print"The filter class ...")
             assert issubclass(queryset.model, filter_model), \
                 'FilterSet model %s does not match queryset model %s' % \
                 (filter_model, queryset.model)
             self.myfilter_class = filter_class
             return filter_class
         except Exception as e:
-            print(e)
-            raise MyCustomException("The View must inherit from MyDynamicGetSerializerQuerysetModelMixin ")
+           #printe)
+            raise MyCustomException("Dynamic Filter class error.")
 
-    def filter_queryset(self, request, queryset, view):
-        filter_class = self.get_filter_class(view, queryset)
-        if filter_class:
-            return filter_class(request.query_params, queryset=queryset).qs
-        return queryset
+    def get_dynamic_filter_class(self, model_class):
+        class Meta:
+            model = model_class
+            exclude = ('file', 'image','recording','logo')  # [f.name for f in model_class.fields if  f.name in ["logo","image","file"]]
+            fields = ("__all__")
+            filter_overrides = {
+                models.CharField: {
+                    'filter_class': django_filters.CharFilter,
+                    'extra': lambda f: {
+                        'lookup_expr': 'icontains',
+                    },
+                }
+            }
+
+        attrs = {"Meta": Meta,
+                 }
+
+        # myexcludes=["image","logo","file"]
+        # myfields=[f.name for f in model_class.fields if  f.name in myexcludes]
+
+        filter_class = type(model_class.__class__.__name__ + "FilterClass", (FilterSet,), attrs)
+
+        ##printfilter_class)
+        return filter_class
+
 
 class MyCustomException(APIException):
     status_code = 503
