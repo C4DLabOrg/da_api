@@ -55,11 +55,11 @@ class StudentFilter(FilterSet):
     school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code", label="School emis code")
     partner=django_filters.NumberFilter(name="",label="Partner  Id",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="",label="Partner Admin Id",method="filter_partner_admin")
-    county = django_filters.NumberFilter(name="class_id__school__zone__subcounty__county", label="County Id")
+    county = django_filters.NumberFilter(name="class_id__school__zone__subcounty__county_id", label="County Id")
 
     class Meta:
         model=Students
-        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
+        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc','graduated')
 
     def filter_name(self,queryset,name,value):
         return filter_students_by_names(queryset,value)
@@ -132,6 +132,7 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
         if not ser.is_valid():
             return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
         object=self.get_object()
+
         if(ser.data["reason"].lower() == "error"):
             object.delete()
             return Response("",status=status.HTTP_204_NO_CONTENT);
@@ -151,7 +152,6 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
             hist.left_description=ser.data["reason"]
             hist.save()
         return Response("",status=status.HTTP_204_NO_CONTENT)
-
 
 class EnrollmentFilter(FilterSet):
     Class = django_filters.NumberFilter(name="class_id", label="Stream Id")

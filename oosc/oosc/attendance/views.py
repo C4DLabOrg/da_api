@@ -71,7 +71,7 @@ class AttendanceFilter(FilterSet):
     partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="partner",method="filter_partner_admin",label="Partner Admin Id")
     county_name=django_filters.CharFilter(name="_class__school__zone__subcounty__county__county_name",lookup_expr="icontains")
-    county = django_filters.NumberFilter(name="_class__school__zone__subcounty__county", label="County Id")
+    county = django_filters.NumberFilter(name="_class__school__zone__subcounty__county_id", label="County Id")
     is_oosc=django_filters.CharFilter(name="student__is_oosc",method="filter_is_oosc")
 
     #date_range = django_filters.DateRangeFilter(name='date')

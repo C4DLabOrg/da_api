@@ -49,7 +49,8 @@ class ListReasonForDropoutv2(generics.ListAPIView):
 
     def get_my_queryset(self):
         hist = History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
-        students=Students.objects.filter(active=False).annotate(logs=Subquery(hist[:1]),
+        prev_class = History.objects.exclude(_class=None).filter(student_id=OuterRef('pk')).order_by("modified").values_list("_class")
+        students=Students.objects.filter(active=False).annotate(logs=Subquery(hist[:1]),prev_class=Subquery(prev_class[:1]),
                                                            name=Concat(F("fstname"), Value(" "), F("midname"),
                                                                        Value(" "), F("lstname"))).filter(logs="DROP")
 
@@ -420,7 +421,7 @@ class ListReasonForDropout(generics.ListAPIView):
         elif format == "reason":
             return F("dropout_reason")
         elif format == "county":
-            return Concat("class_id__school__zone__subcounty__county__county_name", Value(''), output_field=CharField())
+            return Concat("class_id__school__zone__subcounty__county__county_name", Value('_'), output_field=CharField())
         elif format == "class":
             id = Cast("class_id", output_field=TextField())
             return Concat("class_id___class", Value(''), output_field=CharField())

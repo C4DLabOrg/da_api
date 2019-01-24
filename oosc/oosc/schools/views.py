@@ -228,6 +228,8 @@ class GetAllReport(APIView):
             default=Value("others"),
             output_field=CharField()
         )).values("type").annotate(count=Count("type")))
+
+
         mstudents=self.get_count(sts,"old_males") + self.get_count(sts,"enrolled_males") #students.filter(gender="M").count()
         fstudents=self.get_count(sts,"old_females") + self.get_count(sts,"enrolled_females")#students.filter(gender="F").count()
         mdropouts=self.get_count(sts,"dropout_old_males") + self.get_count(sts,"dropout_enrolled_males") #students.filter(gender="M").count()
@@ -274,6 +276,8 @@ class GetAllReport(APIView):
                               "teachers":teachers,
                               "students":{"males":mstudents,
                                           "females":fstudents,
+                                          # "enrolled_males":enmales,
+                                          # "enrolled_females":enfemales,
                                           "dropout_males":dmtotals,
                                           "dropout_females":dftotals,
                                           "old_dropout_males": olddmtotals,
