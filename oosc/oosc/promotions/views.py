@@ -78,7 +78,7 @@ class PromoteSchoolFilter(FilterSet):
     school_emis_code=django_filters.NumberFilter(name="school__emis_code", label="School emis code")
     partner=django_filters.NumberFilter(name="",label="Partner  Id",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="",label="Partner Admin Id",method="filter_partner_admin")
-    county=django_filters.NumberFilter(name="school__zone__subcounty__county",label="County Id",method="filter_county")
+    county=django_filters.NumberFilter(name="school__zone__subcounty__county",label="County Id")
 
 
     class Meta:
@@ -86,15 +86,12 @@ class PromoteSchoolFilter(FilterSet):
         fields=('__all__')
 
 
-    def filter_county(self,queryset,name,value):
-        return queryset.exclude(Q(class_id__school__zone=None) | Q(class_id__school__subcounty=None)).filter(Q(class_id__school__zone__subcounty__county=value) | Q(class_id__school__subcounty__county=value))
-
 
     def filter_partner_admin(self,queryset,name,value):
-        return  queryset.filter(class_id__school__partners__partner_admins__id=value)
+        return  queryset.filter(school__partners__partner_admins__id=value)
 
     def filter_partner(self, queryset, name, value):
-        return queryset.filter(class_id__school__partners__id=value)
+        return queryset.filter(school__partners__id=value)
 
 
 
