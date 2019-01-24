@@ -21,7 +21,7 @@ from oosc.attendance.views import ListCreateAttendance, TakeAttendance, WeeklyAt
     MonitoringAttendanceTaking, MonitorPartnerAttendanceTaking
 from oosc.promotions.views import CreateListPromoteSchool, RetrievePromoteSschool, RetrieveCompletePromoteSschool, \
     PromotionsStaisticsView
-from oosc.schools.views import ListCreateSchool,ImportSchools,GetAllReport,SearchEmiscode
+from oosc.schools.views import ListCreateSchool, ImportSchools, GetAllReport, SearchEmiscode, ListCreateAllSchool
 from oosc.constituencies.views import ListCreateCounstituency
 from oosc.counties.views import ListCreateCounty
 from oosc.stream.views import ListCreateClass, RetrieveUpdateClass
@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^api/schools/import',ImportSchools.as_view(),name="import_schools"),
     url(r'^api/schools/(?P<emiscode>.+)',SearchEmiscode.as_view(),name="import_schools"),
     url(r'^api/school',ListCreateSchool.as_view(),name="school-list-create"),
+    url(r'^api/allschools',ListCreateAllSchool.as_view(),name="school-list-create"),
     url(r'^api/counties',ListCreateCounty.as_view(),name="county-list-create"),
     url(r'^api/zones',ListCreateCounstituency.as_view(),name="zones-list-create"),
     url(r'^api/streams/(?P<pk>[0-9]+)',RetrieveUpdateClass.as_view(),name="stream-retrieve-destory"),

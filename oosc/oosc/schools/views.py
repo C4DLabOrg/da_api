@@ -40,7 +40,7 @@ from oosc.schools.permissions import IsPartner
 
 
 class SchoolsFilter(FilterSet):
-    county=django_filters.NumberFilter(name="county_filter",method="filter_county",label="County Id")
+    county=django_filters.NumberFilter(name="zone__subcounty__county",label="County Id")
     school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
     partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
     partner_conflict=django_filters.CharFilter(name="partner_conflict" ,label="Partner Conflict (true,false)" ,method="filter_partner_conflict")
@@ -49,9 +49,6 @@ class SchoolsFilter(FilterSet):
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner','partner_conflict')
-
-    def filter_county(self,queryset,name,value):
-        return queryset.exclude(Q(zone=None) | Q(subcounty=None)).filter(Q(zone__subcounty__county=value) | Q(subcounty__county=value))
 
 
     def filter_partner(self,queryset,name,value):
@@ -80,7 +77,12 @@ class ListCreateSchool(generics.ListCreateAPIView):
     pagination_class = StandardresultPagination
     #permission_classes = (IsAdminUser,)
 
-
+class ListCreateAllSchool(generics.ListCreateAPIView):
+    queryset=Schools.objects.select_related().prefetch_related("partners").distinct()
+    serializer_class=SchoolsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=SchoolsFilter
+    pagination_class = StandardresultPagination
 
 def mycsv_reader(csv_reader):
   while True:

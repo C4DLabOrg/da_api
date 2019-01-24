@@ -68,10 +68,10 @@ class AttendanceFilter(FilterSet):
     school=django_filters.NumberFilter(name="_class__school",)
     year=django_filters.NumberFilter(name="date__year")
     month=django_filters.NumberFilter(name="date__month")
-    county=django_filters.NumberFilter(name="_class__school__zone__subcounty__county",method="filter_county")
     partner=django_filters.NumberFilter(name="partner",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="partner",method="filter_partner_admin",label="Partner Admin Id")
     county_name=django_filters.CharFilter(name="_class__school__zone__subcounty__county__county_name",lookup_expr="icontains")
+    county = django_filters.NumberFilter(name="_class__school__zone__subcounty__county", label="County Id")
     is_oosc=django_filters.CharFilter(name="student__is_oosc",method="filter_is_oosc")
 
     #date_range = django_filters.DateRangeFilter(name='date')
@@ -85,8 +85,6 @@ class AttendanceFilter(FilterSet):
     def filter_is_oosc(self, queryset, name, value):
         return queryset.filter(student__is_oosc=str2bool(value))
 
-    def filter_county(self,queryset,name,value):
-        return queryset.exclude(Q(student__class_id__school__zone=None) | Q(student__class_id__school__subcounty=None)).filter(Q(student__class_id__school__zone__subcounty__county=value) | Q(student__class_id__school__subcounty__county=value))
 
     def filter_partner_admin(self, queryset, name, value):
         return queryset.filter(_class__school__partners__partner_admins__id=value)
