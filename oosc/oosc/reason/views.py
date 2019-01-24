@@ -2,6 +2,7 @@ from django.http.response import HttpResponseBase
 from django.shortcuts import render
 
 # Create your views here.
+from django_filters.rest_framework import DjangoFilterBackend
 from django_subquery.expressions import OuterRef, Subquery
 from rest_framework import generics
 from rest_framework.response import Response
@@ -19,7 +20,7 @@ from django.db.models.functions import ExtractMonth
 from django.db.models.functions import ExtractYear
 from django.db.models.functions import TruncDate
 
-from oosc.students.views import EnrollmentSerializer
+from oosc.students.views import EnrollmentSerializer, StudentFilter
 import json
 
 class ListCreatereason(generics.ListCreateAPIView):
@@ -31,7 +32,8 @@ class ListCreatereason(generics.ListCreateAPIView):
 class ListReasonForDropoutv2(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     queryset = Students.objects.filter(active=False)
-    filter_backends = (MyDjangoFilterBackend,)
+    filter_class = StudentFilter
+    filter_backends = (DjangoFilterBackend,)
     pagination_class = StandardresultPagination
     myformats = ["class", "gender","partner", "county","reason","yearly","monthly","daily","school"]
     fakepaginate = False
@@ -231,7 +233,8 @@ class ListReasonForDropoutv2(generics.ListAPIView):
 class ListReasonForDropout(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     queryset = Students.objects.filter(active=False)
-    filter_backends = (MyDjangoFilterBackend,)
+    filter_class=StudentFilter
+    filter_backends = (DjangoFilterBackend,)
     pagination_class = StandardresultPagination
     myformats = ["class", "gender", "partner", "county", "reason", "yearly", "monthly", "daily", "school"]
     fakepaginate = False
