@@ -44,6 +44,16 @@ Install the dependencies and devDependencies and start the server.
 Clone the [public repo](https://github.com/C4DLabOrg/da_api.git) and create a [virtual environment](https://virtualenv.pypa.io/en/latest/). 
 
 
+```sh
+$ pip install
+$ ./manage runserver
+```
+
+Verify the api by navigating to your server address in your preferred browser.
+
+```sh
+127.0.0.1:8000
+```
 
 ### Contribute
 
