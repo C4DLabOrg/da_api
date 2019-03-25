@@ -6,6 +6,7 @@ Digital Attendance is an open-source project supported by UNICEF Kenya through a
   - Open source Ionic 2 Application already built
   - Open source Dashboard in Angular2 already built.
 
+
 ## Features!
 
   - Enrolment of students
@@ -18,6 +19,7 @@ Digital Attendance is an open-source project supported by UNICEF Kenya through a
   - Sorting of students in schools (e.g. moving of streams)
   - Exporting attendance data per school
   - Registration and assignment of schools to partner organizations or counties (government agencies)
+
 
 ### Dependancies
 
@@ -32,6 +34,7 @@ Digital Attendance uses a number of open source projects to work properly:
 
 And of course Digital Attendance itself is open source with a [public repository](https://github.com/C4DLabOrg/da_api) on GitHub.
 
+
 ### Installation
 
 Digital Attendance requires [Python 2.7](https://www.python.org/) to run.
@@ -41,6 +44,7 @@ Install the dependencies and devDependencies and start the server.
 Clone the [public repo](https://github.com/C4DLabOrg/da_api.git) and create a [virtual environment](https://virtualenv.pypa.io/en/latest/). 
 
 
+
 ### Contribute
 
 Want to contribute? Great!
@@ -48,6 +52,7 @@ Get in touch with the [development team](https://github.com/shimanyi).
 
 
 Markdown is a lightweight markup language based on the formatting conventions that people naturally use in email.  As [John Gruber] writes on the [Markdown site][df1]
+
 
 License
 ----
