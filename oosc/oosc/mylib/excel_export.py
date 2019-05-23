@@ -24,7 +24,7 @@ from openpyxl.utils import get_column_letter
 from oosc.mylib.common import get_random, get_quick_stream_class_name
 
 months=[{"name":"Sept","days":30},{"name":"Oct","days":31},{"name":"Nov","days":30}]
-collumns=["School Name","School Emis Code","System Student Id","First Name","Middle name","Last Name","Gender","System Class Id","Class Name"]
+collumns=["School Name","School Emis Code","System Student Id","First Name","Middle name","Last Name","Gender","OOSC","System Class Id","Class Name"]
 
 
 # wb.active.title="Jan"
@@ -74,28 +74,11 @@ def excel_generate(queryset,include_days=True):
         sheet.cell(row=i+2, column=5).value=stud["midname"]
         sheet.cell(row=i+2, column=6).value=stud["lstname"]
         sheet.cell(row=i+2, column=7).value=stud["gender"]
-        sheet.cell(row=i+2, column=8).value=stud["class_id"]
-        sheet.cell(row=i+2, column=9).value=stud["class_name"]
+        sheet.cell(row=i + 2, column=8).value = stud["is_oosc"]
+        sheet.cell(row=i+2, column=9).value=stud["class_id"]
+        sheet.cell(row=i+2, column=10).value=stud["class_name"]
 
 
-        ### sheet {i} writing the data
-            #setting the headers for the sheet
-            # for k,col in enumerate(mycollumns):
-            #     cell=sheet.cell(row=1, column=k+1)
-            #     cell.value = col
-            #     # cell.style.alignment.wrap_text = True
-            #     if k+1 <= maxcols:
-            #         sheet.column_dimensions[get_column_letter(k + 1)].width = 20
-            #
-            # #writing the data for sheet {i}
-            #         # writing data to the sheet
-            # for i, stud in enumerate(queryset):
-            #     sheet.cell(row=i + 2, column=1).value = stud["school_name"]
-            #     sheet.cell(row=i + 2, column=2).value = stud["school_emis_code"]
-            #     sheet.cell(row=i + 2, column=3).value = stud["id"]
-            #     sheet.cell(row=i + 2, column=4).value = stud["name"]
-            #     sheet.cell(row=i + 2, column=5).value = stud["class_id"]
-            #     sheet.cell(row=i + 2, column=6).value = stud["class_name"]
     print("Copy pasting sheets")
     # sheet=wb.create_sheet(index=i, title=month["name"])
     if include_days:

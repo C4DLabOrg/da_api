@@ -3,6 +3,21 @@ from oosc.students.models import Students
 from datetime import timedelta,datetime
 import dateutil.parser
 
+
+class StudentsUpdateOoscSerializer(serializers.Serializer):
+    students=serializers.ListField(child=serializers.IntegerField())
+    is_oosc=serializers.BooleanField()
+
+    def validate_students(self,value):
+        unverified_students=set(value)
+        verified_students=list(Students.objects.filter(id__in=unverified_students).values_list("id",flat=True))
+        # print (verified_emis_codes)
+        if len(verified_students) < 1:
+            raise serializers.ValidationError("No Students were found.")
+        return verified_students
+
+
+
 class StudentsSerializer(serializers.ModelSerializer):
     student_name=serializers.SerializerMethodField()
     class_name=serializers.SerializerMethodField()
@@ -83,7 +98,7 @@ class SimplerStudentSerializer(serializers.Serializer):
 class ImportErrorSerializer(serializers.Serializer):
     row_number=serializers.IntegerField()
     error_message=serializers.JSONField()
-    row_details=serializers.JSONField()
+    row_details=serializers.JSONField(allow_null=True)
 
 class ImportResultsSerializer(serializers.Serializer):
     errors=serializers.ListField(child=ImportErrorSerializer())
@@ -91,6 +106,7 @@ class ImportResultsSerializer(serializers.Serializer):
     total_fails=serializers.IntegerField()
     total_duplicates=serializers.IntegerField()
     success_percentage=serializers.SerializerMethodField()
+
     def get_success_percentage(self,obj):
         total=obj.total_fails+obj.total_success+obj.total_duplicates
         if total ==0:

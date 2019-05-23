@@ -29,11 +29,12 @@ SECRET_KEY = '=l())7cafv22l7*yz)rf=g*kb@)0(f__e7$bp73!ibx#32k6e+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL=True
-USE_TZ=True
+USE_TZ=False
 # Application definition
 
 INSTALLED_APPS = [
@@ -140,6 +141,7 @@ WSGI_APPLICATION = 'oosc.config.wsgi.application'
 
 #Production Only
 os.environ['TZ'] = 'Africa/Nairobi'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -188,7 +190,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -201,3 +203,5 @@ STATIC_URL = '/static/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'..','uploads')
 
 MEDIA_URL="/media/"
+
+

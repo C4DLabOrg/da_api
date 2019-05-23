@@ -1,10 +1,14 @@
 from django.db import transaction
-from django.db.models import Case, CharField
+from django.db.models import Case, CharField, F
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import Value
 from django.db.models import When
+from django.db.models.functions import Concat
 from django.shortcuts import render
+from django_subquery.expressions import OuterRef, Subquery
+
+from oosc.history.models import History
 from oosc.schools.models import Schools
 from rest_framework import generics
 from oosc.schools.serializers import SchoolsSerializer, PostSchoolSerializer
@@ -36,7 +40,7 @@ from oosc.schools.permissions import IsPartner
 
 
 class SchoolsFilter(FilterSet):
-    county=django_filters.NumberFilter(name="county_filter",method="filter_county",label="County Id")
+    county=django_filters.NumberFilter(name="zone__subcounty__county",label="County Id")
     school_name=django_filters.CharFilter(name='school_name',label="School Name",lookup_expr="icontains")
     partner=django_filters.NumberFilter(name="partner" ,label="Partner Id" ,method="filter_partner")
     partner_conflict=django_filters.CharFilter(name="partner_conflict" ,label="Partner Conflict (true,false)" ,method="filter_partner_conflict")
@@ -45,9 +49,6 @@ class SchoolsFilter(FilterSet):
     class Meta:
         model=Schools
         fields=('id','emis_code','zone','county',"school_name",'partner','partner_conflict')
-
-    def filter_county(self,queryset,name,value):
-        return queryset.exclude(Q(zone=None) | Q(subcounty=None)).filter(Q(zone__subcounty__county=value) | Q(subcounty__county=value))
 
 
     def filter_partner(self,queryset,name,value):
@@ -69,14 +70,19 @@ class StandardresultPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 class ListCreateSchool(generics.ListCreateAPIView):
-    queryset=Schools.objects.select_related().prefetch_related("partners")
+    queryset=Schools.objects.filter(streams__isnull=False).select_related().prefetch_related("partners").distinct()
     serializer_class=SchoolsSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class=SchoolsFilter
     pagination_class = StandardresultPagination
     #permission_classes = (IsAdminUser,)
 
-
+class ListCreateAllSchool(generics.ListCreateAPIView):
+    queryset=Schools.objects.select_related().prefetch_related("partners").distinct()
+    serializer_class=SchoolsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class=SchoolsFilter
+    pagination_class = StandardresultPagination
 
 def mycsv_reader(csv_reader):
   while True:
@@ -188,6 +194,7 @@ class GetAllReport(APIView):
         activeschools=schools.filter(streams__isnull=False)
         teachers = Teachers.objects.all()
         partner=request.query_params.get("partner",None)
+        county = request.query_params.get("county", None)
         partner_admin=request.query_params.get("partner_admin",None)
 
         if partner:
@@ -195,11 +202,18 @@ class GetAllReport(APIView):
             teachers=teachers.filter(school__partners__id=partner)
             schools=schools.filter(partners__id=partner)
             activeschools=activeschools.filter(partners__id=partner)
+
         if partner_admin:
             students = students.filter(class_id__school__partners__partner_admins__id=partner_admin)
             teachers = teachers.filter(school__partners__partner_admins__id=partner_admin)
             schools = schools.filter(partners__partner_admins__id=partner_admin)
             activeschools = activeschools.filter(partners__partner_admins__id=partner_admin)
+
+        if county:
+            students = students.filter(class_id__school__zone__subcounty__county_id=county)
+            teachers = teachers.filter(school__zone__subcounty__county_id=county)
+            schools = schools.filter(zone__subcounty__county_id=county)
+            activeschools = activeschools.filter(zone__subcounty__county_id=county)
 
         sts = list(students.order_by().annotate(type=Case(
             When(Q(is_oosc=False) & Q(gender="F") & Q(active=False), then=Value("dropout_old_females")),
@@ -214,10 +228,36 @@ class GetAllReport(APIView):
             default=Value("others"),
             output_field=CharField()
         )).values("type").annotate(count=Count("type")))
+
+
         mstudents=self.get_count(sts,"old_males") + self.get_count(sts,"enrolled_males") #students.filter(gender="M").count()
         fstudents=self.get_count(sts,"old_females") + self.get_count(sts,"enrolled_females")#students.filter(gender="F").count()
         mdropouts=self.get_count(sts,"dropout_old_males") + self.get_count(sts,"dropout_enrolled_males") #students.filter(gender="M").count()
         fdropouts=self.get_count(sts,"dropout_old_females") + self.get_count(sts,"dropout_enrolled_females")#students.filter(gender="F").count()
+
+        hist = History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
+
+
+        dmtotals=students.filter(is_oosc=True,gender="M").annotate(logs=Subquery(hist[:1]),
+                                                           name=Concat(F("fstname"), Value(" "), F("midname"),
+                                                                       Value(" "), F("lstname"))).filter(logs="DROP").count()
+
+        dftotals = students.filter(is_oosc=True,gender="F").annotate(logs=Subquery(hist[:1]),
+                                                         name=Concat(F("fstname"), Value(" "), F("midname"),
+                                                                     Value(" "), F("lstname"))).filter(
+            logs="DROP").count()
+
+        olddmtotals = students.filter(is_oosc=False, gender="M").annotate(logs=Subquery(hist[:1]),
+                                                                      name=Concat(F("fstname"), Value(" "),
+                                                                                  F("midname"),
+                                                                                  Value(" "), F("lstname"))).filter(
+            logs="DROP").count()
+
+        olddftotals = students.filter(is_oosc=False, gender="F").annotate(logs=Subquery(hist[:1]),
+                                                                      name=Concat(F("fstname"), Value(" "),
+                                                                                  F("midname"),
+                                                                                  Value(" "), F("lstname"))).filter(
+            logs="DROP").count()
 
         # oldmstudents=students.filter(gender="M",is_oosc=False,active=True).count()
         # newmstudents=students.filter(gender="M",is_oosc=True,active=True).count()
@@ -228,7 +268,6 @@ class GetAllReport(APIView):
         # dropoldfstudents=students.filter(gender="F",is_oosc=False,active=False).count()
         # dropnewftudents=students.filter(gender="F",is_oosc=True,active=False).count()
 
-
         activeschools=activeschools.distinct().count()
         teachers=teachers.count()
         schools=schools.count()
@@ -237,8 +276,12 @@ class GetAllReport(APIView):
                               "teachers":teachers,
                               "students":{"males":mstudents,
                                           "females":fstudents,
-                                          "dropout_males":mdropouts,
-                                          "dropout_females":fdropouts
+                                          # "enrolled_males":enmales,
+                                          # "enrolled_females":enfemales,
+                                          "dropout_males":dmtotals,
+                                          "dropout_females":dftotals,
+                                          "old_dropout_males": olddmtotals,
+                                          "old_dropout_females": olddftotals,
                                           }})
 
     def get_count(self, list, item):

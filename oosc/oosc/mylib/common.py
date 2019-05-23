@@ -1,7 +1,10 @@
+import random
 import re
 
+import django_filters
 import pytz
 from django.core.paginator import Paginator
+from django.db import models
 from django.db.models import Value, Count
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
@@ -10,13 +13,105 @@ from django.db.models import Q, DateField
 import copy
 import uuid
 from datetime import datetime,timedelta
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 
 from oosc.attendance.models import Attendance, AttendanceHistory
 from oosc.classes.models import PublicHoliday
+from django_filters.rest_framework import FilterSet
+
 
 from sys import stdout
 def get_random():
     return uuid.uuid1()
+
+
+
+class StandardresultPagination(PageNumberPagination):
+    page_size = 100
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
+
+def get_dynamic_model_filter_class(model_class):
+    # for s in survey.formulas.all().values_list("slug",flat=True):
+    #     slugs.append(s)
+    # myextra_kwargs = {f.name: {"required": True} for f in model_class._meta.fields if not f.blank}
+    class Meta:
+        model = model_class
+        fields = ("__all__")
+        exclude=("image","logo","file")
+        # extra_kwargs = myextra_kwargs
+
+    attrs = {"Meta": Meta}
+    serializer = type('Response' + model_class.__class__.__name__ + "Filter", (FilterSet,), attrs)
+    return serializer
+
+
+class StandardresultPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 1000
+    page_size_query_param = 'page_size'
+
+def generate_password():
+    chars = ["A", "a", "B", "b", "C", "c", "D", "d", "e", "H", "h", "F", "E", "G", "g", "f", "2",
+             "3", "4", "5", "6", "7"]
+    return ''.join(random.choice(chars) for _ in range(8))
+
+
+
+class MyDjangoFilterBackend(DjangoFilterBackend):
+    myfilter_class = None
+
+    def get_filter_class(self, view, queryset=None):
+        """
+        Return the django-filters `FilterSet` used to filter the queryset.
+        """
+        if self.myfilter_class:
+            return self.myfilter_class
+
+        queryset = getattr(view, 'queryset', None)
+
+        try:
+            model = queryset.model
+            filter_model = model
+            ##print"The filter class ...")
+            filter_class = self.get_dynamic_filter_class(model)
+            ##print"The filter class ...")
+            assert issubclass(queryset.model, filter_model), \
+                'FilterSet model %s does not match queryset model %s' % \
+                (filter_model, queryset.model)
+            self.myfilter_class = filter_class
+            return filter_class
+        except Exception as e:
+           #printe)
+            raise MyCustomException("Dynamic Filter class error.")
+
+    def get_dynamic_filter_class(self, model_class):
+        class Meta:
+            model = model_class
+            exclude = ('file', 'image','recording','logo')  # [f.name for f in model_class.fields if  f.name in ["logo","image","file"]]
+            fields = ("__all__")
+            filter_overrides = {
+                models.CharField: {
+                    'filter_class': django_filters.CharFilter,
+                    'extra': lambda f: {
+                        'lookup_expr': 'icontains',
+                    },
+                }
+            }
+
+        attrs = {"Meta": Meta,
+                 }
+
+        # myexcludes=["image","logo","file"]
+        # myfields=[f.name for f in model_class.fields if  f.name in myexcludes]
+
+        filter_class = type(model_class.__class__.__name__ + "FilterClass", (FilterSet,), attrs)
+
+        ##printfilter_class)
+        return filter_class
+
 
 class MyCustomException(APIException):
     status_code = 503
@@ -90,6 +185,12 @@ def get_list_of_dates( start_date=None,end_date=None):
         # print ("New Date ",thedate)
     return days
 
+def is_date(date_text):
+    try:
+        datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 def get_quick_stream_class_name(name):
     replace_words=["std","class","STD","CLASS"]

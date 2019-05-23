@@ -12,14 +12,15 @@ from django_subquery.expressions import OuterRef, Subquery
 from rest_framework.exceptions import APIException
 
 from oosc.attendance.views import AbsenteesFilter, AttendanceFilter
-from oosc.mylib.common import filter_students_by_names, MyCustomException, get_stream_name_regex
+from oosc.mylib.common import filter_students_by_names, MyCustomException, get_stream_name_regex, get_list_of_dates
 from oosc.mylib.excel_export import excel_generate
+from oosc.mylib.queryset2excel import exportcsv
 from oosc.students.models import Students,ImportError,ImportResults
 from rest_framework import generics,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from oosc.students.serializers import StudentsSerializer,ImportErrorSerializer,ImportResultsSerializer, \
-    SimpleStudentSerializer, SimplerStudentSerializer
+from oosc.students.serializers import StudentsSerializer, ImportErrorSerializer, ImportResultsSerializer, \
+    SimpleStudentSerializer, SimplerStudentSerializer, StudentsUpdateOoscSerializer
 from datetime import datetime,timedelta
 from django_filters.rest_framework import FilterSet,DjangoFilterBackend
 import django_filters
@@ -54,19 +55,14 @@ class StudentFilter(FilterSet):
     school_emis_code=django_filters.NumberFilter(name="class_id__school__emis_code", label="School emis code")
     partner=django_filters.NumberFilter(name="",label="Partner  Id",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="",label="Partner Admin Id",method="filter_partner_admin")
-    county=django_filters.NumberFilter(name="class_id__school__zone__subcounty__county",label="County Id",method="filter_county")
-
+    county = django_filters.NumberFilter(name="class_id__school__zone__subcounty__county_id", label="County Id")
 
     class Meta:
         model=Students
-        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc')
+        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc','graduated')
 
     def filter_name(self,queryset,name,value):
         return filter_students_by_names(queryset,value)
-
-    def filter_county(self,queryset,name,value):
-        return queryset.exclude(Q(class_id__school__zone=None) | Q(class_id__school__subcounty=None)).filter(Q(class_id__school__zone__subcounty__county=value) | Q(class_id__school__subcounty__county=value))
-
 
     def filter_partner_admin(self,queryset,name,value):
         return  queryset.filter(class_id__school__partners__partner_admins__id=value)
@@ -136,6 +132,7 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
         if not ser.is_valid():
             return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
         object=self.get_object()
+
         if(ser.data["reason"].lower() == "error"):
             object.delete()
             return Response("",status=status.HTTP_204_NO_CONTENT);
@@ -155,7 +152,6 @@ class RetrieveUpdateStudent(generics.RetrieveUpdateDestroyAPIView):
             hist.left_description=ser.data["reason"]
             hist.save()
         return Response("",status=status.HTTP_204_NO_CONTENT)
-
 
 class EnrollmentFilter(FilterSet):
     Class = django_filters.NumberFilter(name="class_id", label="Stream Id")
@@ -405,6 +401,7 @@ class ImportStudentSerializer(serializers.Serializer):
     fstname=serializers.CharField(max_length=50)
     midname=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
     lstname=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
+    admission_no=serializers.CharField(max_length=50,required=False,allow_null=True,allow_blank=True)
     school=serializers.IntegerField()
     clas=serializers.CharField(max_length=50)
     gender=serializers.CharField(max_length=20)
@@ -655,6 +652,7 @@ class ImportStudentsV2(APIView):
 
     def str2bool(self,v):
         return v.lower() in ("yes", "true", "t", "1")
+
     def post(self,request,format=None):
         file=""
         results=""
@@ -665,7 +663,7 @@ class ImportStudentsV2(APIView):
         try:
             file = request.FILES["file"]
         except:
-            Response("No .csv file sent", status=status.HTTP_400_BAD_REQUEST)
+            return Response("No .csv file sent", status=status.HTTP_400_BAD_REQUEST)
         data=""
         # Convert each row into array and ignore the header row
         if file:
@@ -690,7 +688,9 @@ class ImportStudentsV2(APIView):
             stdout.write("\rImporting  %d" % i)
             stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                  "admission_no":dat[9],
                   "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
+
             ser = ImportStudentSerializer(data=dt)
             if ser.is_valid():
                 school = Schools.objects.filter(emis_code=ser.validated_data.get("school"))
@@ -705,6 +705,7 @@ class ImportStudentsV2(APIView):
                     continue
                 std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
                                               midname=ser.data.get("midname"),
+                                              admission_no=ser.data.get("admission_no"),
                                               class_id=cl)
                 if(std.exists()):
                     std=std[0]
@@ -718,7 +719,7 @@ class ImportStudentsV2(APIView):
 
         print ""
         total_success=Students.objects.filter(id__in=students).update(is_oosc=self.is_oosc)
-        res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails)
+        res = ImportResults(ImportErrorSerializer(errors, many=True).data, total_success, total_fails,0)
         return ImportResultsSerializer(res).data
 
 
@@ -739,6 +740,7 @@ class ImportStudentsV2(APIView):
                     stdout.write("\rVerifying %s " % percentage)
                     stdout.flush()
                 dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                      "admission_no": dat[9],
                       "clas": dat[13], "gender": dat[11]}
                 ser = ImportStudentSerializer(data=dt)
                 if(ser.is_valid()):
@@ -785,6 +787,7 @@ class ImportStudentsV2(APIView):
                 stdout.write("\rImporting %s " % percentage)
                 stdout.flush()
             dt = {"fstname": dat[6], "midname": dat[7], "lstname": dat[8], "school": dat[5],
+                  "admission_no": dat[9],
                   "clas": dat[13], "gender": dat[11],"date_enrolled":dat[2]}
             ser = ImportStudentSerializer(data=dt)
             if (ser.is_valid()):
@@ -880,6 +883,7 @@ class ImportStudentsV2(APIView):
     def create_student(self, cl, ser,date_enrolled):
         std = Students.objects.filter(fstname=ser.data.get("fstname"), lstname=ser.data.get("lstname"),
                                       midname=ser.data.get("midname"),
+                                      admission_no=ser.data.get("admission_no"),
                                       class_id=cl)
         # check if student Exists
         if (std.exists()):
@@ -939,6 +943,25 @@ class ListAbsentStudents(generics.ListAPIView):
         return AbsentStudentSerializer
 
 
+class UpdateStudentsOoscStatus(generics.UpdateAPIView):
+    queryset = Students.objects.all()
+    serializer_class = StudentsUpdateOoscSerializer
+    #lookup_field = "id"
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        print(serializer.validated_data.get("students"))
+        records=Students.objects.filter(id__in=serializer.validated_data.get("students"))\
+            .update(is_oosc=serializer.validated_data.get("is_oosc"))
+        return Response({"detail":"Ok","detail_description":"{0} record updated.".format(records)})
+
+    def get_object(self):
+        pass
+
+
 class GetDroupoutsWithReasons(generics.ListAPIView):
     queryset = Students.objects.filter(active=False,graduated=False)
     serializer_class=SimpleStudentSerializer
@@ -956,8 +979,11 @@ class GetDroupoutsWithReasons(generics.ListAPIView):
 
     def get_queryset(self):
         hist=History.objects.filter(student_id=OuterRef('pk')).order_by("modified").values_list("left_description")
-        return self.queryset.annotate(logs=Subquery(hist[:1]),
-                                      name=Concat(F("fstname"),Value(" "),F("midname"),Value(" "),F("lstname"))).exclude(logs="ERR")
+        # self.queryset.filter(is_oosc=True).annotate(logs=Subquery(hist[:1]),
+        #                                             name=Concat(F("fstname"), Value(" "), F("midname"), Value(" "),
+        #                                                         F("lstname"))).filter(logs="DROP").update("")
+        return self.queryset.filter(is_oosc=True).annotate(logs=Subquery(hist[:1]),
+                                      name=Concat(F("fstname"),Value(" "),F("midname"),Value(" "),F("lstname"))).filter(logs="DROP")
 
 
 class ListDropouts(generics.ListAPIView):
@@ -980,17 +1006,17 @@ class ExportStudentsData(generics.ListAPIView):
                          school_name= F("class_id__school__school_name"),
                          school_emis_code=F("class_id__school__emis_code"),
                          )
-        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
+        queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","is_oosc","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
-        print ("stuff")
-        print("have the queryset")
+        # print ("stuff")
+        # print("have the queryset")
         queryset=list(queryset)
         path=excel_generate(queryset,include_days=False)
         # path = default_storage.save('exports/file.xlsx',wb)
         # print (default_storage(path).base_url)
         url = request.build_absolute_uri(location="/media/"+path)
         resp={"link":url}
-        print(resp)
+        # print(resp)
         return  Response(resp)
 
 class ExportStudents(generics.ListAPIView):
@@ -1001,6 +1027,8 @@ class ExportStudents(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         school = request.query_params.get("school", None)
+        start_date, end_date=self.parse_querparams()
+
         if school == None:
             raise MyCustomException("You can only generate for a certain school",400)
         queryset=self.filter_queryset(self.queryset)
@@ -1011,13 +1039,37 @@ class ExportStudents(generics.ListAPIView):
                          )
         queryset=queryset.values("id","fstname","midname","lstname","gender","class_id","class_name","school_name","school_emis_code")
         queryset=queryset.order_by("school_emis_code","class_name")
-        print ("stuff")
-        print("have the queryset")
+        # print ("stuff")
+        # print("have the queryset")
+        # filename="test"
+        # queryset=[{"school_title":"Warugara","count":4}]
+        # headers=[{"name":"School Title","value":"school_title"},{"name":"Students Count","value":"count"},{"name":"Test  Final","value":"test"}]
+        # path=exportcsv(filename=filename,queryset=queryset,headers=headers,title="Schools")
+        # print(path)
+        # print("The path taken by the export")
         queryset=list(queryset)
-        path=excel_generate(queryset)
+        if len(queryset) == 0:
+            raise MyCustomException("No Data found.",400)
+        filename="Attendance_%s_%s"%(start_date,end_date)
+        headers=[{"name":"School Name","value":"school_name"},{"name":"Emis Code","value":"school_emis_code"},{"name":"Student System Id","value":"id"},
+                 {"name": "First Name", "value": "fstname"},{"name":"Mid Name","value":"midname"},{"name":"Last Name","value":"lstname"},{"name":"Gender","value":"gender"},
+                 {"name": "System Class Id", "value": "class_id"},{"name":"Class Name","value":"class_name"}]
+
+        thedays = get_list_of_dates(start_date=start_date, end_date=end_date)
+        daysheaders=[{"name":str(d).split(" ")[0],"value":d} for d in thedays]
+        allheaders=headers+daysheaders
+        path = exportcsv(filename=filename, queryset=queryset, headers=allheaders, title="Attendance")
+        # path=excel_generate(queryset)
         # path = default_storage.save('exports/file.xlsx',wb)
         # print (default_storage(path).base_url)
         url = request.build_absolute_uri(location="/media/"+path)
         resp={"link":url}
-        print(resp)
+        # print(resp)
         return  Response(resp)
+
+    def parse_querparams(self):
+        start_date = self.request.GET.get("start_date", None)
+        end_date = self.request.GET.get("end_date", None)
+        if start_date == None or end_date == None: raise MyCustomException(
+            "You must include the `start_date` , `end_date` ,  in the query params");
+        return start_date, end_date

@@ -5,10 +5,11 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-
+from rest_framework import serializers
 from oosc.admin.v2.serializers import ResetPasswordSerializer, SchoolEmiscodesSerializer, \
     DeleteStreamStudentsSerializer, SchoolsSerializerV2
 from oosc.mylib.common import MyCustomException
+from oosc.mylib.queryset2excel import exportcsv
 from oosc.schools.models import Schools
 from oosc.schools.views import SchoolsFilter
 from oosc.stream.models import Stream
@@ -53,11 +54,13 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save()
         try:
-            user = serializer.validated_data.get("user")
+            tech=self.get_object()
+            user = tech.user
             user.set_password("admin")
             user.save()
-        except:
-            raise MyCustomException("Failed to update password", 404)
+            tech.save()
+        except Exception as e:
+            raise MyCustomException("Failed to update password. {}".format(e.message), 404)
 
     def get_object(self):
         username = self.kwargs["pk"]
@@ -68,6 +71,7 @@ class RetrieveDeleteStream(generics.RetrieveUpdateDestroyAPIView):
             else:
                 raise MyCustomException("The teacher does not exist.")
         tech = teachers[0]
+        tech.headteacher = True
         if tech.non_delete:
             tech.headteacher = True
         return tech
@@ -108,3 +112,43 @@ class ListDuplicatePartnerSchools(generics.ListCreateAPIView):
     def get_queryset(self):
         return self.queryset.filter(active=True).annotate(partners_count=Count("partners")).filter(
             partners_count__gte=2)
+
+class ExportSerializer(serializers.Serializer):
+    path=serializers.CharField()
+class ExportDuplicatePartnerSchools(generics.ListAPIView):
+    serializer_class = ExportSerializer
+    queryset = Schools.objects.all()
+    # pagination_class = ""
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = SchoolsFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_my_queryset()
+        url = request.build_absolute_uri(location="/media/" + queryset)
+        return Response({"path":url})
+
+    def get_my_queryset(self):
+        queryset= self.queryset.filter(active=True).annotate(partners_count=Count("partners")).filter(
+            partners_count__gte=2)
+        data=map(self.map_data,SchoolsSerializerV2(queryset,many=True).data)
+        filename="duplicate_partner_schools"
+        headers=[{"name":"School Name","value":"school_name"},
+                 {"name":"Emis Code","value":"emis_code"},{"name":"Partners","value":"partner_names"},{"name":"County","value":"county"},{"name":"Sub-County","value":"subcounty"},
+                 {"name":"Zone","value":"zone_name"}]
+        path=exportcsv(headers=headers,queryset=data,filename=filename,title="Duplicates")
+        return path
+
+
+    def map_data(self,x):
+        #Set the county and subcounty
+        if x["zone"]:
+            x["county"]=x["zone"]["county_name"]
+            x["subcounty"]=x["zone"]["subcounty_name"]
+            x["zone_name"]=x["zone"]["name"]
+        else:
+            x["county"]=""
+            x["subcounty"]=""
+            x["zone_name"]=""
+        ##Map the partners object array into a comma separate 'id-name' string
+        x["partner_names"]=",".join(map(lambda x:"%s-%s"%(str(x["id"]),x["name"]),x["partners"]))
+        return x
