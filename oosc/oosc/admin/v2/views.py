@@ -7,12 +7,13 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import serializers
 from oosc.admin.v2.serializers import ResetPasswordSerializer, SchoolEmiscodesSerializer, \
-    DeleteStreamStudentsSerializer, SchoolsSerializerV2
+    DeleteStreamStudentsSerializer, SchoolsSerializerV2, DeleteStudentsSerializer
 from oosc.mylib.common import MyCustomException
 from oosc.mylib.queryset2excel import exportcsv
 from oosc.schools.models import Schools
 from oosc.schools.views import SchoolsFilter
 from oosc.stream.models import Stream
+from oosc.students.models import Students
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer
 
@@ -86,6 +87,17 @@ class DeleteStreams(generics.DestroyAPIView):
         serializer.is_valid(raise_exception=True)
         emis_codes = serializer.validated_data.get("emis_codes")
         dele = Stream.objects.filter(school__emis_code__in=emis_codes).delete()
+        return Response({"total": dele[0], "objects": dele[1]}, status=status.HTTP_202_ACCEPTED)
+
+class DeleteStudentsAPIView(generics.DestroyAPIView):
+    serializer_class = DeleteStudentsSerializer
+    queryset = Students.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        student_ids = serializer.validated_data.get("students")
+        dele = Students.objects.filter(id__in=student_ids).delete()
         return Response({"total": dele[0], "objects": dele[1]}, status=status.HTTP_202_ACCEPTED)
 
 

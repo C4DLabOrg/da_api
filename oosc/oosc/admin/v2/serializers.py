@@ -4,6 +4,7 @@ from rest_framework import serializers
 from oosc.partner.serializers import SimlePartnerSerializer
 from oosc.schools.models import Schools
 from oosc.stream.models import Stream
+from oosc.students.models import Students
 from oosc.zone.serializers import ZoneSerializer
 
 
@@ -33,6 +34,16 @@ class SchoolEmiscodesSerializer(serializers.Serializer):
         if len(verified_emis_codes) < 1:
             raise serializers.ValidationError("No schools were found.")
         return verified_emis_codes
+
+class DeleteStudentsSerializer(serializers.Serializer):
+    students=serializers.ListField(child=serializers.IntegerField())
+    def validate_students(self,value):
+        unverified_student_ids=set(value)
+        verified_student_ids=list(Students.objects.filter(id__in=unverified_student_ids).values_list("id",flat=True))
+        if len(verified_student_ids) <1:
+            raise serializers.ValidationError("No valid students found")
+        return verified_student_ids
+
 
 class DeleteStreamStudentsSerializer(serializers.Serializer):
     streams=serializers.ListField(child=serializers.IntegerField())
