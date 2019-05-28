@@ -20,7 +20,7 @@ class AttendanceImportResultsSerializer(serializers.Serializer):
         total=obj.total_fails+obj.total_success+obj.total_duplicates
         if total ==0:
             return "0%"
-        return str(int(obj.total_success+obj.total_duplicates/float(total)*100))+"%"
+        return str(int(((obj.total_success+obj.total_duplicates)/float(total))*100))+"%"
 
 class ExportAttendanceSerializer(serializers.Serializer):
     month=serializers.IntegerField(max_value=12,min_value=1)

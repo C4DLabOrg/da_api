@@ -16,7 +16,7 @@ from oosc.attendance.models import Attendance, AttendanceHistory
 from oosc.attendance.serializers import AttendanceSerializer
 from oosc.attendance.v2.serializers import ExportAttendanceSerializer, \
     AttendanceImportErrorSerializer, AttendanceImportResultsSerializer
-from oosc.attendance.views import AttendanceFilter
+from oosc.attendance.views import AttendanceFilter, AttendanceHistorySerializer
 from oosc.mylib.common import MyCustomException, is_date
 import calendar
 
@@ -188,7 +188,7 @@ class ImportAttendance(APIView):
             else:
                 updates.append(att)
         try:
-            resa = Attendance.objects.bulk_create(new)
+            resa =Attendance.objects.bulk_create(new)
             self.get_attendances_history(new)
             # at = AttendanceHistory(id=id, present=present, _class_id=_class, absent=absent, date=date)
             self.success+=len(resa)
@@ -253,16 +253,17 @@ class ImportAttendance(APIView):
         ###Get the dates
         dates=[d.date for d in attendances]
         dates=set(dates)
-        ###For each class filter the present and absent and create the attendance historu
         for theclass in classes:
-            for date in dates:
-                present=len(map(lambda x:x.date==date and x._class_id==theclass and x.status==1,attendances))
-                absent=len(map(lambda x:x.date==date and x._class_id==theclass and x.status==0,attendances))
-                # print(theclass,date,present,absent)
+            for dated in dates:
+                theclass=str(theclass)
+                present=len(filter(lambda x:x.date==dated and x._class_id==theclass and x.status==1,attendances))
+                absent =len(filter(lambda x:x.date==dated and x._class_id==theclass and x.status==0,attendances))
                 theclass=int(theclass)
+                print(theclass,dated,present,absent)
                 ##Delete any history present
-                AttendanceHistory.objects.filter(date=date,_class_id=theclass).delete()
-                attendance_histories.append(AttendanceHistory(_class_id=theclass,date=date,present=present,absent=absent))
+                id = dated.replace('-', '') + "%s" % (theclass)
+                AttendanceHistory.objects.filter(id=id).delete()
+                attendance_histories.append(AttendanceHistory(id=id,_class_id=theclass,date=dated,present=present,absent=absent))
 
         ###Bulk create
         if len(attendance_histories)>0:
@@ -293,6 +294,67 @@ class ImportAttendance(APIView):
         except:
             return 0
 
+class ListCreateAttendanceHistory(generics.ListCreateAPIView):
+    serializer_class = AttendanceHistorySerializer
+    queryset = AttendanceHistory.objects.all()
+    counter=0
+    def create(self, request, *args, **kwargs):
+        action=request.query_params.get("action")
+        res=False
+        if action=="generate":
+            dates=Attendance.objects.values_list("date",flat=True).distinct()
+            res=True
+            self.counter=0
+            for date in dates:
+                attendaces=Attendance.objects.filter(date=date)
+                self.get_attendances_history(attendaces)
+        return Response({"res":res,"dates":len(dates)}, status=200)
 
 
+    def get_attendances_history(self,attendances):
+        # AttendanceHistory(id=id, present=present, _class_id=_class, absent=absent, date=date)
+        attendance_histories=[]
+        ##Get all the classes
+        classes=[d._class_id for d in attendances]
+        classes=set(classes)
+        # print(classes)
+        ###Get the dates
+        dates=[d.date.date() for d in attendances]
+        dates=set(dates)
+        for theclass in classes:
+            for dated in dates:
+                at=attendances[0]
+                present=len(filter(lambda x:x.date.date()==dated and x._class_id==theclass and x.status==1,attendances))
+                absent =len(filter(lambda x:x.date.date()==dated and x._class_id==theclass and x.status==0,attendances))
+                # theclass=int(theclass)
+                ##Delete any history present
+                id = str(dated).replace('-', '') + "%s" % (theclass)
+                # print(id)
+                AttendanceHistory.objects.filter(id=id).delete()
+                if((present+absent)>0):
+                    self.counter+=1
+                    # print(theclass, str(dated), present, absent)
+                    sys.stdout.write("\rTotal:{} SubTotal:{} Present:{} Absent:{}".format(self.counter,len(attendance_histories),present,absent))
+                    attendance_histories.append(AttendanceHistory(id=id,_class_id=theclass,date=dated,present=present,absent=absent))
+                else:
+                    print("No attendance..")
+
+
+                ####Create the classes if greater than 6000
+                if len(attendance_histories) > 6000:
+                    print("Creating them....")
+                    try:
+                        res = AttendanceHistory.objects.bulk_create(attendance_histories)
+                        attendance_histories=[]
+                        # print(res)
+                    except Exception as e:
+                        print(e)
+
+        ###Bulk create
+        if len(attendance_histories)>0:
+            try:
+                res=AttendanceHistory.objects.bulk_create(attendance_histories)
+                # print(res)
+            except Exception as e:
+                print(e)
 

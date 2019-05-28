@@ -476,8 +476,11 @@ class TakeAttendance(APIView):
             return Response(data={"error":"Error","error_description":e.message},status=status.HTTP_400_BAD_REQUEST)
 
 
-class AttendanceHistorySerializer(object):
-    pass
+class AttendanceHistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=AttendanceHistory
+        fields=("__all__")
 
 
 class MonitorPartnerSerializer(serializers.Serializer):
