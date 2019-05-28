@@ -12,7 +12,7 @@ from rest_framework.filters import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from oosc.attendance.models import Attendance
+from oosc.attendance.models import Attendance, AttendanceHistory
 from oosc.attendance.serializers import AttendanceSerializer
 from oosc.attendance.v2.serializers import ExportAttendanceSerializer, \
     AttendanceImportErrorSerializer, AttendanceImportResultsSerializer
@@ -189,6 +189,8 @@ class ImportAttendance(APIView):
                 updates.append(att)
         try:
             resa = Attendance.objects.bulk_create(new)
+            self.get_attendances_history(new)
+            # at = AttendanceHistory(id=id, present=present, _class_id=_class, absent=absent, date=date)
             self.success+=len(resa)
         except Exception as e:
             self.failed += len(attendances)
@@ -241,7 +243,34 @@ class ImportAttendance(APIView):
                                   )
             attendances.append(attendance)
         return attendances
+    def get_attendances_history(self,attendances):
+        # AttendanceHistory(id=id, present=present, _class_id=_class, absent=absent, date=date)
+        attendance_histories=[]
+        ##Get all the classes
+        classes=[d._class_id for d in attendances]
+        classes=set(classes)
+        # print(classes)
+        ###Get the dates
+        dates=[d.date for d in attendances]
+        dates=set(dates)
+        ###For each class filter the present and absent and create the attendance historu
+        for theclass in classes:
+            for date in dates:
+                present=len(map(lambda x:x.date==date and x._class_id==theclass and x.status==1,attendances))
+                absent=len(map(lambda x:x.date==date and x._class_id==theclass and x.status==0,attendances))
+                # print(theclass,date,present,absent)
+                theclass=int(theclass)
+                ##Delete any history present
+                AttendanceHistory.objects.filter(date=date,_class_id=theclass).delete()
+                attendance_histories.append(AttendanceHistory(_class_id=theclass,date=date,present=present,absent=absent))
 
+        ###Bulk create
+        if len(attendance_histories)>0:
+            try:
+                res=AttendanceHistory.objects.bulk_create(attendance_histories)
+                # print(res)
+            except Exception as e:
+                print(e)
 
 
     def validate_classid_sutdent_id(self,student_id,class_id):
