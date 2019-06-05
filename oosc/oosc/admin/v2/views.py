@@ -12,6 +12,7 @@ from oosc.mylib.common import MyCustomException
 from oosc.mylib.queryset2excel import exportcsv
 from oosc.schools.models import Schools
 from oosc.schools.views import SchoolsFilter
+from oosc.schools.serializers import SchoolsSerializer
 from oosc.stream.models import Stream
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer
@@ -130,12 +131,13 @@ class SchoolNoDataSerializer(serializers.Serializer):
 
 class ListSChoolsWithDataNoPartnet(generics.ListAPIView):
     queryset = Stream.objects.all()
-    serializer_class = SchoolNoDataSerializer
+    serializer_class = SchoolsSerializer
 
     def get_queryset(self):
         schools_with_data= self.queryset.values_list("school").distinct()
-        data=Schools.objects.filter(id__in=schools_with_data,active=True).values("partners").annotate(partners_count=Count("partners"))\
-            .filter(partners_count__lte=0).values("partners_count","school_name","emis_code")
+        schools=Schools.objects.filter(id__in=schools_with_data,active=True).values("partners").annotate(partners_count=Count("partners"))\
+            .filter(partners_count__lte=0).values_list("id").distinct()
+        data=Schools.objects.filter(id__in=schools)
         return data
 
 class ExportDuplicatePartnerSchools(generics.ListAPIView):
