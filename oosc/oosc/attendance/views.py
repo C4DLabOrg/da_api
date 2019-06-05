@@ -669,6 +669,8 @@ class MonitoringAttendanceTaking(generics.ListAPIView):
 
         atts=AttendanceHistory.objects.all()
         streams=self.filter_queryset(self.queryset)
+        days = [d.date() for d in days]
+        print(days)
         atts=atts.filter(_class_id=OuterRef("id")).filter(date__in=days).annotate(theclass=F("_class")).values("_class").\
             annotate(count=Count("_class")).values_list("count",flat=True)
 

@@ -15,7 +15,11 @@ from oosc.schools.views import SchoolsFilter
 from oosc.stream.models import Stream
 from oosc.teachers.models import Teachers
 from oosc.teachers.serializers import TeacherSerializer
-
+from oosc.students.models import Students
+from oosc.students.serializers import StudentsSerializer
+from django.db.models import Count,Case,When,IntegerField,Q,Value,CharField,Sum,Avg,BooleanField,DateField,F
+from django.db.models.functions import ExtractMonth,ExtractYear,ExtractDay,TruncDate
+from django.db.models.functions import Concat,Cast
 
 class RestPassword(generics.UpdateAPIView):
     serializer_class = ResetPasswordSerializer
@@ -115,6 +119,25 @@ class ListDuplicatePartnerSchools(generics.ListCreateAPIView):
 
 class ExportSerializer(serializers.Serializer):
     path=serializers.CharField()
+
+
+class SchoolNoDataSerializer(serializers.Serializer):
+    school_name=serializers.CharField(required=False)
+    emis_code=serializers.CharField(required=False)
+    id=serializers.IntegerField(required=False)
+    partners_count=serializers.IntegerField(required=False)
+
+
+class ListSChoolsWithDataNoPartnet(generics.ListAPIView):
+    queryset = Stream.objects.all()
+    serializer_class = SchoolNoDataSerializer
+
+    def get_queryset(self):
+        schools_with_data= self.queryset.values_list("school").distinct()
+        data=Schools.objects.filter(id__in=schools_with_data).values("partners").annotate(partners_count=Count("partners"))\
+            .filter(partners_count__lte=0).values("partners_count","school_name","emis_code")
+        return data
+
 class ExportDuplicatePartnerSchools(generics.ListAPIView):
     serializer_class = ExportSerializer
     queryset = Schools.objects.all()
