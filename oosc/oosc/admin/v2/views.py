@@ -134,7 +134,7 @@ class ListSChoolsWithDataNoPartnet(generics.ListAPIView):
 
     def get_queryset(self):
         schools_with_data= self.queryset.values_list("school").distinct()
-        data=Schools.objects.filter(id__in=schools_with_data).values("partners").annotate(partners_count=Count("partners"))\
+        data=Schools.objects.filter(id__in=schools_with_data,active=True).values("partners").annotate(partners_count=Count("partners"))\
             .filter(partners_count__lte=0).values("partners_count","school_name","emis_code")
         return data
 
