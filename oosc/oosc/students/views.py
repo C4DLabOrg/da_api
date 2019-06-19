@@ -59,7 +59,7 @@ class StudentFilter(FilterSet):
 
     class Meta:
         model=Students
-        fields=('name','fstname','midname','lstname','admission_no','partner','gender','school','school_emis_code','county','is_oosc','graduated')
+        fields=('name','fstname','midname','lstname','admission_no','partner','gender','active','school','school_emis_code','county','is_oosc','graduated')
 
     def filter_name(self,queryset,name,value):
         return filter_students_by_names(queryset,value)
