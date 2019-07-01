@@ -56,10 +56,16 @@ class StudentFilter(FilterSet):
     partner=django_filters.NumberFilter(name="",label="Partner  Id",method="filter_partner")
     partner_admin=django_filters.NumberFilter(name="",label="Partner Admin Id",method="filter_partner_admin")
     county = django_filters.NumberFilter(name="class_id__school__zone__subcounty__county_id", label="County Id")
+    birth_start_date = django_filters.DateFilter(name="date_of_birth", lookup_expr="gte")
+    birth_end_date = django_filters.DateFilter(name='date_of_birth', lookup_expr=('lte'))
+    enrolled_start_date = django_filters.DateFilter(name="date_enrolled", lookup_expr="gte")
+    enrolled_end_date = django_filters.DateFilter(name='date_enrolled', lookup_expr=('lte'))
+
+
 
     class Meta:
         model=Students
-        fields=('name','fstname','midname','lstname','admission_no','partner','gender','active','school','school_emis_code','county','is_oosc','graduated')
+        fields=('name','fstname','birth_start_date','birth_end_date','enrolled_start_date','enrolled_end_date','midname','lstname','admission_no','partner','gender','active','school','school_emis_code','county','is_oosc','graduated')
 
     def filter_name(self,queryset,name,value):
         return filter_students_by_names(queryset,value)
