@@ -158,18 +158,32 @@ class SerializerAllPercentages(serializers.Serializer):
         type=self.context.get("type")
         return_type=self.context.get("return_type")
         # print ("return type",return_type)
+        # {'absent_males': 2, 'school_name': u'Micha High School', 'value': 1001L, 'present_females': 0,
+        # 'absent_females': 0, 'present_males': 1}
+        norm_fields=["absent_males","value","present_females","absent_females","present_males"]
         if stud or return_type == "count":
-            return {"present":instance["present_males"]+instance["present_females"],
+            res_fields= {"present":instance["present_males"]+instance["present_females"],
                     "present_males":instance["present_males"],
                     "present_females":instance["present_females"],
                     "absent":instance["absent_males"]+instance["absent_females"],
                     "absent_males":instance["absent_males"],
                     "absent_females":instance["absent_females"],
                     "total":int(self.get_total(instance)),"value":instance["value"]}
-        return {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
+            for field in instance.keys():
+                if(field not in norm_fields):
+                    res_fields[field]=instance[field]
+            return res_fields
+
+        res_fields= {"present_males":self.get_pm(instance,"present_males"),"present_females":self.get_pm(instance,"present_females"),
                 "absent_males": self.get_pm(instance, "absent_males"),"absent_females": self.get_pm(instance, "absent_females"),
                 "present":self.get_percentage(instance,"present"),"absent":self.get_percentage(instance,"absent"),
                 "total":100,"value":instance["value"]}
+        for field in instance.keys():
+            if (field not in norm_fields):
+                res_fields[field] = instance[field]
+        return res_fields
+
+        return res_fields
 
 class ListAbsentees(generics.ListAPIView):
     queryset = Attendance.objects.all()
@@ -232,7 +246,7 @@ class ListCreateAttendance(generics.ListAPIView):
             self.fakepaginate=True
             return None
         elif startdate !=None and days_between(startdate,enddate) <= pagesize:
-            # print (days_between(startdate,enddate),days_between(startdate,enddate) <= pagesize)
+            # print (days_between(startdate,enddate),days_between(startdate,enddate) <=f pagesize)
             self.fakepaginate = True
             return None
         elif theformat=="weekly" and startdate !=None and days_between(startdate,enddate)/5 <=pagesize:
@@ -324,35 +338,41 @@ class ListCreateAttendance(generics.ListAPIView):
 
     def get_formated_data(self,data,format):
         pm, pf, af, am=self.resp_fields()
-
         outp=Concat("month",Value(''),output_field=CharField())
-
         at = data.annotate(month=self.get_format(format=format)).values("month")
 
         at=at.annotate(present_males=pm, present_females=pf,absent_males=am, absent_females=af,value=F("month"))
         #at=at.annotate(value=Concat(Value(queryet),Value(""),output_field=CharField()))
-        # #print (at)
+        # print (at)
         at=at.exclude(present_males=0,present_females=0,absent_males=0,absent_females=0)
+        return self.append_additional_fields(format=format,data=at)
 
-        return self.filter_formatted_data(format=format,data=at)
 
+    def append_additional_fields(self,format,data):
+        if format=="school":
+            return data.annotate(school_name=F("_class__school__school_name"),
+                                latitude=F("_class__school__latitude"),
+                                longitude=F("_class__school__longitude"),
+                                               ).values("school_name",
+                "present_males", "present_females", "absent_males","absent_females","latitude","longitude",
+                "value")
 
-    def filter_formatted_data(self,format,data):
-        if format=="monthly":
-            return sorted(data,key=lambda x: parse_date(x["value"]),reverse=True)
         return data.order_by("value")
 
 
     def get_format(self,format):
         daily=Concat(TruncDate("date"),Value(''),output_field=CharField(),)
         weekly=Concat(Trunc("date","week"),Value(''),output_field=CharField(),)
+        monthly = Trunc("date", "month", output_field=DateField())
 
         if(format=="monthly"):
-            return Concat(ExtractYear("date"),Value('-'),ExtractMonth('date'),Value('-1'),output_field=DateField(),)
+            return Concat(monthly,Value(''),output_field=CharField())# Concat(ExtractYear("date"),Value('-'),ExtractMonth('date'),Value('-1'),output_field=DateField(),)
         elif format=="daily":
             return daily
         elif format=="weekly":
             return weekly
+        elif format=="school":
+            return F("_class__school__emis_code")
         # elif format=="partner":
         #     return Concat(F("student__school__partners"))
         elif format== "yearly":

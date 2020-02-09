@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2e7eed3d-00e0-4c0f-af0b-c8f68d2edefe" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/config/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/oosc/oosc/config/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/config/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/oosc/oosc/config/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/schools/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/oosc/oosc/schools/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/oosc/oosc/attendance/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/oosc/oosc/attendance/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
