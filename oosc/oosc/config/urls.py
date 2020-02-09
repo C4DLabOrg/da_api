@@ -48,6 +48,7 @@ urlsv2=[
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/v2/', include(urlsv2)),
+    url(r'apiauth/', include('rest_framework.urls')),
     url(r'^api/attendance/weekly',WeeklyAttendanceReport.as_view(),name="weekly_attendance_report"),
     url(r'^api/attendances/monitor/partner$',MonitorPartnerAttendanceTaking.as_view(),name="weekly_attendance_report"),
     url(r'^api/attendances/monitor$',MonitoringAttendanceTaking.as_view(),name="weekly_attendance_report"),

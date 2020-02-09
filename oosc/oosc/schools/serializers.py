@@ -30,7 +30,7 @@ class SchoolsSerializer(serializers.ModelSerializer):
     subcounty_name=serializers.SerializerMethodField()
     class Meta:
         model = Schools
-        fields = ('id','school_code','partner_conflict' , 'school_name','partners','level'
+        fields = ('id','school_code','partner_conflict' , 'latitude','longitude', 'school_name','partners','level'
                   ,'county_name',
                     'subcounty_name',
                  'zone_name'
