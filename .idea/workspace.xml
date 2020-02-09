@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2e7eed3d-00e0-4c0f-af0b-c8f68d2edefe" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/oosc/oosc/attendance/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/oosc/oosc/attendance/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="2e7eed3d-00e0-4c0f-af0b-c8f68d2edefe" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
