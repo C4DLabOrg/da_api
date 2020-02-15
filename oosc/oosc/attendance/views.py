@@ -280,8 +280,15 @@ class ListCreateAttendance(generics.ListAPIView):
             response.accepted_media_type = request.accepted_media_type
             response.renderer_context = self.get_renderer_context()
 
+        #Todo: Remove the fix for
+        theformat = self.kwargs['type']
+        if theformat=="school":
+            print ("screwing up pagination for schools")
+            response.data=response.data["results"]
+
         for key, value in self.headers.items():
             response[key] = value
+
         return response
     # def get_pagination_class(self):
     #     print("Getting the format")
@@ -310,7 +317,6 @@ class ListCreateAttendance(generics.ListAPIView):
         format = self.kwargs['type']
         at=self.get_formated_data(atts,format=format)
         #at["present_males"]=float(at["present_males"])/total
-
         return at
 
     def get_serializer_context(self):
@@ -593,9 +599,6 @@ class MonitorPartnerAttendanceTaking_Depricated(generics.ListCreateAPIView):
         if start_date == None or end_date == None : raise MyCustomException(
             "You must include the `start_date` , `end_date`  in the query params");
         return start_date,end_date
-
-
-
 
 class MonitorPartnerAttendanceTaking(generics.ListAPIView):
     queryset = AttendanceHistory.objects.all()
